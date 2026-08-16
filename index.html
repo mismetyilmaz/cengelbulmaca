@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çengel Bulmaca — Co-op</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- İsim girişi ekranı: linke tıklayan herkes önce burayı görür -->
+  <div id="name-gate" class="overlay">
+    <div class="name-card">
+      <p class="eyebrow">Odaya katılıyorsun</p>
+      <h1>Bulmacaya İsminle Gir</h1>
+      <p class="sub">Diğer oyuncularla aynı bulmacayı çözeceksin. Kimin ne çözdüğü skor tablosunda görünür.</p>
+      <input id="name-input" type="text" maxlength="18" placeholder="Adın" autocomplete="off">
+      <button id="join-btn">Bulmacaya Katıl</button>
+      <p id="name-error" class="error-text"></p>
+    </div>
+  </div>
+
+  <!-- Ana oyun ekranı -->
+  <div id="game-root" class="game-root hidden">
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">✎</span>
+        <span class="brand-text">Çengel Bulmaca</span>
+      </div>
+      <div class="room-info">
+        <span id="room-label">Oda: —</span>
+        <button id="share-btn" title="Davet linkini kopyala">Linki Kopyala</button>
+      </div>
+      <div class="player-badge">
+        <span id="player-name-label"></span>
+      </div>
+    </header>
+
+    <main class="layout">
+
+      <section class="puzzle-pane">
+        <div id="puzzle-grid" class="puzzle-grid">
+          <!-- Grid, js/puzzle-render.js tarafından burada oluşturulur -->
+        </div>
+      </section>
+
+      <aside class="side-pane">
+        <div class="panel scoreboard-panel">
+          <h2>Skor Tablosu</h2>
+          <ol id="scoreboard-list" class="scoreboard-list">
+            <!-- Oyuncu satırları buraya dinamik eklenir -->
+          </ol>
+        </div>
+
+        <div class="panel progress-panel">
+          <h2>İlerleme</h2>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+          </div>
+          <p id="progress-label" class="progress-label">0 / 0 kelime çözüldü</p>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- Kelime giriş kutusu: bir ipucuna tıklanınca açılır -->
+  <div id="answer-popover" class="answer-popover hidden">
+    <p id="answer-clue-text" class="answer-clue-text"></p>
+    <div id="answer-boxes" class="answer-boxes"></div>
+    <div class="answer-actions">
+      <button id="answer-submit">Onayla</button>
+      <button id="answer-cancel" class="ghost">Vazgeç</button>
+    </div>
+    <p id="answer-feedback" class="answer-feedback"></p>
+  </div>
+
+  <!-- Firebase SDK (compat sürüm — CityHive'daki gibi basit kullanım için) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/puzzle-data.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/puzzle-render.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

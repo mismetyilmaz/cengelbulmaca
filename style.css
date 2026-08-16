@@ -1,0 +1,437 @@
+/* ==========================================================================
+   TOKENS
+   Tema: eski bulmaca dergisi kağıdı + dolma kalem mürekkebi.
+   ========================================================================== */
+:root {
+  --paper:        #F3ECDA;
+  --paper-deep:    #EBE1C8;
+  --paper-line:    #D9CBA8;
+  --ink:           #221D17;
+  --ink-soft:      #6E6555;
+  --pen-red:       #A13E2B;
+  --pen-green:     #45654A;
+  --gold:          #A9822F;
+
+  --font-display:  'Fraunces', Georgia, serif;
+  --font-ui:       'Space Grotesk', system-ui, sans-serif;
+  --font-mono:     'JetBrains Mono', 'Courier New', monospace;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+}
+
+/* subtle paper grain via layered gradients */
+body {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(169,130,47,0.05), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(161,62,43,0.04), transparent 45%);
+}
+
+h1, h2 { font-family: var(--font-display); margin: 0; color: var(--ink); }
+
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+button:active { transform: translateY(1px); }
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.hidden { display: none !important; }
+
+/* ==========================================================================
+   NAME GATE — isim girişi
+   ========================================================================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(169,130,47,0.10), transparent 55%),
+    var(--paper);
+  z-index: 50;
+  padding: 24px;
+}
+
+.name-card {
+  max-width: 420px;
+  width: 100%;
+  background: var(--paper-deep);
+  border: 1px solid var(--paper-line);
+  border-radius: var(--radius-md);
+  padding: 40px 36px;
+  text-align: center;
+  box-shadow: 0 18px 40px -22px rgba(34, 29, 23, 0.35);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pen-red);
+  margin: 0 0 10px;
+}
+
+.name-card h1 {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.name-card .sub {
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+#name-input {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+#join-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+}
+#join-btn:hover { background: #37302A; }
+
+.error-text {
+  color: var(--pen-red);
+  font-size: 13px;
+  min-height: 18px;
+  margin: 10px 0 0;
+}
+
+/* ==========================================================================
+   TOPBAR
+   ========================================================================== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1.5px solid var(--paper-line);
+  background: var(--paper-deep);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  font-size: 22px;
+  color: var(--pen-red);
+  font-family: var(--font-display);
+}
+.brand-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.01em;
+}
+
+.room-info { display: flex; align-items: center; gap: 12px; }
+#room-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+#share-btn {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+#share-btn:hover { background: var(--ink); color: var(--paper); }
+
+.player-badge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 6px 12px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: 20px;
+  color: var(--pen-green);
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  padding: 28px;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.puzzle-pane {
+  background: var(--paper-deep);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  overflow-x: auto;
+}
+
+/* ==========================================================================
+   PUZZLE GRID — çengel bulmaca tablosu
+   ========================================================================== */
+.puzzle-grid {
+  display: grid;
+  gap: 0;
+  border-top: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+  width: max-content;
+}
+
+.cell {
+  width: 64px;
+  height: 64px;
+  border-right: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--paper);
+  font-family: var(--font-mono);
+}
+
+.cell.block {
+  background: var(--ink);
+}
+
+.cell.clue {
+  background: var(--paper-deep);
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: var(--ink);
+  padding: 4px 5px;
+  cursor: pointer;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: flex-start;
+  transition: background 0.12s ease;
+}
+.cell.clue:hover { background: #E4D8B8; }
+.cell.clue.active { background: #E9DDBB; box-shadow: inset 0 0 0 2px var(--gold); }
+
+.cell.clue .arrow {
+  position: absolute;
+  font-size: 12px;
+  color: var(--pen-red);
+}
+.cell.clue .arrow.right { right: 4px; top: 50%; transform: translateY(-50%); }
+.cell.clue .arrow.down { bottom: 4px; left: 50%; transform: translateX(-50%) rotate(90deg); }
+
+.cell.letter {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.cell.letter.filled {
+  color: var(--pen-green);
+}
+.cell.letter.highlight {
+  background: #F5EDD3;
+}
+
+.cell.photo {
+  background-size: cover;
+  background-position: center;
+}
+
+/* ==========================================================================
+   SIDE PANE — skor + ilerleme
+   ========================================================================== */
+.panel {
+  background: var(--paper-deep);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.panel h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.scoreboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding: 7px 0;
+}
+
+.score-row .rank {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.score-row .name {
+  flex: 1;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-row .points {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--pen-green);
+}
+
+.score-row.me { color: var(--pen-red); }
+.score-row.me .points { color: var(--pen-red); }
+
+.progress-track {
+  height: 8px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.3s ease;
+}
+.progress-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 10px 0 0;
+}
+
+/* ==========================================================================
+   ANSWER POPOVER — kelime giriş kutusu
+   ========================================================================== */
+.answer-popover {
+  position: fixed;
+  z-index: 60;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 16px 32px -14px rgba(34,29,23,0.45);
+  max-width: 320px;
+}
+
+.answer-clue-text {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.answer-boxes {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.answer-box {
+  width: 32px;
+  height: 38px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--paper-deep);
+  color: var(--ink);
+}
+.answer-box.locked {
+  background: #E4D8B8;
+  color: var(--pen-green);
+  border-color: var(--pen-green);
+}
+.answer-box:focus-visible { outline: 2px solid var(--gold); }
+
+.answer-actions { display: flex; gap: 8px; }
+#answer-submit {
+  flex: 1;
+  padding: 9px;
+  background: var(--pen-green);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+}
+#answer-submit:hover { background: #35502F; }
+
+.ghost {
+  padding: 9px 12px;
+  background: transparent;
+  border: 1.5px solid var(--paper-line);
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+.ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+.answer-feedback {
+  font-size: 12px;
+  margin: 10px 0 0;
+  min-height: 16px;
+  font-weight: 500;
+}
+.answer-feedback.wrong { color: var(--pen-red); }
+.answer-feedback.correct { color: var(--pen-green); }
