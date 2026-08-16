@@ -136,6 +136,154 @@ button:focus-visible, input:focus-visible {
 }
 
 /* ==========================================================================
+   CONNECTION STATUS
+   ========================================================================== */
+.conn-status {
+  position: fixed;
+  top: 12px;
+  right: 14px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: var(--paper-deep);
+  border: 1px solid var(--paper-line);
+  color: var(--ink-soft);
+}
+.conn-status .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+}
+.conn-status.conn-ok .dot { background: var(--pen-green); }
+.conn-status.conn-ok { color: var(--pen-green); }
+.conn-status.conn-bad .dot { background: var(--pen-red); }
+.conn-status.conn-bad { color: var(--pen-red); }
+
+/* ==========================================================================
+   SETUP CARD — oda kurulum ekranı
+   ========================================================================== */
+.setup-card { text-align: left; max-width: 460px; }
+.setup-card h1 { font-size: 24px; }
+
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 18px 0 8px;
+}
+
+.option-row {
+  display: flex;
+  gap: 8px;
+}
+
+.option-btn {
+  flex: 1;
+  padding: 10px 8px;
+  background: var(--paper);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
+}
+.option-btn:hover { border-color: var(--gold); }
+.option-btn.selected {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+#max-players-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 0;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.checkbox-row input { width: 16px; height: 16px; accent-color: var(--pen-green); }
+
+#setup-password-input,
+#join-password-input {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  padding: 11px 13px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  margin-top: 10px;
+}
+
+#create-room-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  margin-top: 22px;
+}
+#create-room-btn:hover { background: #37302A; }
+
+.room-share-banner {
+  background: #E9DDBB;
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+.room-share-banner p {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.share-link-row { display: flex; gap: 6px; }
+#share-link-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+}
+#setup-copy-btn {
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
    TOPBAR
    ========================================================================== */
 .topbar {

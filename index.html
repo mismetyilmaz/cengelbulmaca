@@ -11,13 +11,69 @@
 </head>
 <body>
 
-  <!-- İsim girişi ekranı: linke tıklayan herkes önce burayı görür -->
-  <div id="name-gate" class="overlay">
+  <!-- Bağlantı durumu — her zaman görünür küçük gösterge -->
+  <div id="conn-status" class="conn-status conn-unknown">
+    <span class="dot"></span>
+    <span id="conn-status-text">Bağlanıyor...</span>
+  </div>
+
+  <!-- Oda kurulum ekranı: room parametresi olmayan link açılınca burası gösterilir -->
+  <div id="setup-gate" class="overlay hidden">
+    <div class="name-card setup-card">
+      <p class="eyebrow">Yeni oda</p>
+      <h1>Bulmaca Odası Oluştur</h1>
+      <p class="sub">Ayarları seç, oda linkini oluştur ve arkadaşlarınla paylaş.</p>
+
+      <label class="field-label">Bulmaca boyutu</label>
+      <div class="option-row" id="size-options">
+        <button type="button" class="option-btn selected" data-size="small">Küçük</button>
+        <button type="button" class="option-btn" data-size="medium">Orta</button>
+        <button type="button" class="option-btn" data-size="large">Büyük</button>
+      </div>
+
+      <label class="field-label">Dil</label>
+      <div class="option-row" id="language-options">
+        <button type="button" class="option-btn selected" data-lang="tr">Türkçe</button>
+        <button type="button" class="option-btn" data-lang="en">English</button>
+      </div>
+
+      <label class="field-label" for="max-players-select">Maksimum oyuncu</label>
+      <select id="max-players-select">
+        <option value="0">Sınırsız</option>
+        <option value="2">2 kişi</option>
+        <option value="4">4 kişi</option>
+        <option value="6">6 kişi</option>
+        <option value="10">10 kişi</option>
+      </select>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="use-password-check">
+        <span>Parola ile koru</span>
+      </label>
+      <input id="setup-password-input" type="text" placeholder="Oda parolası" class="hidden" autocomplete="off">
+
+      <button id="create-room-btn">Oda Oluştur</button>
+      <p id="setup-error" class="error-text"></p>
+    </div>
+  </div>
+
+  <!-- İsim girişi ekranı: linke tıklayan herkes burayı görür -->
+  <div id="name-gate" class="overlay hidden">
     <div class="name-card">
-      <p class="eyebrow">Odaya katılıyorsun</p>
+      <p class="eyebrow" id="name-gate-eyebrow">Odaya katılıyorsun</p>
       <h1>Bulmacaya İsminle Gir</h1>
       <p class="sub">Diğer oyuncularla aynı bulmacayı çözeceksin. Kimin ne çözdüğü skor tablosunda görünür.</p>
+
+      <div id="room-share-banner" class="room-share-banner hidden">
+        <p>Oda hazır! Bu linki arkadaşlarınla paylaş:</p>
+        <div class="share-link-row">
+          <input id="share-link-input" type="text" readonly>
+          <button id="setup-copy-btn">Kopyala</button>
+        </div>
+      </div>
+
       <input id="name-input" type="text" maxlength="18" placeholder="Adın" autocomplete="off">
+      <input id="join-password-input" type="text" placeholder="Oda parolası" class="hidden" autocomplete="off">
       <button id="join-btn">Bulmacaya Katıl</button>
       <p id="name-error" class="error-text"></p>
     </div>
@@ -84,6 +140,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script src="js/firebase-config.js"></script>
+  <script src="js/room.js"></script>
   <script src="js/puzzle-data.js"></script>
   <script src="js/scoring.js"></script>
   <script src="js/puzzle-render.js"></script>

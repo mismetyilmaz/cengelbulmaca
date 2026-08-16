@@ -1,17 +1,40 @@
 /**
  * APP.js
  * ------------------------------------------------------------------
- * Sayfa açılış akışı:
- * 1) URL'de ?room=xxxx var mı bak. Yoksa yeni bir oda id'si üret ve
- *    URL'e ekle (bu kişi linki ilk paylaşan olur).
- * 2) İsim ekranını göster.
- * 3) İsim girilince Game.init() çağrılır, grid çizilir, Firebase
- *    dinleyicileri bağlanır.
+ * Akış:
+ *
+ *  URL'de ?room YOK  -> Oda Kurulum Ekranı (boyut / dil / max oyuncu / parola
+ *                        seçilir) -> "Oda Oluştur" -> oda Firebase'e yazılır,
+ *                        URL güncellenir -> İsim Ekranı (kurucu olarak,
+ *                        parola sorulmadan, link paylaşım banner'ıyla)
+ *
+ *  URL'de ?room VAR   -> oda config'i Firebase'den okunur
+ *                        -> bulunamazsa hata + "yeni oda kur" linki
+ *                        -> bulunursa İsim Ekranı (parola varsa parola
+ *                           alanı da gösterilir)
  */
 
 (function () {
+  // ---------- Ortak elementler ----------
+  const connStatus = document.getElementById("conn-status");
+  const connStatusText = document.getElementById("conn-status-text");
+
+  const setupGate = document.getElementById("setup-gate");
+  const sizeOptions = document.getElementById("size-options");
+  const languageOptions = document.getElementById("language-options");
+  const maxPlayersSelect = document.getElementById("max-players-select");
+  const usePasswordCheck = document.getElementById("use-password-check");
+  const setupPasswordInput = document.getElementById("setup-password-input");
+  const createRoomBtn = document.getElementById("create-room-btn");
+  const setupError = document.getElementById("setup-error");
+
   const nameGate = document.getElementById("name-gate");
+  const nameGateEyebrow = document.getElementById("name-gate-eyebrow");
+  const roomShareBanner = document.getElementById("room-share-banner");
+  const shareLinkInput = document.getElementById("share-link-input");
+  const setupCopyBtn = document.getElementById("setup-copy-btn");
   const nameInput = document.getElementById("name-input");
+  const joinPasswordInput = document.getElementById("join-password-input");
   const joinBtn = document.getElementById("join-btn");
   const nameError = document.getElementById("name-error");
 
@@ -33,44 +56,206 @@
   const answerFeedback = document.getElementById("answer-feedback");
 
   let activeWordId = null;
-  let playerId = null;
+  let roomId = null;
+  let roomConfig = null;
+  let isCreator = false;
 
-  // ---------- Oda id'si ----------
-  const params = new URLSearchParams(window.location.search);
-  let roomId = params.get("room");
-  if (!roomId) {
-    roomId = generateRoomId();
-    params.set("room", roomId);
-    window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
-  }
-  roomLabel.textContent = `Oda: ${roomId}`;
-
-  function generateRoomId() {
-    return Math.random().toString(36).slice(2, 8).toUpperCase();
-  }
+  // ---------- Bağlantı durumu ----------
+  Room.watchConnection(connected => {
+    connStatus.classList.remove("conn-unknown", "conn-ok", "conn-bad");
+    if (connected) {
+      connStatus.classList.add("conn-ok");
+      connStatusText.textContent = "Bağlı";
+    } else {
+      connStatus.classList.add("conn-bad");
+      connStatusText.textContent = "Bağlantı yok";
+    }
+  });
 
   // ---------- Oyuncu kimliği (cihazda kalıcı) ----------
-  playerId = localStorage.getItem("cb_playerId");
-  if (!playerId) {
-    playerId = "p_" + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem("cb_playerId", playerId);
-  }
+  const playerId = getOrCreatePlayerId();
   const savedName = localStorage.getItem("cb_playerName");
   if (savedName) nameInput.value = savedName;
 
-  // ---------- İsim ekranı ----------
-  joinBtn.addEventListener("click", handleJoin);
-  nameInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") handleJoin();
+  function getOrCreatePlayerId() {
+    let id = localStorage.getItem("cb_playerId");
+    if (!id) {
+      id = "p_" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("cb_playerId", id);
+    }
+    return id;
+  }
+
+  // ================================================================
+  // BAŞLANGIÇ: room var mı yok mu bak
+  // ================================================================
+  const params = new URLSearchParams(window.location.search);
+  roomId = params.get("room");
+
+  if (!roomId) {
+    showSetupGate();
+  } else {
+    loadExistingRoom(roomId);
+  }
+
+  // ================================================================
+  // ODA KURULUM EKRANI
+  // ================================================================
+  function showSetupGate() {
+    setupGate.classList.remove("hidden");
+  }
+
+  wireOptionGroup(sizeOptions, "size");
+  wireOptionGroup(languageOptions, "lang");
+
+  function wireOptionGroup(container, attr) {
+    container.querySelectorAll(".option-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      });
+    });
+  }
+
+  usePasswordCheck.addEventListener("change", () => {
+    setupPasswordInput.classList.toggle("hidden", !usePasswordCheck.checked);
+    if (!usePasswordCheck.checked) setupPasswordInput.value = "";
   });
 
-  function handleJoin() {
+  createRoomBtn.addEventListener("click", async () => {
+    setupError.textContent = "";
+    const size = sizeOptions.querySelector(".selected").dataset.size;
+    const lang = languageOptions.querySelector(".selected").dataset.lang;
+    const maxPlayers = parseInt(maxPlayersSelect.value, 10);
+    const password = usePasswordCheck.checked ? setupPasswordInput.value.trim() : "";
+
+    if (usePasswordCheck.checked && password.length < 3) {
+      setupError.textContent = "Parola en az 3 karakter olmalı.";
+      return;
+    }
+
+    const puzzleId = `${size}_${lang}`;
+    if (!PUZZLE_CATALOG[puzzleId]) {
+      setupError.textContent = "Bu boyut/dil kombinasyonu için bulmaca bulunamadı.";
+      return;
+    }
+
+    createRoomBtn.disabled = true;
+    createRoomBtn.textContent = "Oluşturuluyor...";
+    try {
+      roomId = await Room.createRoom({ puzzleId, maxPlayers, password, language: lang });
+      roomConfig = { puzzleId, maxPlayers, password, language: lang };
+      isCreator = true;
+
+      params.set("room", roomId);
+      window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+
+      setupGate.classList.add("hidden");
+      showNameGate({ showPassword: false, showShareBanner: true });
+    } catch (err) {
+      console.error(err);
+      setupError.textContent = "Oda oluşturulamadı. Firebase ayarlarını kontrol et (konsolda detay var).";
+      createRoomBtn.disabled = false;
+      createRoomBtn.textContent = "Oda Oluştur";
+    }
+  });
+
+  // ================================================================
+  // VAR OLAN ODAYA KATILMA
+  // ================================================================
+  async function loadExistingRoom(id) {
+    nameGate.classList.remove("hidden");
+    nameGateEyebrow.textContent = "Yükleniyor...";
+    nameInput.disabled = true;
+    joinBtn.disabled = true;
+
+    try {
+      const config = await Room.fetchConfig(id);
+      if (!config) {
+        nameGateEyebrow.textContent = "Oda bulunamadı";
+        nameError.textContent = "Bu link geçersiz olabilir. ";
+        const link = document.createElement("a");
+        link.href = window.location.pathname;
+        link.textContent = "Yeni oda kur";
+        link.style.color = "var(--pen-red)";
+        nameError.appendChild(link);
+        return;
+      }
+      roomConfig = config;
+      nameGateEyebrow.textContent = "Odaya katılıyorsun";
+      nameInput.disabled = false;
+      joinBtn.disabled = false;
+      if (config.password) {
+        joinPasswordInput.classList.remove("hidden");
+      }
+    } catch (err) {
+      console.error(err);
+      nameGateEyebrow.textContent = "Bağlantı hatası";
+      nameError.textContent = "Oda bilgisi okunamadı. İnternet bağlantını ve firebase-config.js ayarlarını kontrol et.";
+    }
+  }
+
+  // ================================================================
+  // İSİM EKRANI
+  // ================================================================
+  function showNameGate({ showPassword, showShareBanner }) {
+    nameGate.classList.remove("hidden");
+    joinPasswordInput.classList.toggle("hidden", !showPassword);
+    roomShareBanner.classList.toggle("hidden", !showShareBanner);
+    if (showShareBanner) {
+      shareLinkInput.value = window.location.href;
+    }
+    nameInput.disabled = false;
+    joinBtn.disabled = false;
+  }
+
+  setupCopyBtn.addEventListener("click", () => {
+    shareLinkInput.select();
+    navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+      setupCopyBtn.textContent = "Kopyalandı!";
+      setTimeout(() => (setupCopyBtn.textContent = "Kopyala"), 1500);
+    });
+  });
+
+  joinBtn.addEventListener("click", handleJoin);
+  nameInput.addEventListener("keydown", e => { if (e.key === "Enter") handleJoin(); });
+  joinPasswordInput.addEventListener("keydown", e => { if (e.key === "Enter") handleJoin(); });
+
+  async function handleJoin() {
+    nameError.textContent = "";
     const name = nameInput.value.trim();
     if (name.length < 2) {
       nameError.textContent = "Lütfen en az 2 karakterli bir isim gir.";
       return;
     }
+
+    if (!isCreator) {
+      joinBtn.disabled = true;
+      joinBtn.textContent = "Kontrol ediliyor...";
+      try {
+        const result = await Room.validateJoin(roomId, roomConfig, {
+          playerId,
+          password: joinPasswordInput.value.trim()
+        });
+        if (!result.ok) {
+          nameError.textContent = result.reason === "wrong_password"
+            ? "Parola yanlış."
+            : "Oda dolu, yeni oyuncu alınamıyor.";
+          joinBtn.disabled = false;
+          joinBtn.textContent = "Bulmacaya Katıl";
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        nameError.textContent = "Kontrol sırasında hata oluştu. Tekrar dene.";
+        joinBtn.disabled = false;
+        joinBtn.textContent = "Bulmacaya Katıl";
+        return;
+      }
+    }
+
     localStorage.setItem("cb_playerName", name);
+    PUZZLE_DATA = PUZZLE_CATALOG[roomConfig.puzzleId].data;
     startGame(name);
   }
 
@@ -78,6 +263,7 @@
     nameGate.classList.add("hidden");
     gameRoot.classList.remove("hidden");
     playerNameLabel.textContent = name;
+    roomLabel.textContent = `Oda: ${roomId}`;
 
     PuzzleRender.init(puzzleGridEl, handleClueClick);
 
@@ -85,9 +271,7 @@
       onLettersChange: letters => PuzzleRender.paintLetters(letters),
       onWordsChange: () => {
         Object.keys(PUZZLE_DATA.words).forEach(wid => {
-          if (Game.isWordSolved(wid)) {
-            PuzzleRender.markWordSolved(wid, wordsSolvedByName(wid));
-          }
+          if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
         });
         renderProgress();
       },
@@ -95,16 +279,11 @@
     });
   }
 
-  function wordsSolvedByName(wordId) {
-    // Basit yardımcı: Game içindeki cache'e doğrudan erişimimiz yok,
-    // bu yüzden ipucunu sade tutuyoruz (isim göstermek istersen
-    // Game.js'e küçük bir getter eklenebilir).
-    return null;
-  }
-
-  // ---------- İpucuna tıklama -> cevap kutusu ----------
+  // ================================================================
+  // İPUCUNA TIKLAMA -> CEVAP KUTUSU
+  // ================================================================
   function handleClueClick(wordId, clueEl) {
-    if (Game.isWordSolved(wordId)) return; // zaten çözülmüş, tekrar açma
+    if (Game.isWordSolved(wordId)) return;
 
     activeWordId = wordId;
     const word = PUZZLE_DATA.words[wordId];
@@ -182,7 +361,24 @@
       return;
     }
 
-    const result = await Game.submitAnswer(activeWordId, guess);
+    answerSubmit.disabled = true;
+    answerSubmit.textContent = "Kontrol ediliyor...";
+
+    let result;
+    try {
+      result = await Game.submitAnswer(activeWordId, guess);
+    } catch (err) {
+      console.error(err);
+      result = { correct: true, error: true, errorMessage: "Beklenmeyen bir hata oluştu." };
+    }
+
+    answerSubmit.disabled = false;
+    answerSubmit.textContent = "Onayla";
+
+    if (result.error) {
+      showFeedback(result.errorMessage || "Bağlantı hatası oluştu.", false);
+      return;
+    }
 
     if (!result.correct) {
       showFeedback("Yanlış, tekrar dene.", false);
@@ -221,7 +417,9 @@
     }
   });
 
-  // ---------- Skor tablosu ----------
+  // ================================================================
+  // SKOR TABLOSU / İLERLEME
+  // ================================================================
   function renderScoreboard() {
     const players = Game.getPlayersSorted();
     scoreboardList.innerHTML = "";
@@ -237,7 +435,6 @@
     });
   }
 
-  // ---------- İlerleme çubuğu ----------
   function renderProgress() {
     const total = Game.getTotalWordCount();
     const solved = Game.getSolvedWordCount();
@@ -246,7 +443,6 @@
     progressLabel.textContent = `${solved} / ${total} kelime çözüldü`;
   }
 
-  // ---------- Link kopyalama ----------
   shareBtn.addEventListener("click", () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       shareBtn.textContent = "Kopyalandı!";

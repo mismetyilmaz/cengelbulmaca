@@ -81,40 +81,65 @@ const Game = (() => {
       return { correct: false };
     }
 
-    // Çift çözümü engellemek için transaction: sadece "solved" değilse yaz.
-    const wordRef = roomRef.child(`words/${wordId}`);
-    const txResult = await wordRef.transaction(current => {
-      if (current && current.solved) {
-        return; // değiştirme, zaten çözülmüş — abort
+    try {
+      // Çift çözümü engellemek için transaction: sadece "solved" değilse yaz.
+      const wordRef = roomRef.child(`words/${wordId}`);
+      const txResult = await withTimeout(
+        wordRef.transaction(current => {
+          if (current && current.solved) {
+            return; // değiştirme, zaten çözülmüş — abort
+          }
+          return {
+            solved: true,
+            solvedBy: playerId,
+            solvedByName: playerName,
+            answer: word.answer
+          };
+        }),
+        8000
+      );
+
+      if (!txResult.committed) {
+        return { correct: true, alreadySolved: true };
       }
-      return {
-        solved: true,
-        solvedBy: playerId,
-        solvedByName: playerName,
-        answer: word.answer
-      };
-    });
 
-    if (!txResult.committed) {
-      return { correct: true, alreadySolved: true };
+      // Puanı, kesişimden ZATEN dolu olan harfleri hariç tutarak hesapla
+      const { points } = SCORING.calculate(word.cells, lettersCache);
+
+      // Harfleri veritabanına yaz
+      const letterUpdates = {};
+      word.answer.split("").forEach((ch, i) => {
+        letterUpdates[`letters/${word.cells[i]}`] = ch;
+      });
+      await roomRef.update(letterUpdates);
+
+      // Skoru artır
+      await roomRef.child(`players/${playerId}/score`).transaction(
+        current => (current || 0) + points
+      );
+
+      return { correct: true, points };
+    } catch (err) {
+      console.error("submitAnswer hatası:", err);
+      return { correct: true, error: true, errorMessage: describeError(err) };
     }
+  }
 
-    // Puanı, kesişimden ZATEN dolu olan harfleri hariç tutarak hesapla
-    const { points } = SCORING.calculate(word.cells, lettersCache);
+  /** Firebase bağlantısı hiç cevap vermezse promise'ın sonsuza dek asılı kalmasını engeller. */
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout: Firebase yanıt vermedi")), ms)
+      )
+    ]);
+  }
 
-    // Harfleri veritabanına yaz
-    const letterUpdates = {};
-    word.answer.split("").forEach((ch, i) => {
-      letterUpdates[`letters/${word.cells[i]}`] = ch;
-    });
-    await roomRef.update(letterUpdates);
-
-    // Skoru artır
-    await roomRef.child(`players/${playerId}/score`).transaction(
-      current => (current || 0) + points
-    );
-
-    return { correct: true, points };
+  function describeError(err) {
+    if (err && err.message && err.message.startsWith("timeout")) {
+      return "Sunucudan yanıt gelmedi. İnternet bağlantını ve firebase-config.js dosyasındaki ayarları kontrol et.";
+    }
+    return "Bir hata oluştu: " + (err && err.message ? err.message : "bilinmeyen hata");
   }
 
   function normalize(str) {
