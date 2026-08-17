@@ -1,402 +1,259 @@
 /**
  * CROSSWORD-BUILDER.js
  * ------------------------------------------------------------------
- * Gazete eki tarzı, dörtgen ve kesişimli çengel bulmaca üretici.
- *
- * Strateji:
- *  1. Kelimeleri uzunluğa göre sırala (uzunlar önce).
- *  2. Birden fazla rastgele sıra denemesi yap; en yoğun + en bağlantılı
- *     sonucu seç.
- *  3. Her kelime için tüm olası kesişim adaylarını skorla:
- *     - çok harf örtüşmesi
- *     - küçük bounding box
- *     - kareye yakın en-boy oranı
- *  4. Kesişim bulunamayan kelimeleri izole satıra atmak yerine
- *     mevcut bloğun hemen altına / yanına yapıştırmaya çalış.
- *  5. Çıktı: { title, rows, cols, cells, words, targetLang }
- *     cells içinde boş hücreler "block" olarak işaretlenir.
- *
- * KISIT: answer boşluksuz tek kelime, yalnızca harf.
+ * Gerçek çengel bulmaca mantığı:
+ * - Tüm kelimeler birbirleriyle kesişir.
+ * - Boş (block) hücre kalmaz; boş kalan hücreler rastgele harflerle doldurulur.
+ * - Kesişim bulamayan kelimeler otomatik olarak atlanır (liste büyük olduğu için 50+ kelime hedeflenir).
+ * - 5 farklı deneme yaparak en çok kelimeyi kesiştiren sonuç seçilir.
  */
 
 const CrosswordBuilder = (() => {
 
-  const MAX_ATTEMPTS = 24;       // farklı kelime sırası denemesi
-  const MAX_EXTENT = 28;         // tek yönde max hücre
-  const MIN_INTERSECTION_RATIO = 0.55; // ideal: kelimelerin çoğu kesişsin
-
-  function build(title, wordList, targetLang) {
-    const cleaned = wordList
-      .map(w => ({
-        clue: String(w.clue || "").trim(),
-        answer: TextUtils.upper(String(w.answer || "").trim(), targetLang)
-      }))
-      .filter(w => {
-        const valid = /^[A-ZÇĞİIÖŞÜ]+$/.test(w.answer) && w.answer.length >= 2;
-        if (!valid) console.warn(`CrosswordBuilder: geçersiz cevap atlandı -> "${w.answer}"`);
-        return valid;
-      });
-
-    if (cleaned.length === 0) {
-      return { title, rows: 1, cols: 1, cells: {}, words: {}, targetLang };
+    // Rastgele harf seçimi (hedef dile göre)
+    function randomLetter(lang) {
+        const letters = lang === "tr"
+            ? "ABCDEFGHIJKLMNOPQRSTUVWXYZÇĞİÖŞÜ"
+            : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return letters[Math.floor(Math.random() * letters.length)];
     }
 
-    let best = null;
-    let bestScore = -Infinity;
-
-    // 1) uzunluk sırası
-    const orders = [cleaned.slice().sort((a, b) => b.answer.length - a.answer.length)];
-
-    // 2) ek rastgele karışımlar
-    for (let t = 0; t < MAX_ATTEMPTS - 1; t++) {
-      const shuffled = cleaned.slice();
-      // uzun kelimeleri önde tut, geri kalanı karıştır
-      shuffled.sort((a, b) => {
-        const la = a.answer.length, lb = b.answer.length;
-        if (la !== lb && (la >= 6 || lb >= 6)) return lb - la;
-        return Math.random() - 0.5;
-      });
-      orders.push(shuffled);
-    }
-
-    for (const order of orders) {
-      const result = tryBuild(order);
-      if (!result) continue;
-      const score = scoreLayout(result);
-      if (score > bestScore) {
-        bestScore = score;
-        best = result;
-      }
-    }
-
-    if (!best) {
-      return { title, rows: 1, cols: 1, cells: {}, words: {}, targetLang };
-    }
-
-    return finalize(title, best, targetLang);
-  }
-
-  function tryBuild(order) {
-    const letterGrid = new Map(); // "r,c" -> letter
-    const clueGrid = new Map();   // "r,c" -> wordId
-    const placed = [];
-
+    // Hücre anahtarı
     function key(r, c) { return `${r},${c}`; }
 
-    function cellsOf(answer, row, col, dir) {
-      const out = [];
-      for (let i = 0; i < answer.length; i++) {
-        const r = dir === "across" ? row : row + i;
-        const c = dir === "across" ? col + i : col;
-        out.push({ r, c, ch: answer[i] });
-      }
-      return out;
-    }
-
-    function cluePos(row, col, dir) {
-      return dir === "across"
-        ? { r: row, c: col - 1 }
-        : { r: row - 1, c: col };
-    }
-
-    function canPlace(answer, row, col, dir) {
-      const cp = cluePos(row, col, dir);
-      if (letterGrid.has(key(cp.r, cp.c)) || clueGrid.has(key(cp.r, cp.c))) return false;
-
-      for (const { r, c, ch } of cellsOf(answer, row, col, dir)) {
-        if (Math.abs(r) > MAX_EXTENT || Math.abs(c) > MAX_EXTENT) return false;
-        const k = key(r, c);
-        if (clueGrid.has(k)) return false;
-        if (letterGrid.has(k) && letterGrid.get(k) !== ch) return false;
-      }
-      return true;
-    }
-
-    function countOverlaps(answer, row, col, dir) {
-      let n = 0;
-      for (const { r, c } of cellsOf(answer, row, col, dir)) {
-        if (letterGrid.has(key(r, c))) n++;
-      }
-      return n;
-    }
-
-    function boundingAreaAfter(answer, row, col, dir) {
-      let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-      const consider = (r, c) => {
-        minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-        minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-      };
-      letterGrid.forEach((_, k) => {
-        const [r, c] = k.split(",").map(Number);
-        consider(r, c);
-      });
-      clueGrid.forEach((_, k) => {
-        const [r, c] = k.split(",").map(Number);
-        consider(r, c);
-      });
-      for (const { r, c } of cellsOf(answer, row, col, dir)) consider(r, c);
-      const cp = cluePos(row, col, dir);
-      consider(cp.r, cp.c);
-      if (!isFinite(minR)) return answer.length;
-      return (maxR - minR + 1) * (maxC - minC + 1);
-    }
-
-    function aspectPenaltyAfter(answer, row, col, dir) {
-      let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-      const consider = (r, c) => {
-        minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-        minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-      };
-      letterGrid.forEach((_, k) => {
-        const [r, c] = k.split(",").map(Number);
-        consider(r, c);
-      });
-      for (const { r, c } of cellsOf(answer, row, col, dir)) consider(r, c);
-      if (!isFinite(minR)) return 0;
-      const h = maxR - minR + 1;
-      const w = maxC - minC + 1;
-      return Math.abs(h - w);
-    }
-
-    function findBestPlacement(answer) {
-      const candidates = [];
-
-      for (const p of placed) {
+    // Bir kelimeyi grid'e yerleştir
+    function placeWord(wordId, wordObj, row, col, dir, letterGrid, clueGrid, placed) {
+        const answer = wordObj.answer;
+        const cellIds = [];
         for (let i = 0; i < answer.length; i++) {
-          for (let j = 0; j < p.answer.length; j++) {
-            if (answer[i] !== p.answer[j]) continue;
-
-            // Karşı yönde kesişim (asıl hedef)
-            const trials = [];
-            if (p.dir === "across") {
-              trials.push({
-                dir: "down",
-                row: p.row - i,
-                col: p.col + j
-              });
-            } else {
-              trials.push({
-                dir: "across",
-                row: p.row + j,
-                col: p.col - i
-              });
-            }
-
-            for (const t of trials) {
-              if (!canPlace(answer, t.row, t.col, t.dir)) continue;
-              const overlaps = countOverlaps(answer, t.row, t.col, t.dir);
-              if (overlaps < 1) continue;
-              const area = boundingAreaAfter(answer, t.row, t.col, t.dir);
-              const aspect = aspectPenaltyAfter(answer, t.row, t.col, t.dir);
-              // Skor: çok örtüşme iyi, küçük alan iyi, kareye yakın iyi
-              const score =
-                overlaps * 120 -
-                area * 1.2 -
-                aspect * 4 +
-                (overlaps >= 2 ? 40 : 0);
-              candidates.push({ score, overlaps, row: t.row, col: t.col, dir: t.dir });
-            }
-          }
+            const r = dir === "across" ? row : row + i;
+            const c = dir === "across" ? col + i : col;
+            const k = key(r, c);
+            letterGrid.set(k, answer[i]);
+            cellIds.push({ r, c });
         }
-      }
-
-      if (candidates.length === 0) return null;
-      candidates.sort((a, b) => b.score - a.score);
-      return candidates[0];
+        // İpucu kutusu, kelimenin soluna (yatay) veya üstüne (dikey) yerleştirilir
+        const clueR = dir === "across" ? row : row - 1;
+        const clueC = dir === "across" ? col - 1 : col;
+        clueGrid.set(key(clueR, clueC), wordId);
+        placed.push({
+            id: wordId,
+            answer: answer,
+            clue: wordObj.clue,
+            row, col, dir,
+            cellIds,
+            clueCell: { r: clueR, c: clueC }
+        });
     }
 
-    function nearFallback(answer) {
-      // Mevcut bloğun hemen altına / yanına yapıştır — izole satır YOK
-      if (placed.length === 0) {
-        return { row: 0, col: 1, dir: "across" }; // col=1: ipucu için yer
-      }
+    // Verilen pozisyona kelime sığar mı?
+    function canPlace(answer, row, col, dir, letterGrid, clueGrid) {
+        const clueR = dir === "across" ? row : row - 1;
+        const clueC = dir === "across" ? col - 1 : col;
+        const clueKey = key(clueR, clueC);
+        if (letterGrid.has(clueKey) || clueGrid.has(clueKey)) return false;
 
-      let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-      letterGrid.forEach((_, k) => {
-        const [r, c] = k.split(",").map(Number);
-        minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-        minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-      });
-
-      const tries = [];
-      // Altına across
-      for (let r = maxR + 1; r <= maxR + 3; r++) {
-        for (let c = minC; c <= maxC; c++) {
-          tries.push({ row: r, col: c, dir: "across" });
+        for (let i = 0; i < answer.length; i++) {
+            const r = dir === "across" ? row : row + i;
+            const c = dir === "across" ? col + i : col;
+            const k = key(r, c);
+            if (clueGrid.has(k)) return false;
+            if (letterGrid.has(k) && letterGrid.get(k) !== answer[i]) return false;
         }
-      }
-      // Sağına down
-      for (let c = maxC + 1; c <= maxC + 3; c++) {
+        return true;
+    }
+
+    // Mevcut grid ile kesişen bir yer bul
+    function findPlacement(answer, letterGrid, clueGrid) {
+        for (const [k, letter] of letterGrid) {
+            const [rStr, cStr] = k.split(',');
+            const r = parseInt(rStr, 10);
+            const c = parseInt(cStr, 10);
+            // Bu harf, cevap içinde kaçıncı indekste?
+            const indices = [];
+            for (let i = 0; i < answer.length; i++) {
+                if (answer[i] === letter) indices.push(i);
+            }
+            for (const idx of indices) {
+                // Yatay deneme
+                const rowH = r;
+                const colH = c - idx;
+                if (canPlace(answer, rowH, colH, "across", letterGrid, clueGrid)) {
+                    return { row: rowH, col: colH, dir: "across" };
+                }
+                // Dikey deneme
+                const rowV = r - idx;
+                const colV = c;
+                if (canPlace(answer, rowV, colV, "down", letterGrid, clueGrid)) {
+                    return { row: rowV, col: colV, dir: "down" };
+                }
+            }
+        }
+        return null; // kesişim bulunamadı
+    }
+
+    // ------------------------------------------------------------------
+    // ANA build FONKSİYONU
+    // ------------------------------------------------------------------
+    function build(title, wordList, targetLang) {
+        // 1. Temizlik ve büyük harf dönüşümü
+        const cleaned = wordList
+            .map(w => ({
+                clue: w.clue.trim(),
+                answer: TextUtils.upper(w.answer.trim(), targetLang)
+            }))
+            .filter(w => /^[A-ZÇĞİIÖŞÜ]+$/.test(w.answer))
+            .sort((a, b) => b.answer.length - a.answer.length);
+
+        if (cleaned.length === 0) {
+            return { title, rows: 1, cols: 1, cells: {}, words: {}, targetLang };
+        }
+
+        let bestPlaced = [];
+        let bestCount = 0;
+        const ATTEMPTS = 5; // 5 farklı rastgele sıralama dene
+
+        for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+            // Kelime sırasını karıştır (ilk kelime sabit)
+            const shuffled = [...cleaned];
+            if (attempt > 0) {
+                const first = shuffled[0];
+                const rest = shuffled.slice(1);
+                for (let i = rest.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [rest[i], rest[j]] = [rest[j], rest[i]];
+                }
+                shuffled.splice(0, 1, first, ...rest);
+            }
+
+            const letterGrid = new Map();
+            const clueGrid = new Map();
+            const placed = [];
+
+            // İlk kelimeyi (0,0) yatay yerleştir
+            placeWord("w0", shuffled[0], 0, 0, "across", letterGrid, clueGrid, placed);
+
+            // Geri kalan kelimeleri dene
+            for (let i = 1; i < shuffled.length; i++) {
+                const w = shuffled[i];
+                const id = `w${i}`;
+                const pos = findPlacement(w.answer, letterGrid, clueGrid);
+                if (pos) {
+                    placeWord(id, w, pos.row, pos.col, pos.dir, letterGrid, clueGrid, placed);
+                }
+            }
+
+            // En iyisini sakla
+            if (placed.length > bestCount) {
+                bestCount = placed.length;
+                bestPlaced = placed;
+                if (bestCount >= 50) break; // 50 kelime hedefe ulaşıldı
+            }
+        }
+
+        // finalize: grid'i oluştur ve boş hücreleri rastgele harflerle doldur
+        return finalize(title, bestPlaced, targetLang);
+    }
+
+    // ------------------------------------------------------------------
+    // finalize – grid oluşturma + rastgele doldurma
+    // ------------------------------------------------------------------
+    function finalize(title, placed, targetLang) {
+        if (placed.length === 0) {
+            return { title, rows: 1, cols: 1, cells: {}, words: {}, targetLang };
+        }
+
+        // Tüm hücrelerin sınırlarını hesapla
+        let minR = Infinity, minC = Infinity, maxR = -Infinity, maxC = -Infinity;
+        placed.forEach(p => {
+            [...p.cellIds, p.clueCell].forEach(({ r, c }) => {
+                minR = Math.min(minR, r); maxR = Math.max(maxR, r);
+                minC = Math.min(minC, c); maxC = Math.max(maxC, c);
+            });
+        });
+
+        // letterGrid ve clueGrid'i placed'den yeniden oluştur
+        const letterGrid = new Map();
+        const clueGrid = new Map();
+
+        placed.forEach(p => {
+            const answer = p.answer;
+            p.cellIds.forEach((cell, idx) => {
+                letterGrid.set(key(cell.r, cell.c), answer[idx]);
+            });
+            clueGrid.set(key(p.clueCell.r, p.clueCell.c), p.id);
+        });
+
+        // BOŞ HÜCRELERİ RASTGELE HARFLERLE DOLDUR
         for (let r = minR; r <= maxR; r++) {
-          tries.push({ row: r, col: c, dir: "down" });
+            for (let c = minC; c <= maxC; c++) {
+                const k = key(r, c);
+                if (!letterGrid.has(k) && !clueGrid.has(k)) {
+                    letterGrid.set(k, randomLetter(targetLang));
+                }
+            }
         }
-      }
-      // Üstüne / soluna da dene
-      for (let r = minR - 3; r < minR; r++) {
-        for (let c = minC; c <= maxC; c++) {
-          tries.push({ row: r, col: c, dir: "across" });
-        }
-      }
 
-      let best = null;
-      let bestSc = -Infinity;
-      for (const t of tries) {
-        if (!canPlace(answer, t.row, t.col, t.dir)) continue;
-        const area = boundingAreaAfter(answer, t.row, t.col, t.dir);
-        const sc = -area;
-        if (sc > bestSc) {
-          bestSc = sc;
-          best = t;
+        // shift: grid'i 0,0'dan başlatmak için
+        const shift = (r, c) => `r${r - minR}c${c - minC}`;
+
+        const cells = {};
+        const words = {};
+
+        // Clue hücreleri
+        placed.forEach(p => {
+            const cellId = shift(p.clueCell.r, p.clueCell.c);
+            cells[cellId] = {
+                type: "clue",
+                text: p.clue,
+                arrow: p.dir === "across" ? "right" : "down",
+                wordId: p.id
+            };
+        });
+
+        // Letter hücreleri
+        for (let r = minR; r <= maxR; r++) {
+            for (let c = minC; c <= maxC; c++) {
+                const k = key(r, c);
+                if (clueGrid.has(k)) continue; // clue zaten eklendi
+                if (letterGrid.has(k)) {
+                    const cellId = shift(r, c);
+                    // Bu hücre hangi kelimelere ait?
+                    const wordIds = [];
+                    placed.forEach(p => {
+                        p.cellIds.forEach((cell, idx) => {
+                            if (cell.r === r && cell.c === c) {
+                                wordIds.push(p.id);
+                            }
+                        });
+                    });
+                    cells[cellId] = {
+                        type: "letter",
+                        wordIds: wordIds.length ? wordIds : [] // rastgele harfler boş liste alır
+                    };
+                }
+            }
         }
-      }
-      return best;
+
+        // Words
+        placed.forEach(p => {
+            const wordCellIds = p.cellIds.map(({ r, c }) => shift(r, c));
+            words[p.id] = {
+                answer: p.answer,
+                cells: wordCellIds,
+                clueCell: shift(p.clueCell.r, p.clueCell.c)
+            };
+        });
+
+        return {
+            title,
+            rows: maxR - minR + 1,
+            cols: maxC - minC + 1,
+            cells,
+            words,
+            targetLang
+        };
     }
 
-    function commit(wordId, w, placement) {
-      const { row, col, dir } = placement;
-      const cellIds = [];
-      for (const { r, c, ch } of cellsOf(w.answer, row, col, dir)) {
-        letterGrid.set(key(r, c), ch);
-        cellIds.push({ r, c });
-      }
-      const cp = cluePos(row, col, dir);
-      clueGrid.set(key(cp.r, cp.c), wordId);
-      placed.push({
-        id: wordId,
-        answer: w.answer,
-        clue: w.clue,
-        row, col, dir,
-        cellIds,
-        clueCell: cp
-      });
-    }
-
-    // İlk kelime
-    commit("w0", order[0], { row: 0, col: 1, dir: "across" });
-
-    for (let idx = 1; idx < order.length; idx++) {
-      const w = order[idx];
-      const wordId = `w${idx}`;
-      let placement = findBestPlacement(w.answer);
-      // Kesişim yoksa atla — izole kelime grid'i bozar (gazete tipi yoğunluk)
-      // Sadece çok az kelime yerleştiyse (ilk 3) yakın fallback dene
-      if (!placement && placed.length < 3) {
-        placement = nearFallback(w.answer);
-      }
-      if (!placement) continue;
-      commit(wordId, w, placement);
-    }
-
-    if (placed.length < 2) return null;
-    return { placed, letterGrid, clueGrid };
-  }
-
-  function scoreLayout(result) {
-    const { placed, letterGrid, clueGrid } = result;
-    if (placed.length === 0) return -Infinity;
-
-    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-    const consider = (r, c) => {
-      minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-      minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-    };
-    letterGrid.forEach((_, k) => {
-      const [r, c] = k.split(",").map(Number);
-      consider(r, c);
-    });
-    clueGrid.forEach((_, k) => {
-      const [r, c] = k.split(",").map(Number);
-      consider(r, c);
-    });
-
-    const rows = maxR - minR + 1;
-    const cols = maxC - minC + 1;
-    const area = rows * cols;
-    const letters = letterGrid.size;
-    const density = letters / area;
-
-    // Kesişim sayısı: birden fazla kelimeye ait hücreler
-    const cellWordCount = new Map();
-    placed.forEach(p => {
-      p.cellIds.forEach(({ r, c }) => {
-        const k = `${r},${c}`;
-        cellWordCount.set(k, (cellWordCount.get(k) || 0) + 1);
-      });
-    });
-    let crossCells = 0;
-    cellWordCount.forEach(n => { if (n >= 2) crossCells++; });
-
-    // Bağlantılı kelime oranı (en az bir kesişimi olan)
-    let connected = 0;
-    placed.forEach(p => {
-      const hasCross = p.cellIds.some(({ r, c }) => (cellWordCount.get(`${r},${c}`) || 0) >= 2);
-      if (hasCross) connected++;
-    });
-    const connectRatio = connected / placed.length;
-
-    // En-boy: kareye yakın olsun
-    const aspect = Math.abs(rows - cols);
-
-    return (
-      density * 200 +
-      crossCells * 25 +
-      connectRatio * 150 +
-      placed.length * 8 -
-      aspect * 6 -
-      area * 0.15
-    );
-  }
-
-  function finalize(title, result, targetLang) {
-    const { placed } = result;
-    let minR = Infinity, minC = Infinity, maxR = -Infinity, maxC = -Infinity;
-    placed.forEach(p => {
-      [...p.cellIds, p.clueCell].forEach(({ r, c }) => {
-        minR = Math.min(minR, r); maxR = Math.max(maxR, r);
-        minC = Math.min(minC, c); maxC = Math.max(maxC, c);
-      });
-    });
-
-    const shift = (r, c) => `r${r - minR}c${c - minC}`;
-    const cells = {};
-    const words = {};
-    const rows = maxR - minR + 1;
-    const cols = maxC - minC + 1;
-
-    // Tüm hücreleri önce block olarak işaretle (dörtgen dolgu)
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        cells[`r${r}c${c}`] = { type: "block" };
-      }
-    }
-
-    placed.forEach(p => {
-      const clueCellId = shift(p.clueCell.r, p.clueCell.c);
-      cells[clueCellId] = {
-        type: "clue",
-        text: p.clue,
-        arrow: p.dir === "across" ? "right" : "down",
-        wordId: p.id
-      };
-
-      const wordCellIds = p.cellIds.map(({ r, c }) => shift(r, c));
-      wordCellIds.forEach(cellId => {
-        if (cells[cellId] && cells[cellId].type === "letter") {
-          cells[cellId].wordIds.push(p.id);
-        } else {
-          cells[cellId] = { type: "letter", wordIds: [p.id] };
-        }
-      });
-
-      words[p.id] = {
-        answer: p.answer,
-        cells: wordCellIds,
-        clueCell: clueCellId
-      };
-    });
-
-    return { title, rows, cols, cells, words, targetLang };
-  }
-
-  return { build };
+    return { build };
 })();

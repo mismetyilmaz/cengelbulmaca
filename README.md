@@ -141,17 +141,3 @@ içine `registerPuzzle(...)` çağrıları ekleyerek yapılıyor.
 - Oyuncu sayısı / aktif olma göstergesi (kim şu an bağlı)
 - Parolanın düz metin yerine hash'lenmesi (şu an basit karşılaştırma,
   arkadaş grubu kullanımı için yeterli ama güvenli şifreleme değil)
-
-## Grid üretimi (güncellendi)
-
-`crossword-builder.js` gazete eki tarzı dörtgen, kesişimli grid üretir:
-
-- Birden fazla kelime sırası dener, en yoğun + en bağlantılı sonucu seçer
-- Her kelime için tüm kesişim adaylarını skorlar (örtüşme, alan, en-boy oranı)
-- Kesişmeyen kelimeleri izole satıra atmaz — yoğunluğu korumak için atlar
-- Boş hücreler `block` olarak işaretlenir (dörtgen dolgu)
-
-**İyi bulmaca için ipuçları** (`puzzle-content.js`):
-- 10–16 kelime ideal (80 kelimelik listeler grid’i seyreltir)
-- Ortak harfleri bol kelimeler seç (A, E, R, T, S, N, L…)
-- `answer` boşluksuz tek kelime olmalı
