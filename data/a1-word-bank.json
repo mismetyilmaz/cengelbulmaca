@@ -1,0 +1,3298 @@
+[
+  {
+    "clue": "Hakkında",
+    "answer": "ABOUT"
+  },
+  {
+    "clue": "Boyunca",
+    "answer": "ACROSS"
+  },
+  {
+    "clue": "Aksiyon",
+    "answer": "ACTION"
+  },
+  {
+    "clue": "Aktivite",
+    "answer": "ACTIVITY"
+  },
+  {
+    "clue": "Aktör",
+    "answer": "ACTOR"
+  },
+  {
+    "clue": "Kadın oyuncu",
+    "answer": "ACTRESS"
+  },
+  {
+    "clue": "Eklemek",
+    "answer": "ADD"
+  },
+  {
+    "clue": "Yetişkin",
+    "answer": "ADULT"
+  },
+  {
+    "clue": "Tavsiye",
+    "answer": "ADVICE"
+  },
+  {
+    "clue": "Korkmuş",
+    "answer": "AFRAID"
+  },
+  {
+    "clue": "Sonra",
+    "answer": "AFTER"
+  },
+  {
+    "clue": "Öğleden sonra",
+    "answer": "AFTERNOON"
+  },
+  {
+    "clue": "Yeniden",
+    "answer": "AGAIN"
+  },
+  {
+    "clue": "Yaş",
+    "answer": "AGE"
+  },
+  {
+    "clue": "Önce",
+    "answer": "AGO"
+  },
+  {
+    "clue": "Anlaşmak",
+    "answer": "AGREE"
+  },
+  {
+    "clue": "Hava",
+    "answer": "AIR"
+  },
+  {
+    "clue": "Havaalanı",
+    "answer": "AIRPORT"
+  },
+  {
+    "clue": "Hepsi",
+    "answer": "ALL"
+  },
+  {
+    "clue": "De",
+    "answer": "ALSO"
+  },
+  {
+    "clue": "Her zaman",
+    "answer": "ALWAYS"
+  },
+  {
+    "clue": "Harika",
+    "answer": "AMAZING"
+  },
+  {
+    "clue": "Ve",
+    "answer": "AND"
+  },
+  {
+    "clue": "Kızgın",
+    "answer": "ANGRY"
+  },
+  {
+    "clue": "Hayvan",
+    "answer": "ANIMAL"
+  },
+  {
+    "clue": "Başkası",
+    "answer": "ANOTHER"
+  },
+  {
+    "clue": "Cevap",
+    "answer": "ANSWER"
+  },
+  {
+    "clue": "Hiç kimse",
+    "answer": "ANYONE"
+  },
+  {
+    "clue": "Hiçbir şey",
+    "answer": "ANYTHING"
+  },
+  {
+    "clue": "Apartman",
+    "answer": "APARTMENT"
+  },
+  {
+    "clue": "Elma",
+    "answer": "APPLE"
+  },
+  {
+    "clue": "Nisan",
+    "answer": "APRIL"
+  },
+  {
+    "clue": "Bölge",
+    "answer": "AREA"
+  },
+  {
+    "clue": "Kol",
+    "answer": "ARM"
+  },
+  {
+    "clue": "Etrafında",
+    "answer": "AROUND"
+  },
+  {
+    "clue": "Varmak",
+    "answer": "ARRIVE"
+  },
+  {
+    "clue": "Sanat",
+    "answer": "ART"
+  },
+  {
+    "clue": "Makale",
+    "answer": "ARTICLE"
+  },
+  {
+    "clue": "Artist",
+    "answer": "ARTIST"
+  },
+  {
+    "clue": "Gibi",
+    "answer": "AS"
+  },
+  {
+    "clue": "Sormak",
+    "answer": "ASK"
+  },
+  {
+    "clue": "Üzerinde",
+    "answer": "AT"
+  },
+  {
+    "clue": "Ağustos",
+    "answer": "AUGUST"
+  },
+  {
+    "clue": "Teyze",
+    "answer": "AUNT"
+  },
+  {
+    "clue": "Sonbahar",
+    "answer": "AUTUMN"
+  },
+  {
+    "clue": "Uzakta",
+    "answer": "AWAY"
+  },
+  {
+    "clue": "Bebek",
+    "answer": "BABY"
+  },
+  {
+    "clue": "Geri",
+    "answer": "BACK"
+  },
+  {
+    "clue": "Kötü",
+    "answer": "BAD"
+  },
+  {
+    "clue": "Çanta",
+    "answer": "BAG"
+  },
+  {
+    "clue": "Top",
+    "answer": "BALL"
+  },
+  {
+    "clue": "Muz",
+    "answer": "BANANA"
+  },
+  {
+    "clue": "Grup",
+    "answer": "BAND"
+  },
+  {
+    "clue": "Banka",
+    "answer": "BANK"
+  },
+  {
+    "clue": "Banyo",
+    "answer": "BATH"
+  },
+  {
+    "clue": "Tuvalet",
+    "answer": "BATHROOM"
+  },
+  {
+    "clue": "Olmak",
+    "answer": "BE"
+  },
+  {
+    "clue": "Sahil",
+    "answer": "BEACH"
+  },
+  {
+    "clue": "Güzel",
+    "answer": "BEAUTIFUL"
+  },
+  {
+    "clue": "Çünkü",
+    "answer": "BECAUSE"
+  },
+  {
+    "clue": "Olmak",
+    "answer": "BECOME"
+  },
+  {
+    "clue": "Yatak",
+    "answer": "BED"
+  },
+  {
+    "clue": "Yatak odası",
+    "answer": "BEDROOM"
+  },
+  {
+    "clue": "Bira",
+    "answer": "BEER"
+  },
+  {
+    "clue": "Önce",
+    "answer": "BEFORE"
+  },
+  {
+    "clue": "Başlamak",
+    "answer": "BEGIN"
+  },
+  {
+    "clue": "Başlangıç",
+    "answer": "BEGINNING"
+  },
+  {
+    "clue": "Arkasında",
+    "answer": "BEHIND"
+  },
+  {
+    "clue": "İnanmak",
+    "answer": "BELIEVE"
+  },
+  {
+    "clue": "Altında",
+    "answer": "BELOW"
+  },
+  {
+    "clue": "Daha iyi",
+    "answer": "BETTER"
+  },
+  {
+    "clue": "Arasında",
+    "answer": "BETWEEN"
+  },
+  {
+    "clue": "Bisiklet",
+    "answer": "BICYCLE"
+  },
+  {
+    "clue": "Büyük",
+    "answer": "BIG"
+  },
+  {
+    "clue": "Bisiklet",
+    "answer": "BIKE"
+  },
+  {
+    "clue": "Fatura",
+    "answer": "BILL"
+  },
+  {
+    "clue": "Kuş",
+    "answer": "BIRD"
+  },
+  {
+    "clue": "Doğum günü",
+    "answer": "BIRTHDAY"
+  },
+  {
+    "clue": "Siyah",
+    "answer": "BLACK"
+  },
+  {
+    "clue": "İnternet günlüğü",
+    "answer": "BLOG"
+  },
+  {
+    "clue": "Sarışın",
+    "answer": "BLONDE"
+  },
+  {
+    "clue": "Mavi",
+    "answer": "BLUE"
+  },
+  {
+    "clue": "Bot",
+    "answer": "BOAT"
+  },
+  {
+    "clue": "Vücut",
+    "answer": "BODY"
+  },
+  {
+    "clue": "Kitap",
+    "answer": "BOOK"
+  },
+  {
+    "clue": "Bot",
+    "answer": "BOOT"
+  },
+  {
+    "clue": "Sıkılmış",
+    "answer": "BORED"
+  },
+  {
+    "clue": "Sıkıcı",
+    "answer": "BORING"
+  },
+  {
+    "clue": "Doğmak",
+    "answer": "BORN"
+  },
+  {
+    "clue": "Her ikisi de",
+    "answer": "BOTH"
+  },
+  {
+    "clue": "Şişe",
+    "answer": "BOTTLE"
+  },
+  {
+    "clue": "Kutu",
+    "answer": "BOX"
+  },
+  {
+    "clue": "Erkek çocuk",
+    "answer": "BOY"
+  },
+  {
+    "clue": "Erkek arkadaş",
+    "answer": "BOYFRIEND"
+  },
+  {
+    "clue": "Ekmek",
+    "answer": "BREAD"
+  },
+  {
+    "clue": "Ara",
+    "answer": "BREAK"
+  },
+  {
+    "clue": "Kahvaltı",
+    "answer": "BREAKFAST"
+  },
+  {
+    "clue": "Getirmek",
+    "answer": "BRING"
+  },
+  {
+    "clue": "Kardeş",
+    "answer": "BROTHER"
+  },
+  {
+    "clue": "Kahverengi",
+    "answer": "BROWN"
+  },
+  {
+    "clue": "İnşa etmek",
+    "answer": "BUILD"
+  },
+  {
+    "clue": "Bina",
+    "answer": "BUILDING"
+  },
+  {
+    "clue": "Otobüs",
+    "answer": "BUS"
+  },
+  {
+    "clue": "İş",
+    "answer": "BUSINESS"
+  },
+  {
+    "clue": "Meşgul",
+    "answer": "BUSY"
+  },
+  {
+    "clue": "Ama",
+    "answer": "BUT"
+  },
+  {
+    "clue": "Tereyağı",
+    "answer": "BUTTER"
+  },
+  {
+    "clue": "Satın almak",
+    "answer": "BUY"
+  },
+  {
+    "clue": "Vasıtasıyla",
+    "answer": "BY"
+  },
+  {
+    "clue": "Güle güle",
+    "answer": "BYE"
+  },
+  {
+    "clue": "Kafe",
+    "answer": "CAFE"
+  },
+  {
+    "clue": "Kek",
+    "answer": "CAKE"
+  },
+  {
+    "clue": "Aramak",
+    "answer": "CALL"
+  },
+  {
+    "clue": "Kamera",
+    "answer": "CAMERA"
+  },
+  {
+    "clue": "Yapabilmek",
+    "answer": "CAN"
+  },
+  {
+    "clue": "Edememek",
+    "answer": "CANNOT"
+  },
+  {
+    "clue": "Başkent",
+    "answer": "CAPITAL"
+  },
+  {
+    "clue": "Araba",
+    "answer": "CAR"
+  },
+  {
+    "clue": "Kart",
+    "answer": "CARD"
+  },
+  {
+    "clue": "Kariyer",
+    "answer": "CAREER"
+  },
+  {
+    "clue": "Havuç",
+    "answer": "CARROT"
+  },
+  {
+    "clue": "Taşımak",
+    "answer": "CARRY"
+  },
+  {
+    "clue": "Kedi",
+    "answer": "CAT"
+  },
+  {
+    "clue": "Sent",
+    "answer": "CENT"
+  },
+  {
+    "clue": "Yüzyıl",
+    "answer": "CENTURY"
+  },
+  {
+    "clue": "Değişmek",
+    "answer": "CHANGE"
+  },
+  {
+    "clue": "Çizelge",
+    "answer": "CHART"
+  },
+  {
+    "clue": "Ucuz",
+    "answer": "CHEAP"
+  },
+  {
+    "clue": "Kontrol etmek",
+    "answer": "CHECK"
+  },
+  {
+    "clue": "Peynir",
+    "answer": "CHEESE"
+  },
+  {
+    "clue": "Tavuk",
+    "answer": "CHICKEN"
+  },
+  {
+    "clue": "Çocuk",
+    "answer": "CHILD"
+  },
+  {
+    "clue": "Seçmek",
+    "answer": "CHOOSE"
+  },
+  {
+    "clue": "Sinema",
+    "answer": "CINEMA"
+  },
+  {
+    "clue": "Şehir",
+    "answer": "CITY"
+  },
+  {
+    "clue": "Sınıf",
+    "answer": "CLASS"
+  },
+  {
+    "clue": "Sınıf",
+    "answer": "CLASSROOM"
+  },
+  {
+    "clue": "Temiz",
+    "answer": "CLEAN"
+  },
+  {
+    "clue": "Saat",
+    "answer": "CLOCK"
+  },
+  {
+    "clue": "Kapamak",
+    "answer": "CLOSE"
+  },
+  {
+    "clue": "Elbiseler",
+    "answer": "CLOTHES"
+  },
+  {
+    "clue": "Kulüp",
+    "answer": "CLUB"
+  },
+  {
+    "clue": "Kaban",
+    "answer": "COAT"
+  },
+  {
+    "clue": "Kahve",
+    "answer": "COFFEE"
+  },
+  {
+    "clue": "Soğuk",
+    "answer": "COLD"
+  },
+  {
+    "clue": "Kolej",
+    "answer": "COLLEGE"
+  },
+  {
+    "clue": "Renk",
+    "answer": "COLOUR"
+  },
+  {
+    "clue": "Gelmek",
+    "answer": "COME"
+  },
+  {
+    "clue": "Yaygın",
+    "answer": "COMMON"
+  },
+  {
+    "clue": "Şirket",
+    "answer": "COMPANY"
+  },
+  {
+    "clue": "Karşılaştırmak",
+    "answer": "COMPARE"
+  },
+  {
+    "clue": "Tamamlamak",
+    "answer": "COMPLETE"
+  },
+  {
+    "clue": "Bilgisayar",
+    "answer": "COMPUTER"
+  },
+  {
+    "clue": "Konser",
+    "answer": "CONCERT"
+  },
+  {
+    "clue": "Pişirme",
+    "answer": "COOKING"
+  },
+  {
+    "clue": "Doğru",
+    "answer": "CORRECT"
+  },
+  {
+    "clue": "Masraf",
+    "answer": "COST"
+  },
+  {
+    "clue": "Yapabilirdi",
+    "answer": "COULD"
+  },
+  {
+    "clue": "Yurt",
+    "answer": "COUNTRY"
+  },
+  {
+    "clue": "Kurs",
+    "answer": "COURSE"
+  },
+  {
+    "clue": "Kuzen",
+    "answer": "COUSIN"
+  },
+  {
+    "clue": "İnek",
+    "answer": "COW"
+  },
+  {
+    "clue": "Krema",
+    "answer": "CREAM"
+  },
+  {
+    "clue": "Yaratmak",
+    "answer": "CREATE"
+  },
+  {
+    "clue": "Kültür",
+    "answer": "CULTURE"
+  },
+  {
+    "clue": "Kupa",
+    "answer": "CUP"
+  },
+  {
+    "clue": "Müşteri",
+    "answer": "CUSTOMER"
+  },
+  {
+    "clue": "Baba",
+    "answer": "DAD"
+  },
+  {
+    "clue": "Dans",
+    "answer": "DANCE"
+  },
+  {
+    "clue": "Dansçı",
+    "answer": "DANCER"
+  },
+  {
+    "clue": "Dans eden",
+    "answer": "DANCING"
+  },
+  {
+    "clue": "Karanlık",
+    "answer": "DARK"
+  },
+  {
+    "clue": "Zaman",
+    "answer": "DATE"
+  },
+  {
+    "clue": "Gün",
+    "answer": "DAY"
+  },
+  {
+    "clue": "Sevgili",
+    "answer": "DEAR"
+  },
+  {
+    "clue": "Aralık",
+    "answer": "DECEMBER"
+  },
+  {
+    "clue": "Karar vermek",
+    "answer": "DECIDE"
+  },
+  {
+    "clue": "Lezzetli",
+    "answer": "DELICIOUS"
+  },
+  {
+    "clue": "Tanımlamak",
+    "answer": "DESCRIBE"
+  },
+  {
+    "clue": "Tanımlama",
+    "answer": "DESCRIPTION"
+  },
+  {
+    "clue": "Tasarım",
+    "answer": "DESIGN"
+  },
+  {
+    "clue": "Masa",
+    "answer": "DESK"
+  },
+  {
+    "clue": "Detay",
+    "answer": "DETAIL"
+  },
+  {
+    "clue": "Diyalog",
+    "answer": "DIALOGUE"
+  },
+  {
+    "clue": "Sözlük",
+    "answer": "DICTIONARY"
+  },
+  {
+    "clue": "Ölmek",
+    "answer": "DIE"
+  },
+  {
+    "clue": "Diyet",
+    "answer": "DIET"
+  },
+  {
+    "clue": "Fark",
+    "answer": "DIFFERENCE"
+  },
+  {
+    "clue": "Farklı",
+    "answer": "DIFFERENT"
+  },
+  {
+    "clue": "Zor",
+    "answer": "DIFFICULT"
+  },
+  {
+    "clue": "Akşam yemeği",
+    "answer": "DINNER"
+  },
+  {
+    "clue": "Kirli",
+    "answer": "DIRTY"
+  },
+  {
+    "clue": "Tartışmak",
+    "answer": "DISCUSS"
+  },
+  {
+    "clue": "Yemek",
+    "answer": "DISH"
+  },
+  {
+    "clue": "Yapmak",
+    "answer": "DO"
+  },
+  {
+    "clue": "Doktor",
+    "answer": "DOCTOR"
+  },
+  {
+    "clue": "Köpek",
+    "answer": "DOG"
+  },
+  {
+    "clue": "Dolar",
+    "answer": "DOLLAR"
+  },
+  {
+    "clue": "Kapı",
+    "answer": "DOOR"
+  },
+  {
+    "clue": "Aşağı",
+    "answer": "DOWN"
+  },
+  {
+    "clue": "Alt kat",
+    "answer": "DOWNSTAIRS"
+  },
+  {
+    "clue": "Çizmek",
+    "answer": "DRAW"
+  },
+  {
+    "clue": "Giysi",
+    "answer": "DRESS"
+  },
+  {
+    "clue": "İçmek",
+    "answer": "DRINK"
+  },
+  {
+    "clue": "Sürmek",
+    "answer": "DRIVE"
+  },
+  {
+    "clue": "Sürücü",
+    "answer": "DRIVER"
+  },
+  {
+    "clue": "Boyunca",
+    "answer": "DURING"
+  },
+  {
+    "clue": "Her biri",
+    "answer": "EACH"
+  },
+  {
+    "clue": "Kulak",
+    "answer": "EAR"
+  },
+  {
+    "clue": "Erken",
+    "answer": "EARLY"
+  },
+  {
+    "clue": "Doğu",
+    "answer": "EAST"
+  },
+  {
+    "clue": "Kolay",
+    "answer": "EASY"
+  },
+  {
+    "clue": "Yemek",
+    "answer": "EAT"
+  },
+  {
+    "clue": "Yumurta",
+    "answer": "EGG"
+  },
+  {
+    "clue": "Sekiz",
+    "answer": "EIGHT"
+  },
+  {
+    "clue": "Seksen",
+    "answer": "EIGHTY"
+  },
+  {
+    "clue": "On bir",
+    "answer": "ELEVEN"
+  },
+  {
+    "clue": "Başka",
+    "answer": "ELSE"
+  },
+  {
+    "clue": "Email",
+    "answer": "EMAIL"
+  },
+  {
+    "clue": "Son",
+    "answer": "END"
+  },
+  {
+    "clue": "Tadını çıkarmak",
+    "answer": "ENJOY"
+  },
+  {
+    "clue": "Euro",
+    "answer": "EURO"
+  },
+  {
+    "clue": "Akşam",
+    "answer": "EVENING"
+  },
+  {
+    "clue": "Olay",
+    "answer": "EVENT"
+  },
+  {
+    "clue": "Asla",
+    "answer": "EVER"
+  },
+  {
+    "clue": "Her",
+    "answer": "EVERY"
+  },
+  {
+    "clue": "Herkes",
+    "answer": "EVERYBODY"
+  },
+  {
+    "clue": "Herkes",
+    "answer": "EVERYONE"
+  },
+  {
+    "clue": "Her şey",
+    "answer": "EVERYTHING"
+  },
+  {
+    "clue": "Sınav",
+    "answer": "EXAM"
+  },
+  {
+    "clue": "Heyecanlı",
+    "answer": "EXCITED"
+  },
+  {
+    "clue": "Heyecan verici",
+    "answer": "EXCITING"
+  },
+  {
+    "clue": "Egzersiz",
+    "answer": "EXERCISE"
+  },
+  {
+    "clue": "Pahalı",
+    "answer": "EXPENSIVE"
+  },
+  {
+    "clue": "Açıklamak",
+    "answer": "EXPLAIN"
+  },
+  {
+    "clue": "Ekstra",
+    "answer": "EXTRA"
+  },
+  {
+    "clue": "Göz",
+    "answer": "EYE"
+  },
+  {
+    "clue": "Yüz",
+    "answer": "FACE"
+  },
+  {
+    "clue": "Gerçek",
+    "answer": "FACT"
+  },
+  {
+    "clue": "Düşmek",
+    "answer": "FALL"
+  },
+  {
+    "clue": "Hatalı",
+    "answer": "FALSE"
+  },
+  {
+    "clue": "Aile",
+    "answer": "FAMILY"
+  },
+  {
+    "clue": "Ünlü",
+    "answer": "FAMOUS"
+  },
+  {
+    "clue": "Uzak",
+    "answer": "FAR"
+  },
+  {
+    "clue": "Çiftçi",
+    "answer": "FARMER"
+  },
+  {
+    "clue": "Hızlı",
+    "answer": "FAST"
+  },
+  {
+    "clue": "Şişman",
+    "answer": "FAT"
+  },
+  {
+    "clue": "Baba",
+    "answer": "FATHER"
+  },
+  {
+    "clue": "Şubat",
+    "answer": "FEBRUARY"
+  },
+  {
+    "clue": "His",
+    "answer": "FEELING"
+  },
+  {
+    "clue": "Festival",
+    "answer": "FESTIVAL"
+  },
+  {
+    "clue": "Az",
+    "answer": "FEW"
+  },
+  {
+    "clue": "On beş",
+    "answer": "FIFTEEN"
+  },
+  {
+    "clue": "Beşinci",
+    "answer": "FIFTH"
+  },
+  {
+    "clue": "Elli",
+    "answer": "FIFTY"
+  },
+  {
+    "clue": "Doldurmak",
+    "answer": "FILL"
+  },
+  {
+    "clue": "Film",
+    "answer": "FILM"
+  },
+  {
+    "clue": "Final",
+    "answer": "FINAL"
+  },
+  {
+    "clue": "Bulmak",
+    "answer": "FIND"
+  },
+  {
+    "clue": "İyi",
+    "answer": "FINE"
+  },
+  {
+    "clue": "Birinci",
+    "answer": "FIRST"
+  },
+  {
+    "clue": "Ateş",
+    "answer": "FIRE"
+  },
+  {
+    "clue": "Balık",
+    "answer": "FISH"
+  },
+  {
+    "clue": "Beş",
+    "answer": "FIVE"
+  },
+  {
+    "clue": "Daire",
+    "answer": "FLAT"
+  },
+  {
+    "clue": "Uçuş",
+    "answer": "FLIGHT"
+  },
+  {
+    "clue": "Zemin",
+    "answer": "FLOOR"
+  },
+  {
+    "clue": "Çiçek",
+    "answer": "FLOWER"
+  },
+  {
+    "clue": "Uçmak",
+    "answer": "FLY"
+  },
+  {
+    "clue": "Takip etmek",
+    "answer": "FOLLOW"
+  },
+  {
+    "clue": "Yemek",
+    "answer": "FOOD"
+  },
+  {
+    "clue": "Ayak",
+    "answer": "FOOT"
+  },
+  {
+    "clue": "Futbol",
+    "answer": "FOOTBALL"
+  },
+  {
+    "clue": "İçin",
+    "answer": "FOR"
+  },
+  {
+    "clue": "Unutmak",
+    "answer": "FORGET"
+  },
+  {
+    "clue": "Form",
+    "answer": "FORM"
+  },
+  {
+    "clue": "Kırk",
+    "answer": "FORTY"
+  },
+  {
+    "clue": "Dört",
+    "answer": "FOUR"
+  },
+  {
+    "clue": "On dört",
+    "answer": "FOURTEEN"
+  },
+  {
+    "clue": "Dördüncü",
+    "answer": "FOURTH"
+  },
+  {
+    "clue": "Özgür",
+    "answer": "FREE"
+  },
+  {
+    "clue": "Cuma",
+    "answer": "FRIDAY"
+  },
+  {
+    "clue": "Arkadaş",
+    "answer": "FRIEND"
+  },
+  {
+    "clue": "Arkadaşça",
+    "answer": "FRIENDLY"
+  },
+  {
+    "clue": "-dan",
+    "answer": "FROM"
+  },
+  {
+    "clue": "Ön",
+    "answer": "FRONT"
+  },
+  {
+    "clue": "Meyve",
+    "answer": "FRUIT"
+  },
+  {
+    "clue": "Dolu",
+    "answer": "FULL"
+  },
+  {
+    "clue": "Eğlence",
+    "answer": "FUN"
+  },
+  {
+    "clue": "Eğlenceli",
+    "answer": "FUNNY"
+  },
+  {
+    "clue": "Gelecek",
+    "answer": "FUTURE"
+  },
+  {
+    "clue": "Oyun",
+    "answer": "GAME"
+  },
+  {
+    "clue": "Bahçe",
+    "answer": "GARDEN"
+  },
+  {
+    "clue": "Coğrafya",
+    "answer": "GEOGRAPHY"
+  },
+  {
+    "clue": "Almak",
+    "answer": "GET"
+  },
+  {
+    "clue": "Kız",
+    "answer": "GIRL"
+  },
+  {
+    "clue": "Kız arkadaş",
+    "answer": "GIRLFRIEND"
+  },
+  {
+    "clue": "Vermek",
+    "answer": "GIVE"
+  },
+  {
+    "clue": "Bardak",
+    "answer": "GLASS"
+  },
+  {
+    "clue": "Gitmek",
+    "answer": "GO"
+  },
+  {
+    "clue": "İyi",
+    "answer": "GOOD"
+  },
+  {
+    "clue": "Dede",
+    "answer": "GRANDFATHER"
+  },
+  {
+    "clue": "Babaanne",
+    "answer": "GRANDMOTHER"
+  },
+  {
+    "clue": "Büyük ebeveyn",
+    "answer": "GRANDPARENT"
+  },
+  {
+    "clue": "Harika",
+    "answer": "GREAT"
+  },
+  {
+    "clue": "Yeşil",
+    "answer": "GREEN"
+  },
+  {
+    "clue": "Gri",
+    "answer": "GREY"
+  },
+  {
+    "clue": "Grup",
+    "answer": "GROUP"
+  },
+  {
+    "clue": "Büyümek",
+    "answer": "GROW"
+  },
+  {
+    "clue": "Gitar",
+    "answer": "GUITAR"
+  },
+  {
+    "clue": "Spor salonu",
+    "answer": "GYM"
+  },
+  {
+    "clue": "Saç",
+    "answer": "HAIR"
+  },
+  {
+    "clue": "El",
+    "answer": "HAND"
+  },
+  {
+    "clue": "Olmak",
+    "answer": "HAPPEN"
+  },
+  {
+    "clue": "Mutlu",
+    "answer": "HAPPY"
+  },
+  {
+    "clue": "Zor",
+    "answer": "HARD"
+  },
+  {
+    "clue": "Şapka",
+    "answer": "HAT"
+  },
+  {
+    "clue": "Nefret etmek",
+    "answer": "HATE"
+  },
+  {
+    "clue": "Sahip olmak",
+    "answer": "HAVE"
+  },
+  {
+    "clue": "O",
+    "answer": "HE"
+  },
+  {
+    "clue": "Kafa",
+    "answer": "HEAD"
+  },
+  {
+    "clue": "Sağlık",
+    "answer": "HEALTH"
+  },
+  {
+    "clue": "Sağlıklı",
+    "answer": "HEALTHY"
+  },
+  {
+    "clue": "Duymak",
+    "answer": "HEAR"
+  },
+  {
+    "clue": "Merhaba",
+    "answer": "HELLO"
+  },
+  {
+    "clue": "Yardım etmek",
+    "answer": "HELP"
+  },
+  {
+    "clue": "Onun",
+    "answer": "HER"
+  },
+  {
+    "clue": "Burada",
+    "answer": "HERE"
+  },
+  {
+    "clue": "Merhaba",
+    "answer": "HEY"
+  },
+  {
+    "clue": "Merhaba",
+    "answer": "HI"
+  },
+  {
+    "clue": "Yüksek",
+    "answer": "HIGH"
+  },
+  {
+    "clue": "Ona",
+    "answer": "HIM"
+  },
+  {
+    "clue": "Onun",
+    "answer": "HIS"
+  },
+  {
+    "clue": "Tarih",
+    "answer": "HISTORY"
+  },
+  {
+    "clue": "Hobi",
+    "answer": "HOBBY"
+  },
+  {
+    "clue": "Tatil",
+    "answer": "HOLIDAY"
+  },
+  {
+    "clue": "Ev",
+    "answer": "HOME"
+  },
+  {
+    "clue": "Ev ödevi",
+    "answer": "HOMEWORK"
+  },
+  {
+    "clue": "At",
+    "answer": "HORSE"
+  },
+  {
+    "clue": "Hastane",
+    "answer": "HOSPITAL"
+  },
+  {
+    "clue": "Sıcak",
+    "answer": "HOT"
+  },
+  {
+    "clue": "Hotel",
+    "answer": "HOTEL"
+  },
+  {
+    "clue": "Saat",
+    "answer": "HOUR"
+  },
+  {
+    "clue": "Ev",
+    "answer": "HOUSE"
+  },
+  {
+    "clue": "Nasıl",
+    "answer": "HOW"
+  },
+  {
+    "clue": "Buna rağmen",
+    "answer": "HOWEVER"
+  },
+  {
+    "clue": "Yüz",
+    "answer": "HUNDRED"
+  },
+  {
+    "clue": "Aç",
+    "answer": "HUNGRY"
+  },
+  {
+    "clue": "Koca",
+    "answer": "HUSBAND"
+  },
+  {
+    "clue": "Ben",
+    "answer": "I"
+  },
+  {
+    "clue": "Buz",
+    "answer": "ICE"
+  },
+  {
+    "clue": "İdea",
+    "answer": "IDEA"
+  },
+  {
+    "clue": "Eğer",
+    "answer": "IF"
+  },
+  {
+    "clue": "Hayal etmek",
+    "answer": "IMAGINE"
+  },
+  {
+    "clue": "Önemli",
+    "answer": "IMPORTANT"
+  },
+  {
+    "clue": "Geliştirmek",
+    "answer": "IMPROVE"
+  },
+  {
+    "clue": "İçinde",
+    "answer": "IN"
+  },
+  {
+    "clue": "İçermek",
+    "answer": "INCLUDE"
+  },
+  {
+    "clue": "Bilgi",
+    "answer": "INFORMATION"
+  },
+  {
+    "clue": "İlgi",
+    "answer": "INTEREST"
+  },
+  {
+    "clue": "İlginç",
+    "answer": "INTERESTED"
+  },
+  {
+    "clue": "İlginç",
+    "answer": "INTERESTING"
+  },
+  {
+    "clue": "İnternet",
+    "answer": "INTERNET"
+  },
+  {
+    "clue": "Tanıtmak",
+    "answer": "INTRODUCE"
+  },
+  {
+    "clue": "Ada",
+    "answer": "ISLAND"
+  },
+  {
+    "clue": "O",
+    "answer": "IT"
+  },
+  {
+    "clue": "Ceket",
+    "answer": "JACKET"
+  },
+  {
+    "clue": "İş",
+    "answer": "JOB"
+  },
+  {
+    "clue": "Katılmak",
+    "answer": "JOIN"
+  },
+  {
+    "clue": "Seyahat",
+    "answer": "JOURNEY"
+  },
+  {
+    "clue": "Meyve suyu",
+    "answer": "JUICE"
+  },
+  {
+    "clue": "Temmuz",
+    "answer": "JULY"
+  },
+  {
+    "clue": "Haziran",
+    "answer": "JUNE"
+  },
+  {
+    "clue": "Sadece",
+    "answer": "JUST"
+  },
+  {
+    "clue": "Tutmak",
+    "answer": "KEEP"
+  },
+  {
+    "clue": "Anahtar",
+    "answer": "KEY"
+  },
+  {
+    "clue": "Tür",
+    "answer": "KIND"
+  },
+  {
+    "clue": "Mutfak",
+    "answer": "KITCHEN"
+  },
+  {
+    "clue": "Bilmek",
+    "answer": "KNOW"
+  },
+  {
+    "clue": "Ada",
+    "answer": "LAND"
+  },
+  {
+    "clue": "Dil",
+    "answer": "LANGUAGE"
+  },
+  {
+    "clue": "Geniş",
+    "answer": "LARGE"
+  },
+  {
+    "clue": "Son",
+    "answer": "LAST"
+  },
+  {
+    "clue": "Geç",
+    "answer": "LATE"
+  },
+  {
+    "clue": "Gülme",
+    "answer": "LAUGH"
+  },
+  {
+    "clue": "Sol",
+    "answer": "LEFT"
+  },
+  {
+    "clue": "Bacak",
+    "answer": "LEG"
+  },
+  {
+    "clue": "Ders",
+    "answer": "LESSON"
+  },
+  {
+    "clue": "İzin vermek",
+    "answer": "LET"
+  },
+  {
+    "clue": "Mektup",
+    "answer": "LETTER"
+  },
+  {
+    "clue": "Kütüphane",
+    "answer": "LIBRARY"
+  },
+  {
+    "clue": "Yalan söylemek",
+    "answer": "LIE"
+  },
+  {
+    "clue": "Hayat",
+    "answer": "LIFE"
+  },
+  {
+    "clue": "Işık",
+    "answer": "LIGHT"
+  },
+  {
+    "clue": "Satır",
+    "answer": "LINE"
+  },
+  {
+    "clue": "Aslan",
+    "answer": "LION"
+  },
+  {
+    "clue": "Liste",
+    "answer": "LIST"
+  },
+  {
+    "clue": "Dinlemek",
+    "answer": "LISTEN"
+  },
+  {
+    "clue": "Küçük",
+    "answer": "LITTLE"
+  },
+  {
+    "clue": "Yaşamak",
+    "answer": "LIVE"
+  },
+  {
+    "clue": "Yerel",
+    "answer": "LOCAL"
+  },
+  {
+    "clue": "Uzun",
+    "answer": "LONG"
+  },
+  {
+    "clue": "Bakmak",
+    "answer": "LOOK"
+  },
+  {
+    "clue": "Kaybetmek",
+    "answer": "LOSE"
+  },
+  {
+    "clue": "Sevmek",
+    "answer": "LOVE"
+  },
+  {
+    "clue": "Öğle yemeği",
+    "answer": "LUNCH"
+  },
+  {
+    "clue": "Makine",
+    "answer": "MACHINE"
+  },
+  {
+    "clue": "Dergi",
+    "answer": "MAGAZINE"
+  },
+  {
+    "clue": "Esas",
+    "answer": "MAIN"
+  },
+  {
+    "clue": "Yapmak",
+    "answer": "MAKE"
+  },
+  {
+    "clue": "Adam",
+    "answer": "MAN"
+  },
+  {
+    "clue": "Çok",
+    "answer": "MANY"
+  },
+  {
+    "clue": "Harita",
+    "answer": "MAP"
+  },
+  {
+    "clue": "Mart",
+    "answer": "MARCH"
+  },
+  {
+    "clue": "Market",
+    "answer": "MARKET"
+  },
+  {
+    "clue": "Evli",
+    "answer": "MARRIED"
+  },
+  {
+    "clue": "Mayıs",
+    "answer": "MAY"
+  },
+  {
+    "clue": "Belki",
+    "answer": "MAYBE"
+  },
+  {
+    "clue": "Beni",
+    "answer": "ME"
+  },
+  {
+    "clue": "Öğün",
+    "answer": "MEAL"
+  },
+  {
+    "clue": "Demek",
+    "answer": "MEAN"
+  },
+  {
+    "clue": "Anlam",
+    "answer": "MEANING"
+  },
+  {
+    "clue": "Et",
+    "answer": "MEAT"
+  },
+  {
+    "clue": "Tanışmak",
+    "answer": "MEET"
+  },
+  {
+    "clue": "Buluşma",
+    "answer": "MEETING"
+  },
+  {
+    "clue": "Üye",
+    "answer": "MEMBER"
+  },
+  {
+    "clue": "Menü",
+    "answer": "MENU"
+  },
+  {
+    "clue": "Mesaj",
+    "answer": "MESSAGE"
+  },
+  {
+    "clue": "Metre",
+    "answer": "METRE"
+  },
+  {
+    "clue": "Gece yarısı",
+    "answer": "MIDNIGHT"
+  },
+  {
+    "clue": "Mil",
+    "answer": "MILE"
+  },
+  {
+    "clue": "Süt",
+    "answer": "MILK"
+  },
+  {
+    "clue": "Milyon",
+    "answer": "MILLION"
+  },
+  {
+    "clue": "Dakika",
+    "answer": "MINUTE"
+  },
+  {
+    "clue": "Kaçırmak",
+    "answer": "MISS"
+  },
+  {
+    "clue": "Hata",
+    "answer": "MISTAKE"
+  },
+  {
+    "clue": "Model",
+    "answer": "MODEL"
+  },
+  {
+    "clue": "Modern",
+    "answer": "MODERN"
+  },
+  {
+    "clue": "An",
+    "answer": "MOMENT"
+  },
+  {
+    "clue": "Pazartesi",
+    "answer": "MONDAY"
+  },
+  {
+    "clue": "Para",
+    "answer": "MONEY"
+  },
+  {
+    "clue": "Ay",
+    "answer": "MONTH"
+  },
+  {
+    "clue": "Daha",
+    "answer": "MORE"
+  },
+  {
+    "clue": "Sabah",
+    "answer": "MORNING"
+  },
+  {
+    "clue": "En çok",
+    "answer": "MOST"
+  },
+  {
+    "clue": "Anne",
+    "answer": "MOTHER"
+  },
+  {
+    "clue": "Dağ",
+    "answer": "MOUNTAIN"
+  },
+  {
+    "clue": "Fare",
+    "answer": "MOUSE"
+  },
+  {
+    "clue": "Ağız",
+    "answer": "MOUTH"
+  },
+  {
+    "clue": "Hareket etmek",
+    "answer": "MOVE"
+  },
+  {
+    "clue": "Film",
+    "answer": "MOVIE"
+  },
+  {
+    "clue": "Fazla",
+    "answer": "MUCH"
+  },
+  {
+    "clue": "Anne",
+    "answer": "MUM"
+  },
+  {
+    "clue": "Müze",
+    "answer": "MUSEUM"
+  },
+  {
+    "clue": "Müzik",
+    "answer": "MUSIC"
+  },
+  {
+    "clue": "Zorunluluk",
+    "answer": "MUST"
+  },
+  {
+    "clue": "Benim",
+    "answer": "MY"
+  },
+  {
+    "clue": "İsim",
+    "answer": "NAME"
+  },
+  {
+    "clue": "Doğal",
+    "answer": "NATURAL"
+  },
+  {
+    "clue": "Yakın",
+    "answer": "NEAR"
+  },
+  {
+    "clue": "Gerekmek",
+    "answer": "NEED"
+  },
+  {
+    "clue": "Olumsuz",
+    "answer": "NEGATIVE"
+  },
+  {
+    "clue": "Komşu",
+    "answer": "NEIGHBOUR"
+  },
+  {
+    "clue": "Asla",
+    "answer": "NEVER"
+  },
+  {
+    "clue": "Yeni",
+    "answer": "NEW"
+  },
+  {
+    "clue": "Haberler",
+    "answer": "NEWS"
+  },
+  {
+    "clue": "Gazete",
+    "answer": "NEWSPAPER"
+  },
+  {
+    "clue": "Sıradaki",
+    "answer": "NEXT"
+  },
+  {
+    "clue": "İyi",
+    "answer": "NICE"
+  },
+  {
+    "clue": "Gece",
+    "answer": "NIGHT"
+  },
+  {
+    "clue": "Dokuz",
+    "answer": "NINE"
+  },
+  {
+    "clue": "On dokuz",
+    "answer": "NINETEEN"
+  },
+  {
+    "clue": "Doksan",
+    "answer": "NINETY"
+  },
+  {
+    "clue": "Burun",
+    "answer": "NOSE"
+  },
+  {
+    "clue": "Değil",
+    "answer": "NOT"
+  },
+  {
+    "clue": "Not",
+    "answer": "NOTE"
+  },
+  {
+    "clue": "Kasım",
+    "answer": "NOVEMBER"
+  },
+  {
+    "clue": "Şimdi",
+    "answer": "NOW"
+  },
+  {
+    "clue": "Numara",
+    "answer": "NUMBER"
+  },
+  {
+    "clue": "Hemşire",
+    "answer": "NURSE"
+  },
+  {
+    "clue": "Obje",
+    "answer": "OBJECT"
+  },
+  {
+    "clue": "Ekim",
+    "answer": "OCTOBER"
+  },
+  {
+    "clue": "-nın",
+    "answer": "OF"
+  },
+  {
+    "clue": "Kapalı",
+    "answer": "OFF"
+  },
+  {
+    "clue": "Ofis",
+    "answer": "OFFICE"
+  },
+  {
+    "clue": "Sıklıkla",
+    "answer": "OFTEN"
+  },
+  {
+    "clue": "Oh",
+    "answer": "OH"
+  },
+  {
+    "clue": "Tasdik",
+    "answer": "OK"
+  },
+  {
+    "clue": "Eski",
+    "answer": "OLD"
+  },
+  {
+    "clue": "Üzerinde",
+    "answer": "ON"
+  },
+  {
+    "clue": "Bir kere",
+    "answer": "ONCE"
+  },
+  {
+    "clue": "Soğan",
+    "answer": "ONION"
+  },
+  {
+    "clue": "Online",
+    "answer": "ONLINE"
+  },
+  {
+    "clue": "Sadece",
+    "answer": "ONLY"
+  },
+  {
+    "clue": "Açık",
+    "answer": "OPEN"
+  },
+  {
+    "clue": "Görüş",
+    "answer": "OPINION"
+  },
+  {
+    "clue": "Karşı",
+    "answer": "OPPOSITE"
+  },
+  {
+    "clue": "Veya",
+    "answer": "OR"
+  },
+  {
+    "clue": "Portakal",
+    "answer": "ORANGE"
+  },
+  {
+    "clue": "Sipariş",
+    "answer": "ORDER"
+  },
+  {
+    "clue": "Diğeri",
+    "answer": "OTHER"
+  },
+  {
+    "clue": "Bizim",
+    "answer": "OUR"
+  },
+  {
+    "clue": "Dışarı",
+    "answer": "OUT"
+  },
+  {
+    "clue": "Dışarı",
+    "answer": "OUTSIDE"
+  },
+  {
+    "clue": "Üstünde",
+    "answer": "OVER"
+  },
+  {
+    "clue": "Kendi",
+    "answer": "OWN"
+  },
+  {
+    "clue": "Sayfa",
+    "answer": "PAGE"
+  },
+  {
+    "clue": "Boya",
+    "answer": "PAINT"
+  },
+  {
+    "clue": "Tablo",
+    "answer": "PAINTING"
+  },
+  {
+    "clue": "Çift",
+    "answer": "PAIR"
+  },
+  {
+    "clue": "Sayfa",
+    "answer": "PAPER"
+  },
+  {
+    "clue": "Paragraf",
+    "answer": "PARAGRAPH"
+  },
+  {
+    "clue": "Ebeveyn",
+    "answer": "PARENT"
+  },
+  {
+    "clue": "Park",
+    "answer": "PARK"
+  },
+  {
+    "clue": "Bölüm",
+    "answer": "PART"
+  },
+  {
+    "clue": "Partner",
+    "answer": "PARTNER"
+  },
+  {
+    "clue": "Parti",
+    "answer": "PARTY"
+  },
+  {
+    "clue": "Pasaport",
+    "answer": "PASSPORT"
+  },
+  {
+    "clue": "Geçmiş",
+    "answer": "PAST"
+  },
+  {
+    "clue": "Ödemek",
+    "answer": "PAY"
+  },
+  {
+    "clue": "Dolma kalem",
+    "answer": "PEN"
+  },
+  {
+    "clue": "Kurşun kalem",
+    "answer": "PENCIL"
+  },
+  {
+    "clue": "İnsanlar",
+    "answer": "PEOPLE"
+  },
+  {
+    "clue": "Biber",
+    "answer": "PEPPER"
+  },
+  {
+    "clue": "Harika",
+    "answer": "PERFECT"
+  },
+  {
+    "clue": "Periyot",
+    "answer": "PERIOD"
+  },
+  {
+    "clue": "İnsan",
+    "answer": "PERSON"
+  },
+  {
+    "clue": "Kişisel",
+    "answer": "PERSONAL"
+  },
+  {
+    "clue": "Telefon",
+    "answer": "PHONE"
+  },
+  {
+    "clue": "Foto",
+    "answer": "PHOTO"
+  },
+  {
+    "clue": "Fotoğraf",
+    "answer": "PHOTOGRAPH"
+  },
+  {
+    "clue": "İbare",
+    "answer": "PHRASE"
+  },
+  {
+    "clue": "Piyano",
+    "answer": "PIANO"
+  },
+  {
+    "clue": "Resim",
+    "answer": "PICTURE"
+  },
+  {
+    "clue": "Tane",
+    "answer": "PIECE"
+  },
+  {
+    "clue": "Domuz",
+    "answer": "PIG"
+  },
+  {
+    "clue": "Pembe",
+    "answer": "PINK"
+  },
+  {
+    "clue": "Yer",
+    "answer": "PLACE"
+  },
+  {
+    "clue": "Plan",
+    "answer": "PLAN"
+  },
+  {
+    "clue": "Uçak",
+    "answer": "PLANE"
+  },
+  {
+    "clue": "Bitki",
+    "answer": "PLANT"
+  },
+  {
+    "clue": "Oyun",
+    "answer": "PLAY"
+  },
+  {
+    "clue": "Oyuncu",
+    "answer": "PLAYER"
+  },
+  {
+    "clue": "Lütfen",
+    "answer": "PLEASE"
+  },
+  {
+    "clue": "Nokta",
+    "answer": "POINT"
+  },
+  {
+    "clue": "Polis",
+    "answer": "POLICE"
+  },
+  {
+    "clue": "Polis",
+    "answer": "POLICEMAN"
+  },
+  {
+    "clue": "Havuz",
+    "answer": "POOL"
+  },
+  {
+    "clue": "Fakir",
+    "answer": "POOR"
+  },
+  {
+    "clue": "Popüler",
+    "answer": "POPULAR"
+  },
+  {
+    "clue": "Positif",
+    "answer": "POSITIVE"
+  },
+  {
+    "clue": "Mümkün",
+    "answer": "POSSIBLE"
+  },
+  {
+    "clue": "Makam",
+    "answer": "POST"
+  },
+  {
+    "clue": "Patates",
+    "answer": "POTATO"
+  },
+  {
+    "clue": "Pound",
+    "answer": "POUND"
+  },
+  {
+    "clue": "Egzersiz",
+    "answer": "PRACTICE"
+  },
+  {
+    "clue": "Alıştırma yapmak",
+    "answer": "PRACTISE"
+  },
+  {
+    "clue": "Tercih etmek",
+    "answer": "PREFER"
+  },
+  {
+    "clue": "Hazırlamak",
+    "answer": "PREPARE"
+  },
+  {
+    "clue": "Şimdiki zaman",
+    "answer": "PRESENT"
+  },
+  {
+    "clue": "Hoş",
+    "answer": "PRETTY"
+  },
+  {
+    "clue": "Fiyat",
+    "answer": "PRICE"
+  },
+  {
+    "clue": "Muhtemelen",
+    "answer": "PROBABLY"
+  },
+  {
+    "clue": "Problem",
+    "answer": "PROBLEM"
+  },
+  {
+    "clue": "Ürün",
+    "answer": "PRODUCT"
+  },
+  {
+    "clue": "Program",
+    "answer": "PROGRAMME"
+  },
+  {
+    "clue": "Proje",
+    "answer": "PROJECT"
+  },
+  {
+    "clue": "Mor",
+    "answer": "PURPLE"
+  },
+  {
+    "clue": "Koymak",
+    "answer": "PUT"
+  },
+  {
+    "clue": "Çeyrek",
+    "answer": "QUARTER"
+  },
+  {
+    "clue": "Soru",
+    "answer": "QUESTION"
+  },
+  {
+    "clue": "Hızlı",
+    "answer": "QUICK"
+  },
+  {
+    "clue": "Hızlıca",
+    "answer": "QUICKLY"
+  },
+  {
+    "clue": "Sakin",
+    "answer": "QUIET"
+  },
+  {
+    "clue": "Epeyce",
+    "answer": "QUITE"
+  },
+  {
+    "clue": "Radyo",
+    "answer": "RADIO"
+  },
+  {
+    "clue": "Yağmur",
+    "answer": "RAIN"
+  },
+  {
+    "clue": "Okumak",
+    "answer": "READ"
+  },
+  {
+    "clue": "Okuyucu",
+    "answer": "READER"
+  },
+  {
+    "clue": "Okuma",
+    "answer": "READING"
+  },
+  {
+    "clue": "Hazır",
+    "answer": "READY"
+  },
+  {
+    "clue": "Gerçek",
+    "answer": "REAL"
+  },
+  {
+    "clue": "Gerçekten",
+    "answer": "REALLY"
+  },
+  {
+    "clue": "Sebep",
+    "answer": "REASON"
+  },
+  {
+    "clue": "Kırmızı",
+    "answer": "RED"
+  },
+  {
+    "clue": "Rahatlamak",
+    "answer": "RELAX"
+  },
+  {
+    "clue": "Hatırlamak",
+    "answer": "REMEMBER"
+  },
+  {
+    "clue": "Tekrar etmek",
+    "answer": "REPEAT"
+  },
+  {
+    "clue": "Rapor",
+    "answer": "REPORT"
+  },
+  {
+    "clue": "Restoran",
+    "answer": "RESTAURANT"
+  },
+  {
+    "clue": "Sonuç",
+    "answer": "RESULT"
+  },
+  {
+    "clue": "Geri dönmek",
+    "answer": "RETURN"
+  },
+  {
+    "clue": "Pirinç",
+    "answer": "RICE"
+  },
+  {
+    "clue": "Zengin",
+    "answer": "RICH"
+  },
+  {
+    "clue": "Sürmek",
+    "answer": "RIDE"
+  },
+  {
+    "clue": "Doğru",
+    "answer": "RIGHT"
+  },
+  {
+    "clue": "Nehir",
+    "answer": "RIVER"
+  },
+  {
+    "clue": "Yol",
+    "answer": "ROAD"
+  },
+  {
+    "clue": "Oda",
+    "answer": "ROOM"
+  },
+  {
+    "clue": "Rutin",
+    "answer": "ROUTINE"
+  },
+  {
+    "clue": "Kural",
+    "answer": "RULE"
+  },
+  {
+    "clue": "Koşmak",
+    "answer": "RUN"
+  },
+  {
+    "clue": "Üzgün",
+    "answer": "SAD"
+  },
+  {
+    "clue": "Salata",
+    "answer": "SALAD"
+  },
+  {
+    "clue": "Tuz",
+    "answer": "SALT"
+  },
+  {
+    "clue": "Aynı",
+    "answer": "SAME"
+  },
+  {
+    "clue": "Sandviç",
+    "answer": "SANDWICH"
+  },
+  {
+    "clue": "Cumartesi",
+    "answer": "SATURDAY"
+  },
+  {
+    "clue": "Söylemek",
+    "answer": "SAY"
+  },
+  {
+    "clue": "Okul",
+    "answer": "SCHOOL"
+  },
+  {
+    "clue": "Bilim",
+    "answer": "SCIENCE"
+  },
+  {
+    "clue": "Bilim adamı",
+    "answer": "SCIENTIST"
+  },
+  {
+    "clue": "Deniz",
+    "answer": "SEA"
+  },
+  {
+    "clue": "İkinci",
+    "answer": "SECOND"
+  },
+  {
+    "clue": "Kesit",
+    "answer": "SECTION"
+  },
+  {
+    "clue": "Görmek",
+    "answer": "SEE"
+  },
+  {
+    "clue": "Satmak",
+    "answer": "SELL"
+  },
+  {
+    "clue": "Göndermek",
+    "answer": "SEND"
+  },
+  {
+    "clue": "Cümle",
+    "answer": "SENTENCE"
+  },
+  {
+    "clue": "Eylül",
+    "answer": "SEPTEMBER"
+  },
+  {
+    "clue": "Yedi",
+    "answer": "SEVEN"
+  },
+  {
+    "clue": "On yedi",
+    "answer": "SEVENTEEN"
+  },
+  {
+    "clue": "Yetmiş",
+    "answer": "SEVENTY"
+  },
+  {
+    "clue": "Paylaşmak",
+    "answer": "SHARE"
+  },
+  {
+    "clue": "O",
+    "answer": "SHE"
+  },
+  {
+    "clue": "Koyun",
+    "answer": "SHEEP"
+  },
+  {
+    "clue": "Gömlek",
+    "answer": "SHIRT"
+  },
+  {
+    "clue": "Ayakkabı",
+    "answer": "SHOE"
+  },
+  {
+    "clue": "Alışveriş",
+    "answer": "SHOP"
+  },
+  {
+    "clue": "Alışveriş yapma",
+    "answer": "SHOPPING"
+  },
+  {
+    "clue": "Kısa",
+    "answer": "SHORT"
+  },
+  {
+    "clue": "Gerekmek",
+    "answer": "SHOULD"
+  },
+  {
+    "clue": "Göstermek",
+    "answer": "SHOW"
+  },
+  {
+    "clue": "Duş",
+    "answer": "SHOWER"
+  },
+  {
+    "clue": "Hasta",
+    "answer": "SICK"
+  },
+  {
+    "clue": "Benzer",
+    "answer": "SIMILAR"
+  },
+  {
+    "clue": "Şarkı söylemek",
+    "answer": "SING"
+  },
+  {
+    "clue": "Şarkıcı",
+    "answer": "SINGER"
+  },
+  {
+    "clue": "Kız kardeş",
+    "answer": "SISTER"
+  },
+  {
+    "clue": "Oturmak",
+    "answer": "SIT"
+  },
+  {
+    "clue": "Durum",
+    "answer": "SITUATION"
+  },
+  {
+    "clue": "Altı",
+    "answer": "SIX"
+  },
+  {
+    "clue": "On altı",
+    "answer": "SIXTEEN"
+  },
+  {
+    "clue": "Altmış",
+    "answer": "SIXTY"
+  },
+  {
+    "clue": "Yetenek",
+    "answer": "SKILL"
+  },
+  {
+    "clue": "Etek",
+    "answer": "SKIRT"
+  },
+  {
+    "clue": "Uyumak",
+    "answer": "SLEEP"
+  },
+  {
+    "clue": "Yavaş",
+    "answer": "SLOW"
+  },
+  {
+    "clue": "Küçük",
+    "answer": "SMALL"
+  },
+  {
+    "clue": "Yılan",
+    "answer": "SNAKE"
+  },
+  {
+    "clue": "Kar",
+    "answer": "SNOW"
+  },
+  {
+    "clue": "Bu yüzden",
+    "answer": "SO"
+  },
+  {
+    "clue": "Biraz",
+    "answer": "SOME"
+  },
+  {
+    "clue": "Birisi",
+    "answer": "SOMEBODY"
+  },
+  {
+    "clue": "Birisi",
+    "answer": "SOMEONE"
+  },
+  {
+    "clue": "Bir şey",
+    "answer": "SOMETHING"
+  },
+  {
+    "clue": "Bazen",
+    "answer": "SOMETIMES"
+  },
+  {
+    "clue": "Oğul",
+    "answer": "SON"
+  },
+  {
+    "clue": "Şarkı",
+    "answer": "SONG"
+  },
+  {
+    "clue": "Yakında",
+    "answer": "SOON"
+  },
+  {
+    "clue": "Ses",
+    "answer": "SOUND"
+  },
+  {
+    "clue": "Çorba",
+    "answer": "SOUP"
+  },
+  {
+    "clue": "Güney",
+    "answer": "SOUTH"
+  },
+  {
+    "clue": "Alan",
+    "answer": "SPACE"
+  },
+  {
+    "clue": "Konuşmak",
+    "answer": "SPEAK"
+  },
+  {
+    "clue": "Özel",
+    "answer": "SPECIAL"
+  },
+  {
+    "clue": "Hecelemek",
+    "answer": "SPELL"
+  },
+  {
+    "clue": "Heceleme",
+    "answer": "SPELLING"
+  },
+  {
+    "clue": "Harcamak",
+    "answer": "SPEND"
+  },
+  {
+    "clue": "Spor",
+    "answer": "SPORT"
+  },
+  {
+    "clue": "İlkbahar",
+    "answer": "SPRING"
+  },
+  {
+    "clue": "Durmak",
+    "answer": "STAND"
+  },
+  {
+    "clue": "Yıldız",
+    "answer": "STAR"
+  },
+  {
+    "clue": "Başlamak",
+    "answer": "START"
+  },
+  {
+    "clue": "Söz",
+    "answer": "STATEMENT"
+  },
+  {
+    "clue": "İstasyon",
+    "answer": "STATION"
+  },
+  {
+    "clue": "Kalmak",
+    "answer": "STAY"
+  },
+  {
+    "clue": "Hala",
+    "answer": "STILL"
+  },
+  {
+    "clue": "Durmak",
+    "answer": "STOP"
+  },
+  {
+    "clue": "Hikaye",
+    "answer": "STORY"
+  },
+  {
+    "clue": "Sokak",
+    "answer": "STREET"
+  },
+  {
+    "clue": "Güçlü",
+    "answer": "STRONG"
+  },
+  {
+    "clue": "Öğrenci",
+    "answer": "STUDENT"
+  },
+  {
+    "clue": "Çalışmak",
+    "answer": "STUDY"
+  },
+  {
+    "clue": "Stil",
+    "answer": "STYLE"
+  },
+  {
+    "clue": "Ders",
+    "answer": "SUBJECT"
+  },
+  {
+    "clue": "Başarı",
+    "answer": "SUCCESS"
+  },
+  {
+    "clue": "Şeker",
+    "answer": "SUGAR"
+  },
+  {
+    "clue": "Yaz",
+    "answer": "SUMMER"
+  },
+  {
+    "clue": "Güneş",
+    "answer": "SUN"
+  },
+  {
+    "clue": "Pazar",
+    "answer": "SUNDAY"
+  },
+  {
+    "clue": "Süpermarket",
+    "answer": "SUPERMARKET"
+  },
+  {
+    "clue": "Emin",
+    "answer": "SURE"
+  },
+  {
+    "clue": "Süveter",
+    "answer": "SWEATER"
+  },
+  {
+    "clue": "Yüzmek",
+    "answer": "SWIM"
+  },
+  {
+    "clue": "Yüzme",
+    "answer": "SWIMMING"
+  },
+  {
+    "clue": "Masa",
+    "answer": "TABLE"
+  },
+  {
+    "clue": "Almak",
+    "answer": "TAKE"
+  },
+  {
+    "clue": "Konuşmak",
+    "answer": "TALK"
+  },
+  {
+    "clue": "Uzun",
+    "answer": "TALL"
+  },
+  {
+    "clue": "Taksi",
+    "answer": "TAXI"
+  },
+  {
+    "clue": "Çay",
+    "answer": "TEA"
+  },
+  {
+    "clue": "Öğretmek",
+    "answer": "TEACH"
+  },
+  {
+    "clue": "Öğretmen",
+    "answer": "TEACHER"
+  },
+  {
+    "clue": "Tim",
+    "answer": "TEAM"
+  },
+  {
+    "clue": "Telefon",
+    "answer": "TELEPHONE"
+  },
+  {
+    "clue": "Televizyon",
+    "answer": "TELEVISION"
+  },
+  {
+    "clue": "Söylemek",
+    "answer": "TELL"
+  },
+  {
+    "clue": "On",
+    "answer": "TEN"
+  },
+  {
+    "clue": "Tenis",
+    "answer": "TENNIS"
+  },
+  {
+    "clue": "Korkunç",
+    "answer": "TERRIBLE"
+  },
+  {
+    "clue": "Test",
+    "answer": "TEST"
+  },
+  {
+    "clue": "Metin",
+    "answer": "TEXT"
+  },
+  {
+    "clue": "-den",
+    "answer": "THAN"
+  },
+  {
+    "clue": "Teşekkür etmek",
+    "answer": "THANK"
+  },
+  {
+    "clue": "Teşekkür ederim",
+    "answer": "THANKS"
+  },
+  {
+    "clue": "Onların",
+    "answer": "THEIR"
+  },
+  {
+    "clue": "Onlara",
+    "answer": "THEM"
+  },
+  {
+    "clue": "O zaman",
+    "answer": "THEN"
+  },
+  {
+    "clue": "Orada",
+    "answer": "THERE"
+  },
+  {
+    "clue": "Onlar",
+    "answer": "THEY"
+  },
+  {
+    "clue": "Şey",
+    "answer": "THING"
+  },
+  {
+    "clue": "Düşünmek",
+    "answer": "THINK"
+  },
+  {
+    "clue": "Üçüncü",
+    "answer": "THIRD"
+  },
+  {
+    "clue": "Susamış",
+    "answer": "THIRSTY"
+  },
+  {
+    "clue": "On üç",
+    "answer": "THIRTEEN"
+  },
+  {
+    "clue": "Otuz",
+    "answer": "THIRTY"
+  },
+  {
+    "clue": "Bu",
+    "answer": "THIS"
+  },
+  {
+    "clue": "Üç",
+    "answer": "THREE"
+  },
+  {
+    "clue": "Perşembe",
+    "answer": "THURSDAY"
+  },
+  {
+    "clue": "Bilet",
+    "answer": "TICKET"
+  },
+  {
+    "clue": "Zaman",
+    "answer": "TIME"
+  },
+  {
+    "clue": "Yorulmuş",
+    "answer": "TIRED"
+  },
+  {
+    "clue": "Başlık",
+    "answer": "TITLE"
+  },
+  {
+    "clue": "Bugün",
+    "answer": "TODAY"
+  },
+  {
+    "clue": "Birlikte",
+    "answer": "TOGETHER"
+  },
+  {
+    "clue": "Tuvalet",
+    "answer": "TOILET"
+  },
+  {
+    "clue": "Domates",
+    "answer": "TOMATO"
+  },
+  {
+    "clue": "Yarın",
+    "answer": "TOMORROW"
+  },
+  {
+    "clue": "Bu gece",
+    "answer": "TONIGHT"
+  },
+  {
+    "clue": "Çok fazla",
+    "answer": "TOO"
+  },
+  {
+    "clue": "Diş",
+    "answer": "TOOTH"
+  },
+  {
+    "clue": "Konu",
+    "answer": "TOPIC"
+  },
+  {
+    "clue": "Turist",
+    "answer": "TOURIST"
+  },
+  {
+    "clue": "Şehir",
+    "answer": "TOWN"
+  },
+  {
+    "clue": "Trafik",
+    "answer": "TRAFFIC"
+  },
+  {
+    "clue": "Tren",
+    "answer": "TRAIN"
+  },
+  {
+    "clue": "Seyahat",
+    "answer": "TRAVEL"
+  },
+  {
+    "clue": "Ağaç",
+    "answer": "TREE"
+  },
+  {
+    "clue": "Doğru",
+    "answer": "TRUE"
+  },
+  {
+    "clue": "Denemek",
+    "answer": "TRY"
+  },
+  {
+    "clue": "Salı",
+    "answer": "TUESDAY"
+  },
+  {
+    "clue": "Sıra",
+    "answer": "TURN"
+  },
+  {
+    "clue": "TV",
+    "answer": "TV"
+  },
+  {
+    "clue": "On iki",
+    "answer": "TWELVE"
+  },
+  {
+    "clue": "Yirmi",
+    "answer": "TWENTY"
+  },
+  {
+    "clue": "İki kez",
+    "answer": "TWICE"
+  },
+  {
+    "clue": "İki",
+    "answer": "TWO"
+  },
+  {
+    "clue": "Tür",
+    "answer": "TYPE"
+  },
+  {
+    "clue": "Amca",
+    "answer": "UNCLE"
+  },
+  {
+    "clue": "Altında",
+    "answer": "UNDER"
+  },
+  {
+    "clue": "Anlamak",
+    "answer": "UNDERSTAND"
+  },
+  {
+    "clue": "Üniversite",
+    "answer": "UNIVERSITY"
+  },
+  {
+    "clue": "Yukarı",
+    "answer": "UP"
+  },
+  {
+    "clue": "Üst kat",
+    "answer": "UPSTAIRS"
+  },
+  {
+    "clue": "Bizi",
+    "answer": "US"
+  },
+  {
+    "clue": "Kullanmak",
+    "answer": "USE"
+  },
+  {
+    "clue": "Kullanışlı",
+    "answer": "USEFUL"
+  },
+  {
+    "clue": "Genellikle",
+    "answer": "USUALLY"
+  },
+  {
+    "clue": "Tatil",
+    "answer": "VACATION"
+  },
+  {
+    "clue": "Sebze",
+    "answer": "VEGETABLE"
+  },
+  {
+    "clue": "Çok",
+    "answer": "VERY"
+  },
+  {
+    "clue": "Video",
+    "answer": "VIDEO"
+  },
+  {
+    "clue": "Köy",
+    "answer": "VILLAGE"
+  },
+  {
+    "clue": "Ziyaret etmek",
+    "answer": "VISIT"
+  },
+  {
+    "clue": "Ziyaretçi",
+    "answer": "VISITOR"
+  },
+  {
+    "clue": "Beklemek",
+    "answer": "WAIT"
+  },
+  {
+    "clue": "Garson",
+    "answer": "WAITER"
+  },
+  {
+    "clue": "Uyanmak",
+    "answer": "WAKE"
+  },
+  {
+    "clue": "Yürümek",
+    "answer": "WALK"
+  },
+  {
+    "clue": "Duvar",
+    "answer": "WALL"
+  },
+  {
+    "clue": "İstemek",
+    "answer": "WANT"
+  },
+  {
+    "clue": "Sıcak",
+    "answer": "WARM"
+  },
+  {
+    "clue": "Yıkamak",
+    "answer": "WASH"
+  },
+  {
+    "clue": "İzlemek",
+    "answer": "WATCH"
+  },
+  {
+    "clue": "Su",
+    "answer": "WATER"
+  },
+  {
+    "clue": "Yol",
+    "answer": "WAY"
+  },
+  {
+    "clue": "Biz",
+    "answer": "WE"
+  },
+  {
+    "clue": "Giymek",
+    "answer": "WEAR"
+  },
+  {
+    "clue": "Hava durumu",
+    "answer": "WEATHER"
+  },
+  {
+    "clue": "Website",
+    "answer": "WEBSITE"
+  },
+  {
+    "clue": "Çarşamba",
+    "answer": "WEDNESDAY"
+  },
+  {
+    "clue": "Hafta",
+    "answer": "WEEK"
+  },
+  {
+    "clue": "Hafta sonu",
+    "answer": "WEEKEND"
+  },
+  {
+    "clue": "Hoş geldin",
+    "answer": "WELCOME"
+  },
+  {
+    "clue": "İyi",
+    "answer": "WELL"
+  },
+  {
+    "clue": "Batı",
+    "answer": "WEST"
+  },
+  {
+    "clue": "Ne",
+    "answer": "WHAT"
+  },
+  {
+    "clue": "Ne zaman",
+    "answer": "WHEN"
+  },
+  {
+    "clue": "Beyaz",
+    "answer": "WHITE"
+  },
+  {
+    "clue": "Kim",
+    "answer": "WHO"
+  },
+  {
+    "clue": "Neden",
+    "answer": "WHY"
+  },
+  {
+    "clue": "Karı",
+    "answer": "WIFE"
+  },
+  {
+    "clue": "Kazanmak",
+    "answer": "WIN"
+  },
+  {
+    "clue": "Pencere",
+    "answer": "WINDOW"
+  },
+  {
+    "clue": "Şarap",
+    "answer": "WINE"
+  },
+  {
+    "clue": "Kış",
+    "answer": "WINTER"
+  },
+  {
+    "clue": "İle",
+    "answer": "WITH"
+  },
+  {
+    "clue": "Kadın",
+    "answer": "WOMAN"
+  },
+  {
+    "clue": "Harika",
+    "answer": "WONDERFUL"
+  },
+  {
+    "clue": "Kelime",
+    "answer": "WORD"
+  },
+  {
+    "clue": "İş",
+    "answer": "WORK"
+  },
+  {
+    "clue": "İşçi",
+    "answer": "WORKER"
+  },
+  {
+    "clue": "Dünya",
+    "answer": "WORLD"
+  },
+  {
+    "clue": "Yazmak",
+    "answer": "WRITE"
+  },
+  {
+    "clue": "Yazar",
+    "answer": "WRITER"
+  },
+  {
+    "clue": "Yazı",
+    "answer": "WRITING"
+  },
+  {
+    "clue": "Yanlış",
+    "answer": "WRONG"
+  },
+  {
+    "clue": "Yıl",
+    "answer": "YEAR"
+  },
+  {
+    "clue": "Sarı",
+    "answer": "YELLOW"
+  },
+  {
+    "clue": "Dün",
+    "answer": "YESTERDAY"
+  },
+  {
+    "clue": "Sen",
+    "answer": "YOU"
+  },
+  {
+    "clue": "Genç",
+    "answer": "YOUNG"
+  },
+  {
+    "clue": "Senin",
+    "answer": "YOUR"
+  }
+]
