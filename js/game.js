@@ -143,7 +143,7 @@ const Game = (() => {
   }
 
   function normalize(str) {
-    return str.toLocaleUpperCase("tr-TR").trim();
+    return TextUtils.upper((str || "").trim(), PUZZLE_DATA.targetLang);
   }
 
   function getFilledLettersForWord(wordId) {

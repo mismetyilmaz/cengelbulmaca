@@ -7,16 +7,67 @@ Linkle katılınan, birden fazla oyuncunun aynı çengel bulmacayı birlikte
 
 ```
 cengel-bulmaca/
-  index.html          -> tüm sayfa iskeleti (isim ekranı + oyun ekranı)
-  style.css            -> kağıt/mürekkep temalı görünüm
+  index.html              -> tüm sayfa iskeleti
+  style.css                -> kağıt/mürekkep temalı görünüm
   js/
-    firebase-config.js -> Firebase bağlantı ayarları (SEN DOLDURACAKSIN)
-    puzzle-data.js      -> bulmacanın yapısı (şu an yer tutucu örnek veri)
-    scoring.js          -> puanlama mantığı
-    puzzle-render.js     -> grid'i ekrana çizer
-    game.js              -> Firebase senkronizasyonu, kelime doğrulama
-    app.js                -> giriş noktası, isim ekranı, popover, skor tablosu
+    firebase-config.js     -> Firebase bağlantı ayarları (SEN DOLDURACAKSIN)
+    room.js                 -> oda oluşturma, parola/kapasite kontrolü, bağlantı durumu
+    text-utils.js            -> TR/EN'e duyarlı büyük harf dönüşümü
+    crossword-builder.js      -> kelime listesinden otomatik kesişimli grid üretir
+    puzzle-library.js          -> seviye (A1-C2) + yön (tr_en/en_tr) bazlı 20'şer slotluk kütüphane
+    puzzle-content.js           -> GERÇEK KELİME LİSTELERİNİ BURAYA EKLEYECEKSİN
+    scoring.js                   -> puanlama mantığı
+    puzzle-render.js               -> grid'i ekrana çizer
+    game.js                         -> Firebase senkronizasyonu, kelime doğrulama
+    app.js                           -> giriş noktası, oda kurulumu, popover, skor tablosu
 ```
+
+## Akış
+
+1. **Link `?room` parametresi olmadan açılırsa** → Oda Kurulum Ekranı:
+   çeviri yönü (Türkçe→İngilizce / İngilizce→Türkçe), seviye (A1-C2),
+   maksimum oyuncu sayısı, opsiyonel parola seçilir. "Oda Oluştur"a
+   basınca o seviye+yön için kayıtlı 20 bulmacadan biri **rastgele**
+   seçilir, oda Firebase'e yazılır, kurucu isim ekranına geçer ve
+   linki kopyalayabileceği bir banner görür.
+
+2. **Link `?room=XXXXXX` ile açılırsa** → oda ayarları Firebase'den
+   okunur, ilgili bulmaca verisi `puzzle-library.js` üzerinden bulunur.
+   Oda bulunamazsa hata, doluysa/parolası yanlışsa katılım reddedilir.
+
+3. İsim (+ gerekirse parola) girilip "Bulmacaya Katıl" ile onaylanınca
+   oyun ekranına geçilir.
+
+Sağ üstteki küçük gösterge (● Bağlı / ● Bağlantı yok) Firebase
+bağlantısının o an çalışıp çalışmadığını gösterir.
+
+## Kelime listesi ekleme — SIRADAKİ ADIM
+
+`js/puzzle-content.js` dosyasını aç. İçinde bir örnek (`A1`, `tr_en`,
+slot `0`) zaten kayıtlı, mekanizmanın çalıştığını göstermek için.
+Aynı formatta devam et:
+
+```js
+registerPuzzle("A1", "tr_en", 1, [
+  { clue: "Kırmızı meyve", answer: "APPLE" },
+  { clue: "Gökyüzünün rengi", answer: "BLUE" },
+  // ...
+], "A1 — Temel Kelimeler #2");
+```
+
+- `level`: `"A1" | "A2" | "B1" | "B2" | "C1" | "C2"`
+- `direction`: `"tr_en"` (ipucu Türkçe, cevap İngilizce) veya `"en_tr"` (tersi)
+- `index`: `0`-`19` arası (her seviye+yön için 20 slot var)
+- `answer`: **boşluksuz tek kelime** olmalı (grid mantığı gereği).
+  Boşluklu/numaralı girişler otomatik atlanır, konsolda uyarı basılır.
+
+Grid'i elle tasarlaman gerekmiyor — `crossword-builder.js` kelimeleri
+ortak harflerden kesişerek (bazısı sağa, bazısı aşağı) otomatik
+yerleştiriyor, kesişim bulamadığı kelimeleri bağımsız bir satıra koyuyor.
+
+Bir (seviye, yön) kombinasyonunda hiç slot doldurulmamışsa, oda
+kurulum ekranında o kombinasyon seçildiğinde "Bu seviye için henüz
+bulmaca eklenmedi" uyarısı gösterilir, site çökmez.
 
 ## 1) Firebase kurulumu
 
@@ -64,35 +115,14 @@ Sonra GitHub repo ayarlarında **Settings > Pages > Source: main branch /
 
 ## 4) Bulmaca verisini değiştirme
 
-`js/puzzle-data.js` içindeki `PUZZLE_DATA` objesini kendi bulmacanla
-değiştir. Format dosyanın başındaki yorumlarda açıklanıyor. Bir sonraki
-adımda görseldeki gerçek bulmacayı bu formata çevireceğiz — muhtemelen
-elle yazmak yerine kolaylaştıracak küçük bir yardımcı script de
-ekleyebiliriz.
-
-## Akış
-
-1. **Link `?room` parametresi olmadan açılırsa** → Oda Kurulum Ekranı:
-   boyut (küçük/orta/büyük), dil (TR/EN), maksimum oyuncu sayısı, opsiyonel
-   parola seçilir. "Oda Oluştur" → oda Firebase'e yazılır, URL güncellenir,
-   kurucu doğrudan isim ekranına geçer (parola sorulmaz, zaten kendisi
-   belirledi) ve linki kopyalayabileceği bir banner görür.
-
-2. **Link `?room=XXXXXX` ile açılırsa** → oda ayarları Firebase'den
-   okunur. Oda bulunamazsa hata + "yeni oda kur" linki gösterilir.
-   Odada parola varsa isim ekranına parola alanı da eklenir. Oda doluysa
-   ("maksimum oyuncu" sınırına ulaşılmışsa) katılım reddedilir.
-
-3. İsim (+ gerekirse parola) girilip "Bulmacaya Katıl" ile onaylanınca
-   oyun ekranına geçilir.
-
-Sağ üstteki küçük gösterge (● Bağlı / ● Bağlantı yok) Firebase
-bağlantısının o an çalışıp çalışmadığını gösterir — "Onayla" butonuna
-basınca hiçbir şey olmuyorsa önce burayı kontrol et.
+Bkz. yukarıdaki "Kelime listesi ekleme" bölümü — `js/puzzle-content.js`
+içine `registerPuzzle(...)` çağrıları ekleyerek yapılıyor.
 
 ## Şu ana kadar çalışan mekanikler
 
-- Oda kurulum ekranı: boyut / dil / max oyuncu / parola seçimi
+- Oda kurulum ekranı: çeviri yönü / seviye / max oyuncu / parola seçimi
+- Seviye+yön başına 20 bulmacalık havuzdan rastgele seçim
+- Otomatik kesişimli (sağa + aşağı karışık) grid üretimi
 - Link ile katılım, lobi yok (`?room=xxxx` URL parametresi)
 - Parola korumalı ve/veya kapasiteli odalar
 - İsim girişi ve oyuncu kimliğinin cihazda kalıcı tutulması
@@ -102,31 +132,11 @@ basınca hiçbir şey olmuyorsa önce burayı kontrol et.
 - Kesişimden zaten dolu olan harfleri hariç tutan puanlama
 - Gerçek zamanlı skor tablosu ve ilerleme çubuğu
 - Bağlantı durumu göstergesi + Firebase isteklerinde 8 saniyelik timeout
-  (böylece yanlış/eksik Firebase ayarında "Onayla" sonsuza dek asılı kalmaz,
-  hata mesajı gösterir)
-
-## "Onayla" çalışmıyordu — neden ve ne değişti
-
-En olası sebep: `js/firebase-config.js` içindeki `FIREBASE_CONFIG` hâlâ
-yer tutucu (placeholder) değerlerdeyse, Firebase'e yazma isteği hiç
-cevap vermez ve `await` satırında sonsuza dek bekler — hata da
-göstermez, konsolda bile bir şey görünmeyebilir. Şimdi:
-
-- İsteklere 8 saniyelik zaman aşımı eklendi, süre dolunca kullanıcıya
-  "Sunucudan yanıt gelmedi, firebase-config.js ayarlarını kontrol et"
-  mesajı gösteriliyor.
-- Sağ üstte sürekli görünen bağlantı göstergesi eklendi.
-- `submitAnswer` artık try/catch ile sarılı; hata olursa buton eski
-  haline dönüyor ve mesaj popover'da gösteriliyor.
-
-Yani buton hâlâ tepki vermiyorsa, önce `firebase-config.js`'i gerçek
-proje bilgilerinle doldurduğundan ve Realtime Database kurallarının
-`.read`/`.write: true` (test aşaması için) olduğundan emin ol.
 
 ## Sırada ne var
 
-- Gerçek bulmaca verisinin `puzzle-data.js` / `PUZZLE_CATALOG` formatına
-  işlenmesi (şu an tüm boyutlar kesişimsiz, otomatik üretilmiş yer tutucu)
+- `js/puzzle-content.js` içine gerçek kelime listelerinin eklenmesi
+  (her seviye+yön için 20'şer, toplam 240 bulmaca)
 - Bulmaca bitince ("tüm kelimeler çözüldü") bir final ekranı
 - Oyuncu sayısı / aktif olma göstergesi (kim şu an bağlı)
 - Parolanın düz metin yerine hash'lenmesi (şu an basit karşılaştırma,

@@ -186,6 +186,12 @@ button:focus-visible, input:focus-visible {
   gap: 8px;
 }
 
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
 .option-btn {
   flex: 1;
   padding: 10px 8px;

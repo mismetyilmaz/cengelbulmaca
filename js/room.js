@@ -30,13 +30,14 @@ const Room = (() => {
    * Yeni oda oluşturur ve config'i yazar.
    * @returns {Promise<string>} roomId
    */
-  async function createRoom({ puzzleId, maxPlayers, password, language }) {
+  async function createRoom({ puzzleId, maxPlayers, password, level, direction }) {
     const roomId = generateRoomId();
     await db.ref(`rooms/${roomId}/config`).set({
       puzzleId,
       maxPlayers: maxPlayers || 0,
       password: password || "",
-      language,
+      level,
+      direction,
       createdAt: firebase.database.ServerValue.TIMESTAMP
     });
     return roomId;

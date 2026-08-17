@@ -24,17 +24,20 @@
       <h1>Bulmaca Odası Oluştur</h1>
       <p class="sub">Ayarları seç, oda linkini oluştur ve arkadaşlarınla paylaş.</p>
 
-      <label class="field-label">Bulmaca boyutu</label>
-      <div class="option-row" id="size-options">
-        <button type="button" class="option-btn selected" data-size="small">Küçük</button>
-        <button type="button" class="option-btn" data-size="medium">Orta</button>
-        <button type="button" class="option-btn" data-size="large">Büyük</button>
+      <label class="field-label">Çeviri yönü</label>
+      <div class="option-row" id="direction-options">
+        <button type="button" class="option-btn selected" data-direction="tr_en">Türkçe → İngilizce</button>
+        <button type="button" class="option-btn" data-direction="en_tr">İngilizce → Türkçe</button>
       </div>
 
-      <label class="field-label">Dil</label>
-      <div class="option-row" id="language-options">
-        <button type="button" class="option-btn selected" data-lang="tr">Türkçe</button>
-        <button type="button" class="option-btn" data-lang="en">English</button>
+      <label class="field-label">Seviye</label>
+      <div class="option-grid" id="level-options">
+        <button type="button" class="option-btn selected" data-level="A1">A1</button>
+        <button type="button" class="option-btn" data-level="A2">A2</button>
+        <button type="button" class="option-btn" data-level="B1">B1</button>
+        <button type="button" class="option-btn" data-level="B2">B2</button>
+        <button type="button" class="option-btn" data-level="C1">C1</button>
+        <button type="button" class="option-btn" data-level="C2">C2</button>
       </div>
 
       <label class="field-label" for="max-players-select">Maksimum oyuncu</label>
@@ -141,7 +144,10 @@
 
   <script src="js/firebase-config.js"></script>
   <script src="js/room.js"></script>
-  <script src="js/puzzle-data.js"></script>
+  <script src="js/text-utils.js"></script>
+  <script src="js/crossword-builder.js"></script>
+  <script src="js/puzzle-library.js"></script>
+  <script src="js/puzzle-content.js"></script>
   <script src="js/scoring.js"></script>
   <script src="js/puzzle-render.js"></script>
   <script src="js/game.js"></script>

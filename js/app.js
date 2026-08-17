@@ -20,8 +20,8 @@
   const connStatusText = document.getElementById("conn-status-text");
 
   const setupGate = document.getElementById("setup-gate");
-  const sizeOptions = document.getElementById("size-options");
-  const languageOptions = document.getElementById("language-options");
+  const directionOptions = document.getElementById("direction-options");
+  const levelOptions = document.getElementById("level-options");
   const maxPlayersSelect = document.getElementById("max-players-select");
   const usePasswordCheck = document.getElementById("use-password-check");
   const setupPasswordInput = document.getElementById("setup-password-input");
@@ -105,8 +105,8 @@
     setupGate.classList.remove("hidden");
   }
 
-  wireOptionGroup(sizeOptions, "size");
-  wireOptionGroup(languageOptions, "lang");
+  wireOptionGroup(directionOptions, "direction");
+  wireOptionGroup(levelOptions, "level");
 
   function wireOptionGroup(container, attr) {
     container.querySelectorAll(".option-btn").forEach(btn => {
@@ -124,8 +124,8 @@
 
   createRoomBtn.addEventListener("click", async () => {
     setupError.textContent = "";
-    const size = sizeOptions.querySelector(".selected").dataset.size;
-    const lang = languageOptions.querySelector(".selected").dataset.lang;
+    const direction = directionOptions.querySelector(".selected").dataset.direction;
+    const level = levelOptions.querySelector(".selected").dataset.level;
     const maxPlayers = parseInt(maxPlayersSelect.value, 10);
     const password = usePasswordCheck.checked ? setupPasswordInput.value.trim() : "";
 
@@ -134,17 +134,17 @@
       return;
     }
 
-    const puzzleId = `${size}_${lang}`;
-    if (!PUZZLE_CATALOG[puzzleId]) {
-      setupError.textContent = "Bu boyut/dil kombinasyonu için bulmaca bulunamadı.";
+    const puzzleId = pickRandomPuzzleId(level, direction);
+    if (!puzzleId) {
+      setupError.textContent = "Bu seviye ve yön için henüz bulmaca eklenmedi. Başka bir seviye/yön dene.";
       return;
     }
 
     createRoomBtn.disabled = true;
     createRoomBtn.textContent = "Oluşturuluyor...";
     try {
-      roomId = await Room.createRoom({ puzzleId, maxPlayers, password, language: lang });
-      roomConfig = { puzzleId, maxPlayers, password, language: lang };
+      roomId = await Room.createRoom({ puzzleId, maxPlayers, password, level, direction });
+      roomConfig = { puzzleId, maxPlayers, password, level, direction };
       isCreator = true;
 
       params.set("room", roomId);
@@ -255,7 +255,13 @@
     }
 
     localStorage.setItem("cb_playerName", name);
-    PUZZLE_DATA = PUZZLE_CATALOG[roomConfig.puzzleId].data;
+    PUZZLE_DATA = getPuzzleData(roomConfig.puzzleId);
+    if (!PUZZLE_DATA) {
+      nameError.textContent = "Bulmaca verisi yüklenemedi. js/puzzle-content.js dosyasını kontrol et.";
+      joinBtn.disabled = false;
+      joinBtn.textContent = "Bulmacaya Katıl";
+      return;
+    }
     startGame(name);
   }
 
@@ -263,7 +269,8 @@
     nameGate.classList.add("hidden");
     gameRoot.classList.remove("hidden");
     playerNameLabel.textContent = name;
-    roomLabel.textContent = `Oda: ${roomId}`;
+    const directionLabel = roomConfig.direction === "tr_en" ? "TR→EN" : "EN→TR";
+    roomLabel.textContent = `Oda: ${roomId} · ${roomConfig.level} · ${directionLabel}`;
 
     PuzzleRender.init(puzzleGridEl, handleClueClick);
 
@@ -319,7 +326,7 @@
         box.disabled = true;
       } else {
         box.addEventListener("input", () => {
-          box.value = box.value.toLocaleUpperCase("tr-TR").slice(-1);
+          box.value = TextUtils.upper(box.value, PUZZLE_DATA.targetLang).slice(-1);
           if (box.value) {
             const next = answerBoxes.children[i + 1];
             if (next && !next.classList.contains("locked")) next.focus();
