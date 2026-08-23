@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulmaca Stüdyosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <div id="conn-status" class="conn-status conn-unknown">
+    <span class="dot"></span>
+    <span id="conn-status-text">Bağlanıyor...</span>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">✎</span>
+      <span class="brand-text">Bulmaca Stüdyosu</span>
+    </div>
+    <a href="index.html" class="ghost-link">← Oyuna dön</a>
+  </header>
+
+  <!-- ADIM 1: Grid kurulumu -->
+  <div id="setup-panel" class="studio-setup panel">
+    <h2>Yeni Bulmaca</h2>
+
+    <label class="field-label">Seviye</label>
+    <div class="option-grid" id="studio-level-options">
+      <button type="button" class="option-btn selected" data-level="A1">A1</button>
+      <button type="button" class="option-btn" data-level="A2">A2</button>
+      <button type="button" class="option-btn" data-level="B1">B1</button>
+      <button type="button" class="option-btn" data-level="B2">B2</button>
+      <button type="button" class="option-btn" data-level="C1">C1</button>
+      <button type="button" class="option-btn" data-level="C2">C2</button>
+    </div>
+
+    <label class="field-label">Çeviri yönü</label>
+    <div class="option-row" id="studio-direction-options">
+      <button type="button" class="option-btn selected" data-direction="tr_en">Türkçe → İngilizce</button>
+      <button type="button" class="option-btn" data-direction="en_tr">İngilizce → Türkçe</button>
+    </div>
+
+    <label class="field-label" for="studio-title-input">Bulmaca başlığı</label>
+    <input id="studio-title-input" type="text" placeholder="örn. A1 — Ev ve Aile" autocomplete="off">
+
+    <div class="dim-row">
+      <div>
+        <label class="field-label" for="studio-rows-input">Satır sayısı</label>
+        <input id="studio-rows-input" type="number" min="2" max="30" value="10">
+      </div>
+      <div>
+        <label class="field-label" for="studio-cols-input">Sütun sayısı</label>
+        <input id="studio-cols-input" type="number" min="2" max="30" value="12">
+      </div>
+    </div>
+
+    <button id="create-grid-btn">Grid Oluştur</button>
+    <p id="setup-error" class="error-text"></p>
+  </div>
+
+  <!-- ADIM 2: Editör -->
+  <div id="studio-workspace" class="studio-workspace hidden">
+    <section class="puzzle-pane studio-grid-pane">
+      <div id="studio-grid" class="puzzle-grid"></div>
+    </section>
+
+    <aside class="side-pane">
+
+      <div class="panel">
+        <h2 id="editor-title">Bir hücre seç</h2>
+        <p class="sub studio-hint">Gridde bir hücreye tıklayarak ipucu ekle. Her hücrede en fazla 2 ipucu olabilir.</p>
+        <div id="clue-slots-container"></div>
+        <button id="add-slot-btn" class="ghost full-width hidden">+ Bu hücreye ikinci ipucu ekle</button>
+      </div>
+
+      <div class="panel">
+        <h2>Ok Yönleri</h2>
+        <div class="legend-row"><span class="arrow">→</span> Sağdaki hücreden başlar, sağa okunur</div>
+        <div class="legend-row"><span class="arrow">↓</span> Alttaki hücreden başlar, aşağı okunur</div>
+        <div class="legend-row"><span class="arrow">⤷</span> Alttaki hücreden başlar, SAĞA okunur</div>
+        <div class="legend-row"><span class="arrow">⤵</span> Sağdaki hücreden başlar, AŞAĞI okunur</div>
+      </div>
+
+      <div class="panel">
+        <h2>Bulmacayı Kaydet</h2>
+        <p class="sub" id="save-target-label">Hedef slot hesaplanıyor...</p>
+        <button id="save-puzzle-btn">Kaydet</button>
+        <button id="reset-grid-btn" class="ghost full-width">Yeni Bulmacaya Başla</button>
+        <p id="save-status" class="error-text"></p>
+      </div>
+
+    </aside>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/room.js"></script>
+  <script src="js/text-utils.js"></script>
+  <script src="js/puzzle-library.js"></script>
+  <script src="js/puzzle-render.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

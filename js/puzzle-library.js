@@ -1,14 +1,16 @@
 /**
  * PUZZLE-LIBRARY.js
  * ------------------------------------------------------------------
- * Bulmacalar seviye (A1-C2) ve yön (tr_en / en_tr) bazında gruplanır.
- * Her (seviye, yön) kombinasyonu için 20 bulmaca slotu vardır.
+ * Bulmacalar artık kod içinde değil, Firebase'de saklanıyor —
+ * Bulmaca Stüdyosu'nda (admin.html) tasarlanıp kaydediliyor, oyun
+ * ekranı (index.html) buradan okuyor. Bu dosya sadece o okuma/yazma
+ * için ortak yardımcıları içerir.
  *
- * İçerik (kelime listeleri) burada DEĞİL, js/puzzle-content.js
- * dosyasında — sen sadece o dosyaya kelime listeleri eklersin,
- * bu dosyaya dokunman gerekmez.
+ * Firebase yapısı:
+ *   puzzles/{level}/{direction}/{index} -> tam bulmaca verisi
+ *     { title, rows, cols, cells, words, targetLang }
  *
- * puzzleId formatı: "{level}_{direction}_{index}"  örn. "A1_tr_en_00"
+ * puzzleId formatı: "{level}_{direction}_{index}"  örn. "A1_tr_en_3"
  */
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -17,56 +19,7 @@ const PUZZLES_PER_LEVEL = 20;
 
 let PUZZLE_DATA = null; // aktif bulmaca — oyuncu odaya girince atanır
 
-const PUZZLE_LIBRARY = {};
-LEVELS.forEach(level => {
-  PUZZLE_LIBRARY[level] = {};
-  DIRECTIONS.forEach(dir => {
-    PUZZLE_LIBRARY[level][dir] = new Array(PUZZLES_PER_LEVEL).fill(null);
-  });
-});
-
-/**
- * Bir bulmaca slotuna kelime listesi kaydeder. js/puzzle-content.js
- * içinden çağrılır.
- *
- * @param {string} level - "A1".."C2"
- * @param {"tr_en"|"en_tr"} direction
- * @param {number} index - 0-19 arası slot numarası
- * @param {{clue: string, answer: string}[]} wordList
- * @param {string} [title]
- */
-function registerPuzzle(level, direction, index, wordList, title) {
-  if (!LEVELS.includes(level)) { console.warn(`registerPuzzle: geçersiz seviye "${level}"`); return; }
-  if (!DIRECTIONS.includes(direction)) { console.warn(`registerPuzzle: geçersiz yön "${direction}"`); return; }
-  if (index < 0 || index >= PUZZLES_PER_LEVEL) { console.warn(`registerPuzzle: index 0-${PUZZLES_PER_LEVEL - 1} aralığında olmalı`); return; }
-
-  const targetLang = direction === "tr_en" ? "en" : "tr";
-  const data = CrosswordBuilder.build(
-    title || `${level} ${direction.toUpperCase()} #${index + 1}`,
-    wordList,
-    targetLang
-  );
-  PUZZLE_LIBRARY[level][direction][index] = data;
-}
-
-/** O seviye/yönde dolu (kayıtlı) slot indexlerini döner */
-function getAvailableIndexes(level, direction) {
-  const arr = PUZZLE_LIBRARY[level] && PUZZLE_LIBRARY[level][direction];
-  if (!arr) return [];
-  const result = [];
-  arr.forEach((p, i) => { if (p) result.push(i); });
-  return result;
-}
-
-/** Rastgele dolu bir slot seçip puzzleId döner, yoksa null */
-function pickRandomPuzzleId(level, direction) {
-  const available = getAvailableIndexes(level, direction);
-  if (available.length === 0) return null;
-  const index = available[Math.floor(Math.random() * available.length)];
-  return `${level}_${direction}_${String(index).padStart(2, "0")}`;
-}
-
-/** puzzleId'yi güvenli şekilde parçalar: "A1_tr_en_00" -> {level, direction, index} */
+/** puzzleId'yi parçalar: "A1_tr_en_3" -> {level, direction, index} */
 function parsePuzzleId(puzzleId) {
   const match = puzzleId.match(/^([A-C][12])_(tr_en|en_tr)_(\d+)$/);
   if (!match) return null;
@@ -74,11 +27,30 @@ function parsePuzzleId(puzzleId) {
   return { level, direction, index: parseInt(indexStr, 10) };
 }
 
-/** puzzleId'den bulmaca verisini getirir */
-function getPuzzleData(puzzleId) {
+/** O seviye+yönde Firebase'de kayıtlı slot indexlerini döner (dolu olanlar) */
+async function getAvailableIndexes(level, direction) {
+  const snap = await db.ref(`puzzles/${level}/${direction}`).get();
+  if (!snap.exists()) return [];
+  return Object.keys(snap.val()).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+}
+
+/** Rastgele dolu bir slot seçip puzzleId döner, hiç yoksa null */
+async function pickRandomPuzzleId(level, direction) {
+  const indexes = await getAvailableIndexes(level, direction);
+  if (indexes.length === 0) return null;
+  const index = indexes[Math.floor(Math.random() * indexes.length)];
+  return `${level}_${direction}_${index}`;
+}
+
+/** puzzleId'den bulmaca verisini Firebase'den getirir */
+async function getPuzzleData(puzzleId) {
   const parsed = parsePuzzleId(puzzleId);
   if (!parsed) return null;
-  const arr = PUZZLE_LIBRARY[parsed.level] && PUZZLE_LIBRARY[parsed.level][parsed.direction];
-  if (!arr) return null;
-  return arr[parsed.index] || null;
+  const snap = await db.ref(`puzzles/${parsed.level}/${parsed.direction}/${parsed.index}`).get();
+  return snap.exists() ? snap.val() : null;
+}
+
+/** Bulmaca Stüdyosu'nun kullandığı kayıt fonksiyonu */
+async function savePuzzleToLibrary(level, direction, index, puzzleData) {
+  await db.ref(`puzzles/${level}/${direction}/${index}`).set(puzzleData);
 }

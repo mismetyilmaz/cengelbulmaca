@@ -134,7 +134,7 @@
       return;
     }
 
-    const puzzleId = pickRandomPuzzleId(level, direction);
+    const puzzleId = await pickRandomPuzzleId(level, direction);
     if (!puzzleId) {
       setupError.textContent = "Bu seviye ve yön için henüz bulmaca eklenmedi. Başka bir seviye/yön dene.";
       return;
@@ -255,7 +255,7 @@
     }
 
     localStorage.setItem("cb_playerName", name);
-    PUZZLE_DATA = getPuzzleData(roomConfig.puzzleId);
+    PUZZLE_DATA = await getPuzzleData(roomConfig.puzzleId);
     if (!PUZZLE_DATA) {
       nameError.textContent = "Bulmaca verisi yüklenemedi. js/puzzle-content.js dosyasını kontrol et.";
       joinBtn.disabled = false;
@@ -295,8 +295,9 @@
     activeWordId = wordId;
     const word = PUZZLE_DATA.words[wordId];
     const cellData = PUZZLE_DATA.cells[word.clueCell];
+    const clue = cellData.clues.find(cl => cl.wordId === wordId);
 
-    answerClueText.textContent = cellData.text;
+    answerClueText.textContent = clue ? clue.text : "";
     answerFeedback.textContent = "";
     answerFeedback.className = "answer-feedback";
 

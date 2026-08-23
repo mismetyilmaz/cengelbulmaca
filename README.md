@@ -1,102 +1,94 @@
 # Çengel Bulmaca — Co-op
 
 Linkle katılınan, birden fazla oyuncunun aynı çengel bulmacayı birlikte
-çözdüğü, puan tablolu web tabanlı bulmaca oyunu.
+çözdüğü, puan tablolu web tabanlı bulmaca oyunu. Bulmacalar **Bulmaca
+Stüdyosu**'nda (admin.html) elle tasarlanır, Firebase'e kaydedilir ve
+oyun ekranından (index.html) oynanır.
 
 ## Klasör yapısı
 
 ```
 cengel-bulmaca/
-  index.html              -> tüm sayfa iskeleti
-  style.css                -> kağıt/mürekkep temalı görünüm
+  index.html          -> OYUN ekranı (oda kurulumu + bulmaca çözme)
+  admin.html            -> BULMACA STÜDYOSU (bulmaca tasarlama + kaydetme)
+  style.css              -> ortak kağıt/mürekkep teması (ikisi de kullanır)
+  admin.css               -> sadece stüdyoya özel stiller
   js/
-    firebase-config.js     -> Firebase bağlantı ayarları (SEN DOLDURACAKSIN)
-    room.js                 -> oda oluşturma, parola/kapasite kontrolü, bağlantı durumu
+    firebase-config.js   -> Firebase bağlantı ayarları (SEN DOLDURACAKSIN)
+    room.js                -> oda oluşturma, parola/kapasite kontrolü, bağlantı durumu
     text-utils.js            -> TR/EN'e duyarlı büyük harf dönüşümü
-    crossword-builder.js      -> kelime listesinden otomatik kesişimli grid üretir
-    puzzle-library.js          -> seviye (A1-C2) + yön (tr_en/en_tr) bazlı 20'şer slotluk kütüphane
-    puzzle-content.js           -> GERÇEK KELİME LİSTELERİNİ BURAYA EKLEYECEKSİN
-    scoring.js                   -> puanlama mantığı
-    puzzle-render.js               -> grid'i ekrana çizer
-    game.js                         -> Firebase senkronizasyonu, kelime doğrulama
-    app.js                           -> giriş noktası, oda kurulumu, popover, skor tablosu
+    puzzle-library.js          -> Firebase'den bulmaca okuma/yazma yardımcıları
+    puzzle-render.js             -> grid'i ekrana çizer (oyun VE stüdyo ortak kullanır)
+    scoring.js                     -> puanlama mantığı
+    game.js                         -> Firebase senkronizasyonu, kelime doğrulama (SADECE oyun)
+    app.js                           -> oyun ekranının giriş noktası
+    admin.js                          -> Bulmaca Stüdyosu'nun tüm mantığı
 ```
 
-## Akış
+## Bulmaca Stüdyosu — nasıl çalışır
 
-1. **Link `?room` parametresi olmadan açılırsa** → Oda Kurulum Ekranı:
-   çeviri yönü (Türkçe→İngilizce / İngilizce→Türkçe), seviye (A1-C2),
-   maksimum oyuncu sayısı, opsiyonel parola seçilir. "Oda Oluştur"a
-   basınca o seviye+yön için kayıtlı 20 bulmacadan biri **rastgele**
-   seçilir, oda Firebase'e yazılır, kurucu isim ekranına geçer ve
-   linki kopyalayabileceği bir banner görür.
+`admin.html`'i aç (yerelde `http://localhost:5500/admin.html`):
 
-2. **Link `?room=XXXXXX` ile açılırsa** → oda ayarları Firebase'den
-   okunur, ilgili bulmaca verisi `puzzle-library.js` üzerinden bulunur.
-   Oda bulunamazsa hata, doluysa/parolası yanlışsa katılım reddedilir.
+1. **Kurulum**: Seviye (A1-C2), çeviri yönü (TR→EN / EN→TR), başlık,
+   satır × sütun sayısı seç (örn. 10×12). "Grid Oluştur"a bas.
+2. Karşına boş bir grid çıkar. **Herhangi bir hücreye tıkla** — sağ
+   panelde o hücre için bir ipucu editörü açılır:
+   - **Yön seç** (4 buton): → sağa · ↓ aşağı · ⤷ alt kutudan sağa ·
+     ⤵ sağ kutudan aşağıya
+   - **İpucu metni** yaz
+   - **Cevap** yaz (boşluksuz, tek kelime)
+   - **Kaydet**'e bas — cevap otomatik olarak ilgili hücrelere
+     yerleşir, kesişen başka bir kelime varsa (ortak harf) otomatik
+     doğrulanır; harfler çakışırsa hata mesajı gösterilir, kaydetmez.
+   - Aynı hücreye **ikinci bir ipucu** da ekleyebilirsin (görseldeki
+     gibi üst üste iki ipucu, örn. "Gönüllü oldu / Atlı spor").
+3. Gridi tamamen doldurana kadar hücre hücre devam et. İstediğin an
+   bir kelimeyi silip (Sil butonu) yeniden yazabilirsin.
+4. Sağ altta **"Bulmacayı Kaydet"** — seçtiğin seviye+yön için boş
+   olan ilk slotu otomatik bulur (0-19 arası, her seviye+yön için 20
+   slot var) ve Firebase'e yazar.
+5. Kaydettikten sonra bulmaca **anında oynanabilir** hâle gelir —
+   index.html'de o seviye+yönü seçen biri, oda kurduğunda rastgele
+   seçilebilecek bulmacalar arasına girer.
 
-3. İsim (+ gerekirse parola) girilip "Bulmacaya Katıl" ile onaylanınca
-   oyun ekranına geçilir.
+### 4 ok yönünün anlamı
 
-Sağ üstteki küçük gösterge (● Bağlı / ● Bağlantı yok) Firebase
-bağlantısının o an çalışıp çalışmadığını gösterir.
+- **→ sağa**: cevap, ipucu kutusunun SAĞINDAKİ hücreden başlar, sağa okunur
+- **↓ aşağı**: cevap, ipucu kutusunun ALTINDAKİ hücreden başlar, aşağı okunur
+- **⤷ alt kutudan sağa**: cevap ALTTAKİ hücreden başlar ama SAĞA okunur
+  (kutunun hemen altı boşsa ve cevap yana doğru devam edecekse kullanılır)
+- **⤵ sağ kutudan aşağıya**: cevap SAĞDAKİ hücreden başlar ama AŞAĞI okunur
 
-## Kelime listesi ekleme — SIRADAKİ ADIM
-
-`js/puzzle-content.js` dosyasını aç. İçinde bir örnek (`A1`, `tr_en`,
-slot `0`) zaten kayıtlı, mekanizmanın çalıştığını göstermek için.
-Aynı formatta devam et:
-
-```js
-registerPuzzle("A1", "tr_en", 1, [
-  { clue: "Kırmızı meyve", answer: "APPLE" },
-  { clue: "Gökyüzünün rengi", answer: "BLUE" },
-  // ...
-], "A1 — Temel Kelimeler #2");
-```
-
-- `level`: `"A1" | "A2" | "B1" | "B2" | "C1" | "C2"`
-- `direction`: `"tr_en"` (ipucu Türkçe, cevap İngilizce) veya `"en_tr"` (tersi)
-- `index`: `0`-`19` arası (her seviye+yön için 20 slot var)
-- `answer`: **boşluksuz tek kelime** olmalı (grid mantığı gereği).
-  Boşluklu/numaralı girişler otomatik atlanır, konsolda uyarı basılır.
-
-Grid'i elle tasarlaman gerekmiyor — `crossword-builder.js` kelimeleri
-ortak harflerden kesişerek (bazısı sağa, bazısı aşağı) otomatik
-yerleştiriyor, kesişim bulamadığı kelimeleri bağımsız bir satıra koyuyor.
-
-Bir (seviye, yön) kombinasyonunda hiç slot doldurulmamışsa, oda
-kurulum ekranında o kombinasyon seçildiğinde "Bu seviye için henüz
-bulmaca eklenmedi" uyarısı gösterilir, site çökmez.
+Bu 4 yön sayesinde gerçek çengel bulmacalardaki gibi **hiç boş/siyah
+kare olmadan**, tamamen dolu bir dikdörtgen bulmaca tasarlayabilirsin —
+otomatik üretim algoritmalarının veremediği yoğunluk bu şekilde elde
+ediliyor.
 
 ## 1) Firebase kurulumu
 
-1. https://console.firebase.google.com adresinden yeni proje oluştur
-   (ya da CityHive'da kullandığın projeyi kullan).
+1. https://console.firebase.google.com adresinden yeni proje oluştur.
 2. **Build > Realtime Database > Create Database** ile bir Realtime
    Database oluştur.
 3. Test aşamasında kuralları geçici olarak aç:
    ```json
    { "rules": { ".read": true, ".write": true } }
    ```
+   Değiştirdikten sonra **Publish**'e basmayı unutma.
 4. **Project settings > General > Your apps** kısmından bir Web App
-   ekle, sana verilen config objesini `js/firebase-config.js` dosyasındaki
-   `FIREBASE_CONFIG` içine yapıştır.
+   ekle, config objesini `js/firebase-config.js` içine yapıştır.
 
 ## 2) Yerelde test etme
-
-Statik dosyalar olduğu için basit bir local server yeterli:
 
 ```bash
 cd cengel-bulmaca
 npx serve .
-# veya
-python3 -m http.server 5500
 ```
 
-Tarayıcıda `http://localhost:5500` adresini aç. İkinci bir sekmede
-aynı adrese `?room=xxxx` parametresiyle (ilk sekmenin URL'sini kopyalayarak)
-girip iki oyuncuyla test edebilirsin.
+- `http://localhost:5500/admin.html` → bulmaca tasarla, kaydet
+- `http://localhost:5500/` → oyunu aç, aynı seviye+yönü seçip test et
+
+İki oyuncuyla test etmek için ikinci bir sekmede, ilk sekmenin
+paylaşım linkini (`?room=xxxx` içeren URL) aç.
 
 ## 3) GitHub Pages'e yayınlama
 
@@ -109,20 +101,23 @@ git remote add origin <repo-url>
 git push -u origin main
 ```
 
-Sonra GitHub repo ayarlarında **Settings > Pages > Source: main branch /
-(root)** seçeneğini işaretle. Birkaç dakika içinde
-`https://<kullanici-adin>.github.io/<repo-adi>/` adresinden erişilebilir olur.
+GitHub repo ayarlarında **Settings > Pages > Source: main branch /
+(root)**. Birkaç dakika içinde
+`https://<kullanici-adin>.github.io/<repo-adi>/` üzerinden erişilebilir
+olur; stüdyo ise `.../admin.html` adresinde.
 
-## 4) Bulmaca verisini değiştirme
-
-Bkz. yukarıdaki "Kelime listesi ekleme" bölümü — `js/puzzle-content.js`
-içine `registerPuzzle(...)` çağrıları ekleyerek yapılıyor.
+⚠️ `admin.html` şu an herkese açık — internete koyarsan, linkini
+bilen herkes bulmaca ekleyebilir/oda ayarlarını değiştirebilir. Sadece
+sen kullanacaksan bunu bilerek ilerle; ileride basit bir şifre koruması
+eklenebilir.
 
 ## Şu ana kadar çalışan mekanikler
 
+- **Bulmaca Stüdyosu**: satır×sütun seçimi, hücre bazlı ipucu/cevap/yön
+  ekleme, hücre başına 2 ipucu, kesişim doğrulama (çakışan harfleri
+  reddeder), Firebase'e kaydetme
 - Oda kurulum ekranı: çeviri yönü / seviye / max oyuncu / parola seçimi
-- Seviye+yön başına 20 bulmacalık havuzdan rastgele seçim
-- Otomatik kesişimli (sağa + aşağı karışık) grid üretimi
+  — o seviye+yönde Firebase'de kayıtlı bulmacalardan rastgele biri seçilir
 - Link ile katılım, lobi yok (`?room=xxxx` URL parametresi)
 - Parola korumalı ve/veya kapasiteli odalar
 - İsim girişi ve oyuncu kimliğinin cihazda kalıcı tutulması
@@ -135,9 +130,8 @@ içine `registerPuzzle(...)` çağrıları ekleyerek yapılıyor.
 
 ## Sırada ne var
 
-- `js/puzzle-content.js` içine gerçek kelime listelerinin eklenmesi
-  (her seviye+yön için 20'şer, toplam 240 bulmaca)
+- Bulmaca Stüdyosu'na basit bir giriş şifresi (herkes bulmaca eklemesin diye)
+- Kayıtlı bulmacaları listeleyip düzenleme/silme ekranı (şu an sadece yeni ekleme var)
 - Bulmaca bitince ("tüm kelimeler çözüldü") bir final ekranı
 - Oyuncu sayısı / aktif olma göstergesi (kim şu an bağlı)
-- Parolanın düz metin yerine hash'lenmesi (şu an basit karşılaştırma,
-  arkadaş grubu kullanımı için yeterli ama güvenli şifreleme değil)
+- Parolanın düz metin yerine hash'lenmesi

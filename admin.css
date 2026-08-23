@@ -1,0 +1,191 @@
+/* ==========================================================================
+   ADMIN.css — Bulmaca Stüdyosu'na özel stiller (style.css'i tamamlar)
+   ========================================================================== */
+
+.ghost-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.ghost-link:hover { color: var(--ink); }
+
+.studio-setup {
+  max-width: 460px;
+  margin: 40px auto;
+}
+.studio-setup h2 { font-size: 20px; margin-bottom: 6px; }
+
+.dim-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+.dim-row input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+#studio-title-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+#create-grid-btn, #save-puzzle-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 14.5px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  margin-top: 18px;
+}
+#create-grid-btn:hover, #save-puzzle-btn:hover { background: #37302A; }
+
+.studio-workspace {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 22px;
+  padding: 20px 28px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .studio-workspace { grid-template-columns: 1fr; }
+}
+
+.studio-grid-pane { overflow: auto; max-height: 82vh; }
+
+/* Stüdyoda TÜM hücreler tıklanabilir (boş olanlar dahil) */
+.studio-grid-pane .cell {
+  cursor: pointer;
+}
+.studio-grid-pane .cell.block:hover { background: #3A342C; }
+.studio-grid-pane .cell.selected {
+  box-shadow: inset 0 0 0 3px var(--gold);
+}
+
+.studio-hint {
+  font-size: 12.5px;
+  margin-bottom: 14px;
+}
+
+.clue-slot-editor {
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.direction-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.direction-btn {
+  padding: 8px 0;
+  background: var(--paper);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+.direction-btn:hover { border-color: var(--gold); }
+.direction-btn.selected {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.slot-input {
+  width: 100%;
+  padding: 9px 11px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.slot-input.answer-input {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.slot-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.slot-save-btn {
+  flex: 1;
+  padding: 9px;
+  background: var(--pen-green);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+.slot-save-btn:hover { background: #35502F; }
+.slot-delete-btn {
+  padding: 9px 12px;
+  background: transparent;
+  border: 1.5px solid var(--pen-red);
+  color: var(--pen-red);
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+.slot-delete-btn:hover { background: var(--pen-red); color: var(--paper); }
+
+.slot-error {
+  font-size: 12px;
+  color: var(--pen-red);
+  margin: 6px 0 0;
+  min-height: 14px;
+}
+
+.full-width { width: 100%; margin-top: 8px; }
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  padding: 6px 0;
+}
+.legend-row .arrow {
+  width: 22px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--pen-red);
+  flex-shrink: 0;
+}
+
+#save-target-label {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.success-text {
+  color: var(--pen-green);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 10px 0 0;
+}
