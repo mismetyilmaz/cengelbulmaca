@@ -189,3 +189,50 @@
   font-weight: 600;
   margin: 10px 0 0;
 }
+
+.library-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.library-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+.library-item-info {
+  font-size: 13px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.library-item-index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-right: 6px;
+}
+.library-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.library-edit-btn, .library-delete-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+.library-edit-btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+}
+.library-delete-btn {
+  background: transparent;
+  border: 1.5px solid var(--pen-red);
+  color: var(--pen-red);
+}
+.library-delete-btn:hover { background: var(--pen-red); color: var(--paper); }

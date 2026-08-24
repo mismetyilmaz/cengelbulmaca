@@ -209,7 +209,7 @@ button:focus-visible, input:focus-visible {
   color: var(--paper);
 }
 
-#max-players-select {
+#max-players-select, #puzzle-select {
   width: 100%;
   padding: 10px 12px;
   font-family: var(--font-ui);
@@ -362,7 +362,32 @@ button:focus-visible, input:focus-visible {
   border: 1.5px solid var(--paper-line);
   border-radius: var(--radius-md);
   padding: 20px;
-  overflow-x: auto;
+  overflow: hidden;
+}
+
+.zoom-controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.zoom-controls button {
+  width: 34px;
+  height: 34px;
+  background: var(--paper);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+}
+.zoom-controls button:hover { border-color: var(--gold); }
+#zoom-reset-btn { width: auto; padding: 0 10px; font-size: 12px; }
+
+.puzzle-zoom-wrap {
+  overflow: auto;
+  max-height: 70vh;
+  touch-action: none; /* pinch hareketini biz yönetiyoruz, tarayıcı sayfayı zoom'lamasın */
 }
 
 /* ==========================================================================
@@ -550,6 +575,8 @@ button:focus-visible, input:focus-visible {
   padding: 16px;
   box-shadow: 0 16px 32px -14px rgba(34,29,23,0.45);
   max-width: 320px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
 }
 
 .answer-clue-text {

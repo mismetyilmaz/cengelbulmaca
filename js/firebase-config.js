@@ -17,7 +17,7 @@
  */
 
 const FIREBASE_CONFIG = {
-   apiKey: "AIzaSyBBticMfohmYMhybuZcCpthEcfdMuNftNw",
+  apiKey: "AIzaSyBBticMfohmYMhybuZcCpthEcfdMuNftNw",
   authDomain: "cengelbulmaca-31f11.firebaseapp.com",
   databaseURL: "https://cengelbulmaca-31f11-default-rtdb.firebaseio.com",
   projectId: "cengelbulmaca-31f11",

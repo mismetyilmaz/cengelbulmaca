@@ -44,6 +44,7 @@
   const playerNameLabel = document.getElementById("player-name-label");
 
   const puzzleGridEl = document.getElementById("puzzle-grid");
+  const puzzleZoomWrap = document.getElementById("puzzle-zoom-wrap");
   const scoreboardList = document.getElementById("scoreboard-list");
   const progressFill = document.getElementById("progress-fill");
   const progressLabel = document.getElementById("progress-label");
@@ -107,6 +108,12 @@
 
   wireOptionGroup(directionOptions, "direction");
   wireOptionGroup(levelOptions, "level");
+  [directionOptions, levelOptions].forEach(group => {
+    group.querySelectorAll(".option-btn").forEach(btn => {
+      btn.addEventListener("click", refreshPuzzleSelect);
+    });
+  });
+  refreshPuzzleSelect();
 
   function wireOptionGroup(container, attr) {
     container.querySelectorAll(".option-btn").forEach(btn => {
@@ -115,6 +122,25 @@
         btn.classList.add("selected");
       });
     });
+  }
+
+  const puzzleSelect = document.getElementById("puzzle-select");
+
+  async function refreshPuzzleSelect() {
+    const direction = directionOptions.querySelector(".selected").dataset.direction;
+    const level = levelOptions.querySelector(".selected").dataset.level;
+    puzzleSelect.innerHTML = `<option value="random">🎲 Rastgele seç</option>`;
+    try {
+      const puzzles = await listPuzzles(level, direction);
+      puzzles.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = String(p.index);
+        opt.textContent = `#${p.index} — ${p.title}`;
+        puzzleSelect.appendChild(opt);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   usePasswordCheck.addEventListener("change", () => {
@@ -134,7 +160,10 @@
       return;
     }
 
-    const puzzleId = await pickRandomPuzzleId(level, direction);
+    const puzzleChoice = puzzleSelect.value;
+    const puzzleId = puzzleChoice === "random"
+      ? await pickRandomPuzzleId(level, direction)
+      : `${level}_${direction}_${puzzleChoice}`;
     if (!puzzleId) {
       setupError.textContent = "Bu seviye ve yön için henüz bulmaca eklenmedi. Başka bir seviye/yön dene.";
       return;
@@ -273,6 +302,7 @@
     roomLabel.textContent = `Oda: ${roomId} · ${roomConfig.level} · ${directionLabel}`;
 
     PuzzleRender.init(puzzleGridEl, handleClueClick);
+    initZoom();
 
     Game.init(roomId, playerId, name, {
       onLettersChange: letters => PuzzleRender.paintLetters(letters),
@@ -302,8 +332,8 @@
     answerFeedback.className = "answer-feedback";
 
     buildAnswerBoxes(wordId);
-    positionPopover(clueEl);
     popover.classList.remove("hidden");
+    positionPopover(clueEl);
     PuzzleRender.highlightWordCells(wordId, true);
 
     const firstEmpty = answerBoxes.querySelector("input:not(.locked)");
@@ -346,14 +376,27 @@
   }
 
   function positionPopover(anchorEl) {
+    const margin = 12;
     const rect = anchorEl.getBoundingClientRect();
-    const popoverWidth = 320;
-    let left = rect.left + window.scrollX;
-    if (left + popoverWidth > window.innerWidth - 16) {
-      left = window.innerWidth - popoverWidth - 16;
+    const popoverWidth = popover.offsetWidth || 320;
+    const popoverHeight = popover.offsetHeight || 220;
+
+    // position: fixed olduğu için scrollX/scrollY EKLENMEZ — viewport'a göre konumlanır
+    let left = rect.left;
+    if (left + popoverWidth > window.innerWidth - margin) {
+      left = window.innerWidth - popoverWidth - margin;
     }
-    popover.style.left = `${Math.max(16, left)}px`;
-    popover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+    if (left < margin) left = margin;
+
+    let top = rect.bottom + 8;
+    if (top + popoverHeight > window.innerHeight - margin) {
+      // Ekranın altına sığmıyor — ipucunun ÜSTÜNE aç
+      top = rect.top - popoverHeight - 8;
+    }
+    if (top < margin) top = margin;
+
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
   }
 
   answerSubmit.addEventListener("click", submitCurrentAnswer);
@@ -462,5 +505,59 @@
     const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  // ================================================================
+  // ZOOM — mobilde pinch, masaüstünde +/- butonlar
+  // ================================================================
+  const CELL_PX = 64;
+  const MIN_ZOOM = 0.4;
+  const MAX_ZOOM = 2.5;
+  let currentZoom = 1;
+  let pinchStartDist = null;
+  let pinchStartZoom = 1;
+
+  function initZoom() {
+    currentZoom = 1;
+    applyZoom(1);
+
+    document.getElementById("zoom-in-btn").onclick = () => applyZoom(currentZoom + 0.2);
+    document.getElementById("zoom-out-btn").onclick = () => applyZoom(currentZoom - 0.2);
+    document.getElementById("zoom-reset-btn").onclick = () => applyZoom(1);
+
+    puzzleZoomWrap.ontouchstart = e => {
+      if (e.touches.length === 2) {
+        pinchStartDist = touchDistance(e.touches);
+        pinchStartZoom = currentZoom;
+      }
+    };
+    puzzleZoomWrap.ontouchmove = e => {
+      if (e.touches.length === 2 && pinchStartDist) {
+        e.preventDefault();
+        const dist = touchDistance(e.touches);
+        applyZoom(pinchStartZoom * (dist / pinchStartDist));
+      }
+    };
+    puzzleZoomWrap.ontouchend = e => {
+      if (e.touches.length < 2) pinchStartDist = null;
+    };
+  }
+
+  function touchDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  function applyZoom(scale) {
+    currentZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale));
+    const natW = PUZZLE_DATA.cols * CELL_PX;
+    const natH = PUZZLE_DATA.rows * CELL_PX;
+    puzzleGridEl.style.transformOrigin = "top left";
+    puzzleGridEl.style.transform = `scale(${currentZoom})`;
+    puzzleGridEl.style.width = `${natW}px`;
+    puzzleGridEl.style.height = `${natH}px`;
+    puzzleZoomWrap.style.width = `${natW * currentZoom}px`;
+    puzzleZoomWrap.style.minWidth = "100%";
   }
 })();

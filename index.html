@@ -17,6 +17,8 @@
     <span id="conn-status-text">Bağlanıyor...</span>
   </div>
 
+  <a href="#" id="admin-access-link" class="admin-access-link">Stüdyo →</a>
+
   <!-- Oda kurulum ekranı: room parametresi olmayan link açılınca burası gösterilir -->
   <div id="setup-gate" class="overlay hidden">
     <div class="name-card setup-card">
@@ -39,6 +41,11 @@
         <button type="button" class="option-btn" data-level="C1">C1</button>
         <button type="button" class="option-btn" data-level="C2">C2</button>
       </div>
+
+      <label class="field-label" for="puzzle-select">Bulmaca</label>
+      <select id="puzzle-select">
+        <option value="random">🎲 Rastgele seç</option>
+      </select>
 
       <label class="field-label" for="max-players-select">Maksimum oyuncu</label>
       <select id="max-players-select">
@@ -102,8 +109,15 @@
     <main class="layout">
 
       <section class="puzzle-pane">
-        <div id="puzzle-grid" class="puzzle-grid">
-          <!-- Grid, js/puzzle-render.js tarafından burada oluşturulur -->
+        <div class="zoom-controls">
+          <button id="zoom-out-btn" type="button" title="Uzaklaştır">−</button>
+          <button id="zoom-reset-btn" type="button" title="Sıfırla">%100</button>
+          <button id="zoom-in-btn" type="button" title="Yakınlaştır">+</button>
+        </div>
+        <div id="puzzle-zoom-wrap" class="puzzle-zoom-wrap">
+          <div id="puzzle-grid" class="puzzle-grid">
+            <!-- Grid, js/puzzle-render.js tarafından burada oluşturulur -->
+          </div>
         </div>
       </section>
 

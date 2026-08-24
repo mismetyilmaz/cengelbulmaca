@@ -34,6 +34,21 @@ async function getAvailableIndexes(level, direction) {
   return Object.keys(snap.val()).map(k => parseInt(k, 10)).sort((a, b) => a - b);
 }
 
+/** O seviye+yönde kayıtlı bulmacaları {index, title} listesi olarak döner (tek okuma) */
+async function listPuzzles(level, direction) {
+  const snap = await db.ref(`puzzles/${level}/${direction}`).get();
+  if (!snap.exists()) return [];
+  const val = snap.val();
+  return Object.keys(val)
+    .map(k => ({ index: parseInt(k, 10), title: (val[k] && val[k].title) || `#${k}` }))
+    .sort((a, b) => a.index - b.index);
+}
+
+/** Bir bulmacayı Firebase'den siler */
+async function deletePuzzleFromLibrary(level, direction, index) {
+  await db.ref(`puzzles/${level}/${direction}/${index}`).remove();
+}
+
 /** Rastgele dolu bir slot seçip puzzleId döner, hiç yoksa null */
 async function pickRandomPuzzleId(level, direction) {
   const indexes = await getAvailableIndexes(level, direction);

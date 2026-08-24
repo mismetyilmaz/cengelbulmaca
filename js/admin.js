@@ -57,7 +57,9 @@ document.getElementById("create-grid-btn").addEventListener("click", () => {
   };
 
   document.getElementById("setup-panel").classList.add("hidden");
+  document.getElementById("library-panel").classList.add("hidden");
   document.getElementById("studio-workspace").classList.remove("hidden");
+  state.isEditingExisting = false;
   renderGrid();
   updateSaveTargetLabel();
 });
@@ -67,6 +69,117 @@ document.getElementById("reset-grid-btn").addEventListener("click", () => {
     window.location.reload();
   }
 });
+
+// ================================================================
+// KAYITLI BULMACALARI LİSTELEME / DÜZENLEME / SİLME
+// ================================================================
+const libraryLevelOptions = document.getElementById("library-level-options");
+const libraryDirectionOptions = document.getElementById("library-direction-options");
+wireOptionGroup(libraryLevelOptions);
+wireOptionGroup(libraryDirectionOptions);
+
+[libraryLevelOptions, libraryDirectionOptions].forEach(group => {
+  group.querySelectorAll(".option-btn").forEach(btn => {
+    btn.addEventListener("click", refreshLibraryList);
+  });
+});
+
+async function refreshLibraryList() {
+  const level = libraryLevelOptions.querySelector(".selected").dataset.level;
+  const direction = libraryDirectionOptions.querySelector(".selected").dataset.direction;
+  const listEl = document.getElementById("library-list");
+  listEl.innerHTML = `<p class="sub">Yükleniyor...</p>`;
+
+  try {
+    const puzzles = await listPuzzles(level, direction);
+    if (puzzles.length === 0) {
+      listEl.innerHTML = `<p class="sub">${level} / ${direction} için henüz kayıtlı bulmaca yok.</p>`;
+      return;
+    }
+    listEl.innerHTML = "";
+    puzzles.forEach(p => {
+      const row = document.createElement("div");
+      row.className = "library-item";
+
+      const info = document.createElement("span");
+      info.className = "library-item-info";
+      info.innerHTML = `<span class="library-item-index">#${p.index}</span>${escapeHtml(p.title)}`;
+
+      const actions = document.createElement("div");
+      actions.className = "library-item-actions";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "library-edit-btn";
+      editBtn.textContent = "Düzenle";
+      editBtn.addEventListener("click", () => loadPuzzleForEditing(level, direction, p.index));
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "library-delete-btn";
+      delBtn.textContent = "Sil";
+      delBtn.addEventListener("click", async () => {
+        if (!confirm(`"${p.title}" kalıcı olarak silinsin mi?`)) return;
+        await deletePuzzleFromLibrary(level, direction, p.index);
+        refreshLibraryList();
+      });
+
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+      row.appendChild(info);
+      row.appendChild(actions);
+      listEl.appendChild(row);
+    });
+  } catch (err) {
+    console.error(err);
+    listEl.innerHTML = `<p class="sub">Liste okunamadı (bağlantı sorunu olabilir).</p>`;
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function loadPuzzleForEditing(level, direction, index) {
+  const setupError = document.getElementById("setup-error");
+  setupError.textContent = "";
+  try {
+    const data = await getPuzzleData(`${level}_${direction}_${index}`);
+    if (!data) { alert("Bulmaca yüklenemedi."); return; }
+
+    // wordCounter'ı mevcut en yüksek wordId'nin bir fazlasına ayarla (çakışmasın diye)
+    let maxNum = -1;
+    Object.keys(data.words).forEach(wid => {
+      const n = parseInt(wid.replace("w", ""), 10);
+      if (!isNaN(n) && n > maxNum) maxNum = n;
+    });
+
+    state = {
+      level, direction,
+      targetLang: data.targetLang,
+      title: data.title,
+      rows: data.rows, cols: data.cols,
+      cells: JSON.parse(JSON.stringify(data.cells)),
+      words: JSON.parse(JSON.stringify(data.words)),
+      wordCounter: maxNum + 1,
+      selectedCellId: null,
+      nextIndex: index,
+      isEditingExisting: true
+    };
+
+    document.getElementById("setup-panel").classList.add("hidden");
+    document.getElementById("library-panel").classList.add("hidden");
+    document.getElementById("studio-workspace").classList.remove("hidden");
+    renderGrid();
+    document.getElementById("save-target-label").textContent =
+      `${level} / ${direction} — slot #${index} üzerine kaydedilecek (düzenleniyor)`;
+  } catch (err) {
+    console.error(err);
+    alert("Bulmaca yüklenirken hata oluştu.");
+  }
+}
+
+refreshLibraryList();
 
 // ================================================================
 // YARDIMCI: HÜCRE KOORDİNATLARI
@@ -348,6 +461,12 @@ function buildSlotEditor(originCellId, clue) {
 // ================================================================
 async function updateSaveTargetLabel() {
   const label = document.getElementById("save-target-label");
+
+  if (state.isEditingExisting) {
+    label.textContent = `${state.level} / ${state.direction} — slot #${state.nextIndex} üzerine kaydedilecek (düzenleniyor)`;
+    return;
+  }
+
   label.textContent = "Hesaplanıyor...";
   try {
     const used = await getAvailableIndexes(state.level, state.direction);

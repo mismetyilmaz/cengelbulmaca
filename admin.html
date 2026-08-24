@@ -63,6 +63,28 @@
     <p id="setup-error" class="error-text"></p>
   </div>
 
+  <!-- Kayıtlı bulmacaları düzenleme -->
+  <div id="library-panel" class="studio-setup panel">
+    <h2>Kayıtlı Bulmacayı Düzenle</h2>
+    <label class="field-label">Seviye</label>
+    <div class="option-grid" id="library-level-options">
+      <button type="button" class="option-btn selected" data-level="A1">A1</button>
+      <button type="button" class="option-btn" data-level="A2">A2</button>
+      <button type="button" class="option-btn" data-level="B1">B1</button>
+      <button type="button" class="option-btn" data-level="B2">B2</button>
+      <button type="button" class="option-btn" data-level="C1">C1</button>
+      <button type="button" class="option-btn" data-level="C2">C2</button>
+    </div>
+    <label class="field-label">Çeviri yönü</label>
+    <div class="option-row" id="library-direction-options">
+      <button type="button" class="option-btn selected" data-direction="tr_en">Türkçe → İngilizce</button>
+      <button type="button" class="option-btn" data-direction="en_tr">İngilizce → Türkçe</button>
+    </div>
+    <div id="library-list" class="library-list">
+      <p class="sub">Yükleniyor...</p>
+    </div>
+  </div>
+
   <!-- ADIM 2: Editör -->
   <div id="studio-workspace" class="studio-workspace hidden">
     <section class="puzzle-pane studio-grid-pane">
