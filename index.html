@@ -152,6 +152,24 @@
     <p id="answer-feedback" class="answer-feedback"></p>
   </div>
 
+  <!-- Sohbet balonu: ekranın her zaman sağ altında -->
+  <div id="chat-bubble" class="chat-bubble hidden">
+    <span class="chat-bubble-icon">💬</span>
+    <span id="chat-unread-badge" class="chat-badge hidden">0</span>
+  </div>
+
+  <div id="chat-panel" class="chat-panel hidden">
+    <div class="chat-header">
+      <span>Sohbet</span>
+      <button id="chat-close-btn" class="chat-close" type="button">✕</button>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" type="text" maxlength="300" placeholder="Mesaj yaz..." autocomplete="off">
+      <button id="chat-send-btn" type="button">Gönder</button>
+    </div>
+  </div>
+
   <!-- Firebase SDK (compat sürüm — CityHive'daki gibi basit kullanım için) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -163,6 +181,7 @@
   <script src="js/scoring.js"></script>
   <script src="js/puzzle-render.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/chat.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -56,6 +56,14 @@
   const answerCancel = document.getElementById("answer-cancel");
   const answerFeedback = document.getElementById("answer-feedback");
 
+  const chatBubble = document.getElementById("chat-bubble");
+  const chatUnreadBadge = document.getElementById("chat-unread-badge");
+  const chatPanel = document.getElementById("chat-panel");
+  const chatCloseBtn = document.getElementById("chat-close-btn");
+  const chatMessagesEl = document.getElementById("chat-messages");
+  const chatInput = document.getElementById("chat-input");
+  const chatSendBtn = document.getElementById("chat-send-btn");
+
   let activeWordId = null;
   let roomId = null;
   let roomConfig = null;
@@ -106,6 +114,9 @@
     setupGate.classList.remove("hidden");
   }
 
+  const puzzleSelect = document.getElementById("puzzle-select");
+  let puzzleSelectRequestId = 0;
+
   wireOptionGroup(directionOptions, "direction");
   wireOptionGroup(levelOptions, "level");
   [directionOptions, levelOptions].forEach(group => {
@@ -124,14 +135,17 @@
     });
   }
 
-  const puzzleSelect = document.getElementById("puzzle-select");
-
   async function refreshPuzzleSelect() {
     const direction = directionOptions.querySelector(".selected").dataset.direction;
     const level = levelOptions.querySelector(".selected").dataset.level;
-    puzzleSelect.innerHTML = `<option value="random">🎲 Rastgele seç</option>`;
+    const requestId = ++puzzleSelectRequestId;
+
+    puzzleSelect.innerHTML = `<option value="random">🎲 Rastgele seç</option><option value="" disabled>Yükleniyor...</option>`;
     try {
       const puzzles = await listPuzzles(level, direction);
+      if (requestId !== puzzleSelectRequestId) return; // bu arada başka bir seviye/yön seçildi, bu cevap artık geçersiz
+
+      puzzleSelect.innerHTML = `<option value="random">🎲 Rastgele seç</option>`;
       puzzles.forEach(p => {
         const opt = document.createElement("option");
         opt.value = String(p.index);
@@ -140,6 +154,8 @@
       });
     } catch (err) {
       console.error(err);
+      if (requestId !== puzzleSelectRequestId) return;
+      puzzleSelect.innerHTML = `<option value="random">🎲 Rastgele seç</option>`;
     }
   }
 
@@ -313,6 +329,17 @@
         renderProgress();
       },
       onPlayersChange: () => renderScoreboard()
+    });
+
+    chatBubble.classList.remove("hidden");
+    Chat.init(roomId, playerId, name, {
+      onMessage: (msg, isNew) => {
+        renderChatMessage(msg);
+        if (isNew && chatPanel.classList.contains("hidden")) {
+          chatUnreadCount++;
+          updateChatBadge();
+        }
+      }
     });
   }
 
@@ -556,4 +583,53 @@
     puzzleGridEl.style.gridTemplateColumns = `repeat(${PUZZLE_DATA.cols}, var(--cell-size))`;
     puzzleGridEl.style.gridTemplateRows = `repeat(${PUZZLE_DATA.rows}, var(--cell-size))`;
   }
+
+  // ================================================================
+  // SOHBET
+  // ================================================================
+  let chatUnreadCount = 0;
+
+  function renderChatMessage(msg) {
+    const div = document.createElement("div");
+    div.className = "chat-msg" + (msg.playerId === playerId ? " me" : "");
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "chat-msg-name";
+    nameSpan.textContent = msg.name + ": ";
+    div.appendChild(nameSpan);
+    div.appendChild(document.createTextNode(msg.text));
+    chatMessagesEl.appendChild(div);
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
+  function updateChatBadge() {
+    if (chatUnreadCount > 0) {
+      chatUnreadBadge.textContent = chatUnreadCount > 9 ? "9+" : String(chatUnreadCount);
+      chatUnreadBadge.classList.remove("hidden");
+    } else {
+      chatUnreadBadge.classList.add("hidden");
+    }
+  }
+
+  chatBubble.addEventListener("click", () => {
+    chatPanel.classList.remove("hidden");
+    chatUnreadCount = 0;
+    updateChatBadge();
+    chatInput.focus();
+  });
+
+  chatCloseBtn.addEventListener("click", () => {
+    chatPanel.classList.add("hidden");
+  });
+
+  function sendChatMessage() {
+    const text = chatInput.value;
+    if (!text.trim()) return;
+    Chat.sendMessage(playerNameLabel.textContent, text);
+    chatInput.value = "";
+  }
+
+  chatSendBtn.addEventListener("click", sendChatMessage);
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") sendChatMessage();
+  });
 })();

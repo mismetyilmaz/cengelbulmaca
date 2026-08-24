@@ -113,6 +113,10 @@ eklenebilir.
 
 ## Şu ana kadar çalışan mekanikler
 
+- **Sohbet**: sağ altta sabit balon (her zaman erişilebilir), tıklayınca
+  açılan panel, oda içi gerçek zamanlı mesajlaşma, panel kapalıyken
+  gelen yeni mesajlar için kırmızı sayı rozeti
+
 - **Bulmaca Stüdyosu**: satır×sütun seçimi, hücre bazlı ipucu/cevap/yön
   ekleme, hücre başına 2 ipucu, kesişim doğrulama (çakışan harfleri
   reddeder), Firebase'e kaydetme
