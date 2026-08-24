@@ -551,13 +551,9 @@
 
   function applyZoom(scale) {
     currentZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale));
-    const natW = PUZZLE_DATA.cols * CELL_PX;
-    const natH = PUZZLE_DATA.rows * CELL_PX;
-    puzzleGridEl.style.transformOrigin = "top left";
-    puzzleGridEl.style.transform = `scale(${currentZoom})`;
-    puzzleGridEl.style.width = `${natW}px`;
-    puzzleGridEl.style.height = `${natH}px`;
-    puzzleZoomWrap.style.width = `${natW * currentZoom}px`;
-    puzzleZoomWrap.style.minWidth = "100%";
+    const px = Math.round(CELL_PX * currentZoom);
+    puzzleGridEl.style.setProperty("--cell-size", `${px}px`);
+    puzzleGridEl.style.gridTemplateColumns = `repeat(${PUZZLE_DATA.cols}, var(--cell-size))`;
+    puzzleGridEl.style.gridTemplateRows = `repeat(${PUZZLE_DATA.rows}, var(--cell-size))`;
   }
 })();

@@ -387,7 +387,9 @@ button:focus-visible, input:focus-visible {
 .puzzle-zoom-wrap {
   overflow: auto;
   max-height: 70vh;
-  touch-action: none; /* pinch hareketini biz yönetiyoruz, tarayıcı sayfayı zoom'lamasın */
+  /* pan-x/pan-y: tek parmak native kaydırma çalışsın; sadece pinch-zoom'u
+     (page-level) biz JS ile ele alıyoruz, tarayıcı sayfayı zoom'lamasın */
+  touch-action: pan-x pan-y;
 }
 
 /* ==========================================================================
@@ -402,8 +404,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .cell {
-  width: 64px;
-  height: 64px;
+  width: var(--cell-size, 64px);
+  height: var(--cell-size, 64px);
   border-right: 1.5px solid var(--ink);
   border-bottom: 1.5px solid var(--ink);
   display: flex;
