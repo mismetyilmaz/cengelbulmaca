@@ -321,7 +321,7 @@
     initZoom();
 
     Game.init(roomId, playerId, name, {
-      onLettersChange: letters => PuzzleRender.paintLetters(letters),
+      onLettersChange: letters => PuzzleRender.paintLetters(letters, Game.getPlayerColor),
       onWordsChange: () => {
         Object.keys(PUZZLE_DATA.words).forEach(wid => {
           if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
@@ -379,27 +379,40 @@
       box.dataset.index = i;
 
       if (filled[cellId]) {
-        box.value = filled[cellId];
+        box.value = filled[cellId].letter;
+        box.style.color = Game.getPlayerColor(filled[cellId].playerId);
         box.classList.add("locked");
         box.disabled = true;
       } else {
         box.addEventListener("input", () => {
           box.value = TextUtils.upper(box.value, PUZZLE_DATA.targetLang).slice(-1);
-          if (box.value) {
-            const next = answerBoxes.children[i + 1];
-            if (next && !next.classList.contains("locked")) next.focus();
-          }
+          if (box.value) focusNextEditableBox(i);
         });
         box.addEventListener("keydown", e => {
           if (e.key === "Backspace" && !box.value) {
-            const prev = answerBoxes.children[i - 1];
-            if (prev && !prev.classList.contains("locked")) prev.focus();
+            focusPrevEditableBox(i);
           }
           if (e.key === "Enter") submitCurrentAnswer();
         });
       }
       answerBoxes.appendChild(box);
     });
+  }
+
+  /** Kilitli (kesişimden zaten dolu) kutuları atlayarak bir sonraki boş kutuya odaklanır */
+  function focusNextEditableBox(fromIndex) {
+    for (let idx = fromIndex + 1; idx < answerBoxes.children.length; idx++) {
+      const el = answerBoxes.children[idx];
+      if (!el.classList.contains("locked")) { el.focus(); return; }
+    }
+  }
+
+  /** Kilitli kutuları atlayarak bir önceki boş kutuya odaklanır */
+  function focusPrevEditableBox(fromIndex) {
+    for (let idx = fromIndex - 1; idx >= 0; idx--) {
+      const el = answerBoxes.children[idx];
+      if (!el.classList.contains("locked")) { el.focus(); return; }
+    }
   }
 
   function positionPopover(anchorEl) {
@@ -506,6 +519,7 @@
       li.className = "score-row" + (p.id === playerId ? " me" : "");
       li.innerHTML = `
         <span class="rank">${i + 1}.</span>
+        <span class="player-dot" style="background:${p.color}"></span>
         <span class="name">${escapeHtml(p.name)}</span>
         <span class="points">${p.score}</span>
       `;

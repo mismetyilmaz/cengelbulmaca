@@ -20,7 +20,7 @@ const SCORING = {
 
   /**
    * @param {string[]} wordCellIds - kelimenin hücre id listesi (sırayla)
-   * @param {Object} filledLettersMap - { [cellId]: "X" } zaten dolu olan harfler
+   * @param {Object} filledLettersMap - { [cellId]: {letter, playerId} } zaten dolu olan harfler
    *        (bu kelime çözülmeden ÖNCEKİ duruma göre, başka kelimelerden gelen)
    * @returns {{ newLetters: number, points: number }}
    */

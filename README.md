@@ -113,6 +113,11 @@ eklenebilir.
 
 ## Şu ana kadar çalışan mekanikler
 
+- **Oyuncu renkleri**: odaya katılma sırasına göre her oyuncuya sabit
+  bir renk atanır; doğru cevaplanan harfler o oyuncunun renginde
+  grid'e işlenir, skor tablosunda da isminin yanında aynı renkte bir
+  nokta gösterilir — kimin hangi harfi yazdığı görülebilir
+
 - **Sohbet**: sağ altta sabit balon (her zaman erişilebilir), tıklayınca
   açılan panel, oda içi gerçek zamanlı mesajlaşma, panel kapalıyken
   gelen yeni mesajlar için kırmızı sayı rozeti

@@ -518,6 +518,7 @@ button:focus-visible, input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 7px;
   font-size: 13.5px;
   padding: 7px 0;
 }
@@ -527,6 +528,14 @@ button:focus-visible, input:focus-visible {
   color: var(--ink-soft);
   width: 20px;
   flex-shrink: 0;
+}
+
+.player-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
 }
 
 .score-row .name {

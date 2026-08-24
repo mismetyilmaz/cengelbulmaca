@@ -4,9 +4,13 @@
  * Firebase Realtime Database ile senkron çalışan oyun katmanı.
  *
  * Veritabanı şeması:
- *   rooms/{roomId}/players/{playerId}   -> { name, score, joinedAt }
- *   rooms/{roomId}/letters/{cellId}     -> "X"   (o hücreye yazılan harf)
+ *   rooms/{roomId}/players/{playerId}   -> { name, score, color, joinedAt }
+ *   rooms/{roomId}/letters/{cellId}     -> { letter: "X", playerId }
  *   rooms/{roomId}/words/{wordId}       -> { solved, solvedBy, solvedByName }
+ *
+ * Her hücreye yazılan harfin YANINDA o harfi doğru bilen oyuncunun id'si
+ * de tutulur — bu sayede grid'de harfi kimin yazdığı, o oyuncunun
+ * rengiyle gösterilebiliyor.
  */
 
 const Game = (() => {
@@ -15,9 +19,9 @@ const Game = (() => {
   let playerName = null;
 
   let roomRef = null;
-  let lettersCache = {};   // { cellId: "X" }
+  let lettersCache = {};   // { cellId: {letter, playerId} }
   let wordsCache = {};     // { wordId: {solved,...} }
-  let playersCache = {};   // { playerId: {name, score} }
+  let playersCache = {};   // { playerId: {name, score, color} }
 
   const listeners = {
     onLettersChange: null,
@@ -33,22 +37,9 @@ const Game = (() => {
 
     roomRef = db.ref(`rooms/${roomId}`);
 
-    // Oyuncuyu kaydet
-    const playerRef = roomRef.child(`players/${playerId}`);
-    playerRef.get().then(snap => {
-      if (!snap.exists()) {
-        playerRef.set({
-          name: playerName,
-          score: 0,
-          joinedAt: firebase.database.ServerValue.TIMESTAMP
-        });
-      } else {
-        // Aynı isimle geri dönmüş olabilir, ismi güncel tut
-        playerRef.update({ name: playerName });
-      }
-    });
+    registerPlayer();
     // Sekme kapanınca oyuncuyu listeden tamamen silmiyoruz;
-    // skorlar kalıcı kalsın istiyoruz (co-op puan tablosu).
+    // skorlar ve renk kalıcı kalsın istiyoruz (co-op puan tablosu).
 
     roomRef.child("letters").on("value", snap => {
       lettersCache = snap.val() || {};
@@ -64,6 +55,29 @@ const Game = (() => {
       playersCache = snap.val() || {};
       if (listeners.onPlayersChange) listeners.onPlayersChange(playersCache);
     });
+  }
+
+  /** Oyuncuyu kaydeder; yeniyse mevcut oyuncu sayısına göre sabit bir renk atar. */
+  async function registerPlayer() {
+    const playerRef = roomRef.child(`players/${playerId}`);
+    try {
+      const snap = await playerRef.get();
+      if (!snap.exists()) {
+        const playersSnap = await roomRef.child("players").get();
+        const existingCount = playersSnap.exists() ? Object.keys(playersSnap.val()).length : 0;
+        await playerRef.set({
+          name: playerName,
+          score: 0,
+          color: colorForPlayerIndex(existingCount),
+          joinedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+      } else {
+        // Aynı isimle geri dönmüş olabilir, ismi güncel tut (rengi ve skoru koru)
+        await playerRef.update({ name: playerName });
+      }
+    } catch (err) {
+      console.error("registerPlayer hatası:", err);
+    }
   }
 
   /**
@@ -106,10 +120,10 @@ const Game = (() => {
       // Puanı, kesişimden ZATEN dolu olan harfleri hariç tutarak hesapla
       const { points } = SCORING.calculate(word.cells, lettersCache);
 
-      // Harfleri veritabanına yaz
+      // Harfleri veritabanına yaz — hangi oyuncunun yazdığı bilgisiyle birlikte
       const letterUpdates = {};
       word.answer.split("").forEach((ch, i) => {
-        letterUpdates[`letters/${word.cells[i]}`] = ch;
+        letterUpdates[`letters/${word.cells[i]}`] = { letter: ch, playerId };
       });
       await roomRef.update(letterUpdates);
 
@@ -146,6 +160,7 @@ const Game = (() => {
     return TextUtils.upper((str || "").trim(), PUZZLE_DATA.targetLang);
   }
 
+  /** @returns {{[cellId]: {letter, playerId}}} */
   function getFilledLettersForWord(wordId) {
     const word = PUZZLE_DATA.words[wordId];
     if (!word) return {};
@@ -168,9 +183,14 @@ const Game = (() => {
     return Object.values(wordsCache).filter(w => w && w.solved).length;
   }
 
+  /** Bir oyuncunun sabit rengini döner (kayıtlı değilse nötr bir gri) */
+  function getPlayerColor(pid) {
+    return (playersCache[pid] && playersCache[pid].color) || "#6E6555";
+  }
+
   function getPlayersSorted() {
     return Object.entries(playersCache)
-      .map(([id, p]) => ({ id, name: p.name, score: p.score || 0 }))
+      .map(([id, p]) => ({ id, name: p.name, score: p.score || 0, color: p.color || "#6E6555" }))
       .sort((a, b) => b.score - a.score);
   }
 
@@ -181,6 +201,7 @@ const Game = (() => {
     isWordSolved,
     getTotalWordCount,
     getSolvedWordCount,
+    getPlayerColor,
     getPlayersSorted,
     get playerId() { return playerId; }
   };

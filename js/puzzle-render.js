@@ -87,12 +87,19 @@ const PuzzleRender = (() => {
    * Verilen harf durumuna göre tüm harf hücrelerini günceller.
    * @param {Object} filledLetters - { [cellId]: "X" }
    */
-  function paintLetters(filledLetters) {
+  /**
+   * Verilen harf durumuna göre tüm harf hücrelerini günceller.
+   * @param {Object} filledLetters - { [cellId]: {letter, playerId} }
+   * @param {(playerId: string) => string} getPlayerColor - harfi o renkte boyamak için
+   */
+  function paintLetters(filledLetters, getPlayerColor) {
     for (const cellId in filledLetters) {
       const el = containerEl.querySelector(`[data-cell-id="${cellId}"]`);
       if (!el) continue;
-      el.textContent = filledLetters[cellId];
+      const entry = filledLetters[cellId];
+      el.textContent = entry.letter;
       el.classList.add("filled");
+      if (getPlayerColor) el.style.color = getPlayerColor(entry.playerId);
     }
   }
 
