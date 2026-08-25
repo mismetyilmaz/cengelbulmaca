@@ -30,13 +30,13 @@ const PuzzleRender = (() => {
   // Gridde gösterilen büyük/kalın oklar — kalın stroke'lu, komşu hücreye taşacak SVG'ler
   const ARROW_SVG = {
     right:
-      '<svg viewBox="0 0 32 32"><path d="M3 16 H25 M17 8 L26 16 L17 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      '<svg viewBox="0 0 32 32"><path d="M3 16 H25 M17 8 L26 16 L17 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     down:
-      '<svg viewBox="0 0 32 32"><path d="M16 3 V25 M8 17 L16 26 L24 17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      '<svg viewBox="0 0 32 32"><path d="M16 3 V25 M8 17 L16 26 L24 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     "down-right":
-      '<svg viewBox="0 0 32 32"><path d="M10 3 V13 C10 18 13 21 18 21 H25 M19 14 L28 21 L19 28" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      '<svg viewBox="0 0 32 32"><path d="M10 3 V13 C10 18 13 21 18 21 H25 M19 14 L28 21 L19 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     "right-down":
-      '<svg viewBox="0 0 32 32"><path d="M3 10 H13 C18 10 21 13 21 18 V25 M13 19 L21 28 L29 19" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      '<svg viewBox="0 0 32 32"><path d="M3 10 H13 C18 10 21 13 21 18 V25 M13 19 L21 28 L29 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
   };
 
   let containerEl = null;
