@@ -310,7 +310,7 @@
     startGame(name);
   }
 
-  function startGame(name) {
+ function startGame(name) {
     nameGate.classList.add("hidden");
     gameRoot.classList.remove("hidden");
     playerNameLabel.textContent = name;
@@ -320,8 +320,44 @@
     PuzzleRender.init(puzzleGridEl, handleClueClick);
     initZoom();
 
+    // YENİ EKLENEN: Otomatik çözülen kelimelerde tekrarlı istek atmayı önlemek için
+    const pendingAutoSolves = new Set(); 
+
     Game.init(roomId, playerId, name, {
-      onLettersChange: letters => PuzzleRender.paintLetters(letters, Game.getPlayerColor),
+      onLettersChange: letters => {
+        PuzzleRender.paintLetters(letters, Game.getPlayerColor);
+        
+        // YENİ EKLENEN BLOK: Bütün harfleri çıkan kelimeleri otomatik onayla
+        Object.keys(PUZZLE_DATA.words).forEach(async wordId => {
+          // Eğer kelime zaten çözüldüyse veya şu an sunucuya gönderiliyorsa atla
+          if (Game.isWordSolved(wordId) || pendingAutoSolves.has(wordId)) return;
+          
+          const word = PUZZLE_DATA.words[wordId];
+          let isComplete = true;
+          let currentGuess = "";
+          
+          // Kelimenin tüm hücreleri grid üzerinde dolu mu diye kontrol et
+          for (const cellId of word.cells) {
+            if (!letters[cellId] || !letters[cellId].letter) {
+              isComplete = false;
+              break;
+            }
+            currentGuess += letters[cellId].letter;
+          }
+          
+          // Eğer kelime tamamen dolmuşsa, oyuncu tıklamadan arka planda cevabı gönder
+          if (isComplete && currentGuess.length === word.answer.length) {
+            pendingAutoSolves.add(wordId);
+            try {
+              await Game.submitAnswer(wordId, currentGuess);
+            } catch (err) {
+              console.error("Otomatik onaylama başarısız:", err);
+            } finally {
+              pendingAutoSolves.delete(wordId);
+            }
+          }
+        });
+      },
       onWordsChange: () => {
         Object.keys(PUZZLE_DATA.words).forEach(wid => {
           if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
