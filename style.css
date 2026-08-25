@@ -465,8 +465,8 @@ button:focus-visible, input:focus-visible {
 
 .arrow {
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: 19px;
+  height: 19px;
   color: var(--pen-red);
   z-index: 5;
   pointer-events: none;

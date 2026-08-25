@@ -59,19 +59,36 @@ const PuzzleRender = (() => {
     }
   }
 
-  /**
-   * Bir okun hücre içindeki konumunu hesaplar. Sağa/sağ-aşağı türü oklar
-   * hücrenin SAĞ kenarına, aşağı/alt-sağa türü oklar hücrenin ALT kenarına
-   * taşırılır. Hücrede 2 ipucu varsa, aynı türden oklar üst üste binmesin
-   * diye ilgili satırın hizasına (üst/alt yarı) yerleştirilir.
+ /**
+   * Bir okun hücre içindeki konumunu hesaplar.
+   * ZOOM sorununu çözmek için px yerine % (yüzdelik) oranlar kullanılmıştır.
    */
   function computeArrowStyle(direction, lineIndex, totalLines) {
     const isHorizontal = direction === "right" || direction === "right-down";
+    
+    // Okun boyutunu ve taşma miktarını kutucuğa oranla belirliyoruz.
+    // Orijinal 64px hücrede 11px taşma yaklaşık %18'e denk gelir.
+    const arrowSize = "35%"; // Okun kutucuğa göre büyüklüğü (CSS'i ezmesi için ekledik)
+    const offset = "-18%";   // -11px yerine kutucuğun %18'i kadar taşma payı
+
     if (isHorizontal) {
       const vertPct = totalLines === 1 ? 50 : (lineIndex === 0 ? 25 : 75);
-      return { right: "-16px", top: `${vertPct}%`, transform: "translateY(-50%)" };
+      return { 
+        right: offset, 
+        top: `${vertPct}%`, 
+        transform: "translateY(-50%)",
+        width: arrowSize,   // Kutucukla beraber büyüyüp küçülecek
+        height: arrowSize 
+      };
     }
-    return { bottom: "-16px", left: "50%", transform: "translateX(-50%)" };
+    
+    return { 
+      bottom: offset, 
+      left: "50%", 
+      transform: "translateX(-50%)",
+      width: arrowSize,     // Kutucukla beraber büyüyüp küçülecek
+      height: arrowSize 
+    };
   }
 
   function buildCellEl(cellId, cellData) {
@@ -84,6 +101,10 @@ const PuzzleRender = (() => {
       el.className = "cell clue" + (cellData.clues.length > 1 ? " two-clues" : "");
       const totalLines = cellData.clues.length;
 
+      // YENİ EKLENEN 1: Kutucuğu bir "Container" (Taşıyıcı) olarak tanımlıyoruz. 
+      // Böylece içindeki yazılar bu kutunun genişliğini referans alabilecek.
+      el.style.containerType = "inline-size";
+
       cellData.clues.forEach((clue, lineIndex) => {
         const line = document.createElement("div");
         line.className = "clue-line";
@@ -92,6 +113,12 @@ const PuzzleRender = (() => {
         const text = document.createElement("span");
         text.className = "clue-text";
         text.textContent = clue.text;
+        
+        // YENİ EKLENEN 2: Font boyutunu px yerine cqw (Container Width) ile veriyoruz.
+        text.style.fontSize = totalLines > 1 ? "13cqw" : "18cqw";
+        text.style.lineHeight = "1.1"; 
+        text.style.wordBreak = "break-word"; 
+
         line.appendChild(text);
 
         line.addEventListener("click", e => {
@@ -100,8 +127,7 @@ const PuzzleRender = (() => {
         });
         el.appendChild(line);
 
-        // Ok, satıra değil hücrenin kendisine eklenir ki komşu hücreye
-        // taşarken doğru kenardan (hücre kenarı) çıksın.
+        // Ok, satıra değil hücrenin kendisine eklenir
         const arrow = document.createElement("span");
         arrow.className = `arrow arrow-${clue.arrow}`;
         arrow.innerHTML = ARROW_SVG[clue.arrow] || "";
@@ -118,7 +144,6 @@ const PuzzleRender = (() => {
 
     return el;
   }
-
   /**
    * Verilen harf durumuna göre tüm harf hücrelerini günceller.
    * @param {Object} filledLetters - { [cellId]: {letter, playerId} }
