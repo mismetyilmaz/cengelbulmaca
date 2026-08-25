@@ -429,18 +429,18 @@ button:focus-visible, input:focus-visible {
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
+  position: relative;
+  overflow: visible; /* oklar komşu hücreye taşabilsin */
 }
 
 .clue-line {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 3px;
   padding: 2px 4px;
   cursor: pointer;
   transition: background 0.12s ease;
-  overflow: hidden;
   min-height: 0;
 }
 .clue-line:hover { background: #E4D8B8; }
@@ -459,15 +459,21 @@ button:focus-visible, input:focus-visible {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  padding-right: 2px;
 }
 .clue-line.solved .clue-text { color: var(--pen-green); }
 
 .arrow {
-  flex-shrink: 0;
-  font-size: 11px;
+  position: absolute;
+  width: 26px;
+  height: 26px;
   color: var(--pen-red);
-  line-height: 1;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15));
 }
+.arrow svg { width: 100%; height: 100%; display: block; }
+.clue-line.solved + .arrow { color: var(--pen-green); }
 
 .cell.letter {
   font-size: 22px;

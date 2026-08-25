@@ -101,6 +101,23 @@
       </div>
 
       <div class="panel">
+        <h2>Grid Boyutu</h2>
+        <p class="sub studio-hint">Büyütmek her zaman güvenli. Küçültürken, sınır dışında kalacak ipucu varsa reddedilir — önce onu silmen gerekir.</p>
+        <div class="dim-row">
+          <div>
+            <label class="field-label" for="resize-rows-input">Satır</label>
+            <input id="resize-rows-input" type="number" min="2" max="30">
+          </div>
+          <div>
+            <label class="field-label" for="resize-cols-input">Sütun</label>
+            <input id="resize-cols-input" type="number" min="2" max="30">
+          </div>
+        </div>
+        <button id="resize-grid-btn" class="full-width">Boyutu Uygula</button>
+        <p id="resize-error" class="error-text"></p>
+      </div>
+
+      <div class="panel">
         <h2>Ok Yönleri</h2>
         <div class="legend-row"><span class="arrow">→</span> Sağdaki hücreden başlar, sağa okunur</div>
         <div class="legend-row"><span class="arrow">↓</span> Alttaki hücreden başlar, aşağı okunur</div>

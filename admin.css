@@ -44,7 +44,7 @@
   color: var(--ink);
 }
 
-#create-grid-btn, #save-puzzle-btn {
+#create-grid-btn, #save-puzzle-btn, #resize-grid-btn {
   width: 100%;
   padding: 12px;
   background: var(--ink);

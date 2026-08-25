@@ -62,6 +62,7 @@ document.getElementById("create-grid-btn").addEventListener("click", () => {
   state.isEditingExisting = false;
   renderGrid();
   updateSaveTargetLabel();
+  initResizePanel();
 });
 
 document.getElementById("reset-grid-btn").addEventListener("click", () => {
@@ -173,6 +174,7 @@ async function loadPuzzleForEditing(level, direction, index) {
     renderGrid();
     document.getElementById("save-target-label").textContent =
       `${level} / ${direction} — slot #${index} üzerine kaydedilecek (düzenleniyor)`;
+    initResizePanel();
   } catch (err) {
     console.error(err);
     alert("Bulmaca yüklenirken hata oluştu.");
@@ -330,18 +332,21 @@ function buildAdminCellEl(cellId) {
     el.className = "cell block" + (selected ? " selected" : "");
   } else if (cellData.type === "clue") {
     el.className = "cell clue" + (cellData.clues.length > 1 ? " two-clues" : "") + (selected ? " selected" : "");
-    cellData.clues.forEach(clue => {
+    const totalLines = cellData.clues.length;
+    cellData.clues.forEach((clue, lineIndex) => {
       const line = document.createElement("div");
       line.className = "clue-line";
       const text = document.createElement("span");
       text.className = "clue-text";
       text.textContent = clue.text;
-      const arrow = document.createElement("span");
-      arrow.className = "arrow";
-      arrow.textContent = PuzzleRender.ARROW_GLYPH[clue.arrow] || "?";
       line.appendChild(text);
-      line.appendChild(arrow);
       el.appendChild(line);
+
+      const arrow = document.createElement("span");
+      arrow.className = `arrow arrow-${clue.arrow}`;
+      arrow.innerHTML = PuzzleRender.ARROW_SVG[clue.arrow] || "";
+      Object.assign(arrow.style, PuzzleRender.computeArrowStyle(clue.arrow, lineIndex, totalLines));
+      el.appendChild(arrow);
     });
   } else if (cellData.type === "letter") {
     el.className = "cell letter" + (selected ? " selected" : "");
@@ -521,4 +526,65 @@ document.getElementById("save-puzzle-btn").addEventListener("click", async () =>
     btn.disabled = false;
     btn.textContent = "Kaydet";
   }
+});
+
+// ================================================================
+// GRID BOYUTUNU DEĞİŞTİRME
+// ================================================================
+function initResizePanel() {
+  document.getElementById("resize-rows-input").value = state.rows;
+  document.getElementById("resize-cols-input").value = state.cols;
+  document.getElementById("resize-error").textContent = "";
+}
+
+/** Yeni boyutta sınır dışında kalacak kelimelerin ipucu metinlerini döner (boşsa güvenli demektir) */
+function findClueTextsOutOfBounds(newRows, newCols) {
+  const texts = [];
+  Object.entries(state.words).forEach(([wordId, w]) => {
+    const clueRC = parseCellId(w.clueCell);
+    const clueOutOfBounds = clueRC.r >= newRows || clueRC.c >= newCols;
+    const lettersOutOfBounds = w.cells.some(cellId => {
+      const { r, c } = parseCellId(cellId);
+      return r >= newRows || c >= newCols;
+    });
+    if (clueOutOfBounds || lettersOutOfBounds) {
+      const clueCellData = state.cells[w.clueCell];
+      const clue = clueCellData && clueCellData.clues.find(cl => cl.wordId === wordId);
+      texts.push(clue ? clue.text : wordId);
+    }
+  });
+  return texts;
+}
+
+document.getElementById("resize-grid-btn").addEventListener("click", () => {
+  const errEl = document.getElementById("resize-error");
+  errEl.textContent = "";
+
+  const newRows = parseInt(document.getElementById("resize-rows-input").value, 10);
+  const newCols = parseInt(document.getElementById("resize-cols-input").value, 10);
+
+  if (!newRows || !newCols || newRows < 2 || newCols < 2 || newRows > 30 || newCols > 30) {
+    errEl.textContent = "Satır/sütun 2 ile 30 arasında olmalı.";
+    return;
+  }
+
+  if (newRows === state.rows && newCols === state.cols) {
+    return; // değişiklik yok
+  }
+
+  // Büyütme her zaman güvenli. Küçültme sadece hiçbir ipucu sınır dışında
+  // kalmıyorsa uygulanır.
+  const shrinking = newRows < state.rows || newCols < state.cols;
+  if (shrinking) {
+    const affected = findClueTextsOutOfBounds(newRows, newCols);
+    if (affected.length > 0) {
+      const preview = affected.slice(0, 4).join(", ") + (affected.length > 4 ? ` ve ${affected.length - 4} tane daha` : "");
+      errEl.textContent = `Bu boyuta küçültülemez — sınır dışında kalacak ipucular var: ${preview}. Önce onları sil.`;
+      return;
+    }
+  }
+
+  state.rows = newRows;
+  state.cols = newCols;
+  renderGrid();
 });
