@@ -120,12 +120,19 @@ const Game = (() => {
       // Puanı, kesişimden ZATEN dolu olan harfleri hariç tutarak hesapla
       const { points } = SCORING.calculate(word.cells, lettersCache);
 
-      // Harfleri veritabanına yaz — hangi oyuncunun yazdığı bilgisiyle birlikte
+      // Harfleri veritabanına yaz — SADECE henüz dolu olmayan hücrelere.
+      // Kesişimden zaten dolu gelen bir hücrenin rengi/sahibi değişmesin diye
+      // (o hücreyi daha önce dolduran oyuncunun rengi korunur).
       const letterUpdates = {};
       word.answer.split("").forEach((ch, i) => {
-        letterUpdates[`letters/${word.cells[i]}`] = { letter: ch, playerId };
+        const cellId = word.cells[i];
+        if (!lettersCache[cellId]) {
+          letterUpdates[`letters/${cellId}`] = { letter: ch, playerId };
+        }
       });
-      await roomRef.update(letterUpdates);
+      if (Object.keys(letterUpdates).length > 0) {
+        await roomRef.update(letterUpdates);
+      }
 
       // Skoru artır
       await roomRef.child(`players/${playerId}/score`).transaction(

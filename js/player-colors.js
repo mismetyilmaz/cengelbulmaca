@@ -7,16 +7,16 @@
  */
 
 const PLAYER_COLORS = [
-  "#C0392B", // kiremit kırmızı
-  "#1565C0", // mavi
   "#2E7D32", // yeşil
-  "#8E24AA", // mor
-  "#EF6C00", // turuncu
-  "#00838F", // camgöbeği
-  "#AD1457", // pembe-bordo
-  "#6D4C41", // kahve
-  "#558B2F", // zeytin yeşili
-  "#4527A0"  // indigo
+  "#00897B", // teal
+  "#1565C0", // mavi
+  "#5E35B1", // mor
+  "#00695C", // koyu teal
+  "#3949AB", // indigo
+  "#43A047", // açık yeşil
+  "#0277BD", // gök mavisi
+  "#6A1B9A", // koyu mor
+  "#00838F"  // camgöbeği
 ];
 
 function colorForPlayerIndex(index) {
