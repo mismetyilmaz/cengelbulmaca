@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-01",
+  "reviews": {
+    "A1:MENTION": {
+      "level": "A1",
+      "answer": "MENTION",
+      "clue": "Bahsetmek",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "B2:THEREBY": {
+      "level": "B2",
+      "answer": "THEREBY",
+      "clue": "Dolayısıyla",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "B2:FOUNDER": {
+      "level": "B2",
+      "answer": "FOUNDER",
+      "clue": "Kurucu",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "B2:CONVENTION": {
+      "level": "B2",
+      "answer": "CONVENTION",
+      "clue": "Konferans",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "B2:DEPARTURE": {
+      "level": "B2",
+      "answer": "DEPARTURE",
+      "clue": "Çıkış",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "B2:MANUFACTURE": {
+      "level": "B2",
+      "answer": "MANUFACTURE",
+      "clue": "Üretmek",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "B2:PROMPT": {
+      "level": "B2",
+      "answer": "PROMPT",
+      "clue": "Çabuk",
+      "partOfSpeech": "Adjective",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "C2:PRO": {
+      "level": "C2",
+      "answer": "PRO",
+      "clue": "Uzman",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "C2:FRINGE": {
+      "level": "C2",
+      "answer": "FRINGE",
+      "clue": "Püskül",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "C2:PERFECTION": {
+      "level": "C2",
+      "answer": "PERFECTION",
+      "clue": "Mükemmeliyet",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    },
+    "C2:TERRIFIC": {
+      "level": "C2",
+      "answer": "TERRIFIC",
+      "clue": "Müthiş",
+      "decision": "approved",
+      "reason": "Kullanıcı tarafından doğrulandı."
+    }
+  }
+}

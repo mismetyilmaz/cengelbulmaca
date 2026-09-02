@@ -27,6 +27,22 @@ const PuzzleRender = (() => {
     "right-down": "⤵"
   };
 
+  /** Okun ipucu kutusundan çıktığı kenarı döndürür. */
+  function arrowExitEdge(direction) {
+    if (direction === "right" || direction === "right-down") return "right";
+    if (direction === "down" || direction === "down-right") return "bottom";
+    return null;
+  }
+
+  // Referanstaki gibi sağ kenar oku üst satırda, alt kenar oku ikinci
+  // satırda gösterilir.
+  function orderClues(clues) {
+    return (Array.isArray(clues) ? clues : []).slice().sort((a, b) => {
+      const rank = edge => edge === "right" ? 0 : edge === "bottom" ? 1 : 2;
+      return rank(arrowExitEdge(a.arrow)) - rank(arrowExitEdge(b.arrow));
+    });
+  }
+
   // Gridde gösterilen büyük/kalın oklar — kalın stroke'lu, komşu hücreye taşacak SVG'ler
   const ARROW_SVG = {
     right:
@@ -64,14 +80,14 @@ const PuzzleRender = (() => {
    * ZOOM sorununu çözmek için px yerine % (yüzdelik) oranlar kullanılmıştır.
    */
   function computeArrowStyle(direction, lineIndex, totalLines) {
-    const isHorizontal = direction === "right" || direction === "right-down";
+    const exitEdge = arrowExitEdge(direction);
     
     // Okun boyutunu ve taşma miktarını kutucuğa oranla belirliyoruz.
     // Orijinal 64px hücrede 11px taşma yaklaşık %18'e denk gelir.
-    const arrowSize = "35%"; // Okun kutucuğa göre büyüklüğü (CSS'i ezmesi için ekledik)
-    const offset = "-18%";   // -11px yerine kutucuğun %18'i kadar taşma payı
+    const arrowSize = "30%";
+    const offset = "-15%";
 
-    if (isHorizontal) {
+    if (exitEdge === "right") {
       const vertPct = totalLines === 1 ? 50 : (lineIndex === 0 ? 25 : 75);
       return { 
         right: offset, 
@@ -99,13 +115,14 @@ const PuzzleRender = (() => {
       el.className = "cell block";
     } else if (cellData.type === "clue") {
       el.className = "cell clue" + (cellData.clues.length > 1 ? " two-clues" : "");
-      const totalLines = cellData.clues.length;
+      const clues = orderClues(cellData.clues);
+      const totalLines = clues.length;
 
       // YENİ EKLENEN 1: Kutucuğu bir "Container" (Taşıyıcı) olarak tanımlıyoruz. 
       // Böylece içindeki yazılar bu kutunun genişliğini referans alabilecek.
       el.style.containerType = "inline-size";
 
-      cellData.clues.forEach((clue, lineIndex) => {
+      clues.forEach((clue, lineIndex) => {
         const line = document.createElement("div");
         line.className = "clue-line";
         line.dataset.wordId = clue.wordId;
@@ -175,5 +192,20 @@ const PuzzleRender = (() => {
     });
   }
 
-  return { init, buildCellEl, computeArrowStyle, paintLetters, markWordSolved, highlightWordCells, ARROW_GLYPH, ARROW_SVG };
+  return {
+    init,
+    buildCellEl,
+    computeArrowStyle,
+    arrowExitEdge,
+    orderClues,
+    paintLetters,
+    markWordSolved,
+    highlightWordCells,
+    ARROW_GLYPH,
+    ARROW_SVG
+  };
 })();
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = PuzzleRender;
+}

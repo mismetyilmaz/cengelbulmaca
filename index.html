@@ -32,14 +32,11 @@
         <button type="button" class="option-btn" data-direction="en_tr">İngilizce → Türkçe</button>
       </div>
 
-      <label class="field-label">Seviye</label>
+      <label class="field-label">Zorluk</label>
       <div class="option-grid" id="level-options">
-        <button type="button" class="option-btn selected" data-level="A1">A1</button>
-        <button type="button" class="option-btn" data-level="A2">A2</button>
-        <button type="button" class="option-btn" data-level="B1">B1</button>
-        <button type="button" class="option-btn" data-level="B2">B2</button>
-        <button type="button" class="option-btn" data-level="C1">C1</button>
-        <button type="button" class="option-btn" data-level="C2">C2</button>
+        <button type="button" class="option-btn selected" data-level="A">A</button>
+        <button type="button" class="option-btn" data-level="B">B</button>
+        <button type="button" class="option-btn" data-level="C">C</button>
       </div>
 
       <label class="field-label" for="puzzle-select">Bulmaca</label>
@@ -149,7 +146,34 @@
       <button id="answer-submit">Onayla</button>
       <button id="answer-cancel" class="ghost">Vazgeç</button>
     </div>
+    <button id="report-word-btn" class="report-word-btn" type="button">⚑ Kelime / ipucu hatası bildir</button>
     <p id="answer-feedback" class="answer-feedback"></p>
+  </div>
+
+  <!-- Seçili kelime için oyuncu raporu -->
+  <div id="report-modal" class="overlay report-overlay hidden">
+    <div class="name-card report-card" role="dialog" aria-modal="true" aria-labelledby="report-title">
+      <p class="eyebrow">Geri bildirim</p>
+      <h1 id="report-title">Kelime hatası bildir</h1>
+      <p id="report-word-summary" class="sub report-word-summary"></p>
+
+      <label class="field-label" for="report-reason-select">Sorun nedir?</label>
+      <select id="report-reason-select">
+        <option value="wrong_translation">Çeviri yanlış</option>
+        <option value="ambiguous">İpucu belirsiz / birden fazla cevap var</option>
+        <option value="typo">Yazım hatası</option>
+        <option value="wrong_level">Seviye uygun değil</option>
+        <option value="other">Diğer</option>
+      </select>
+
+      <label class="field-label" for="report-details-input">Açıklama (isteğe bağlı)</label>
+      <textarea id="report-details-input" maxlength="300" rows="4" placeholder="Doğru çeviri veya sorunun ayrıntısını yazabilirsin."></textarea>
+      <div class="report-actions">
+        <button id="report-submit-btn" type="button">Raporu Gönder</button>
+        <button id="report-cancel-btn" type="button" class="ghost">Vazgeç</button>
+      </div>
+      <p id="report-status" class="answer-feedback" aria-live="polite"></p>
+    </div>
   </div>
 
   <!-- Sohbet balonu: ekranın her zaman sağ altında -->
@@ -178,11 +202,12 @@
   <script src="js/room.js"></script>
   <script src="js/text-utils.js"></script>
   <script src="js/player-colors.js"></script>
-  <script src="js/puzzle-library.js"></script>
+  <script src="js/puzzle-library.js?v=2"></script>
   <script src="js/scoring.js"></script>
   <script src="js/puzzle-render.js"></script>
   <script src="js/game.js"></script>
   <script src="js/chat.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/app.js?v=2"></script>
 </body>
 </html>

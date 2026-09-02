@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="admin.css?v=7">
 </head>
 <body>
 
@@ -29,14 +29,11 @@
   <div id="setup-panel" class="studio-setup panel">
     <h2>Yeni Bulmaca</h2>
 
-    <label class="field-label">Seviye</label>
+    <label class="field-label">Zorluk</label>
     <div class="option-grid" id="studio-level-options">
-      <button type="button" class="option-btn selected" data-level="A1">A1</button>
-      <button type="button" class="option-btn" data-level="A2">A2</button>
-      <button type="button" class="option-btn" data-level="B1">B1</button>
-      <button type="button" class="option-btn" data-level="B2">B2</button>
-      <button type="button" class="option-btn" data-level="C1">C1</button>
-      <button type="button" class="option-btn" data-level="C2">C2</button>
+      <button type="button" class="option-btn selected" data-level="A">A</button>
+      <button type="button" class="option-btn" data-level="B">B</button>
+      <button type="button" class="option-btn" data-level="C">C</button>
     </div>
 
     <label class="field-label">Çeviri yönü</label>
@@ -46,7 +43,7 @@
     </div>
 
     <label class="field-label" for="studio-title-input">Bulmaca başlığı</label>
-    <input id="studio-title-input" type="text" placeholder="örn. A1 — Ev ve Aile" autocomplete="off">
+    <input id="studio-title-input" type="text" placeholder="örn. Kolay — Ev ve Aile" autocomplete="off">
 
     <div class="dim-row">
       <div>
@@ -59,16 +56,45 @@
       </div>
     </div>
 
-    <button id="create-grid-btn">Grid Oluştur</button>
+    <label class="field-label" for="auto-target-input">Otomatik üretimde yaklaşık hedef kelime</label>
+    <input id="auto-target-input" type="number" min="3" max="80" value="18">
+
+    <label class="auto-candidate-toggle" for="include-candidates-check">
+      <input type="checkbox" id="include-candidates-check">
+      <span>AI onayı olmayan yeni kelime adaylarını da kullan</span>
+    </label>
+
+    <button id="full-generate-btn" type="button" class="full-width">Hibrit Taslak Oluştur</button>
+    <button id="auto-generate-btn" type="button" class="ghost full-width">Az Boşluklu Otomatik Oluştur</button>
+    <button id="create-grid-btn" type="button" class="ghost full-width">Boş Grid Oluştur</button>
+    <button id="load-draft-btn" type="button" class="ghost full-width">Bu Zorluk/Yöndeki Taslağı Aç</button>
+    <p class="sub auto-generator-note">A: A1+A2, B: B1+B2, C: C1+C2 ana kelimelerini kullanır. 1–4 harfli dolgular bütün seviyelerden seçilebilir. İnsan ve AI onaylı kayıtlar varsayılan olarak açıktır.</p>
     <p id="setup-error" class="error-text"></p>
+  </div>
+
+  <!-- Oyunculardan gelen kalıcı kelime raporları -->
+  <div id="report-panel" class="studio-setup panel report-queue-panel">
+    <div class="report-queue-heading">
+      <div>
+        <h2>Oyuncu Raporları</h2>
+        <p class="sub">Aynı bulmaca kelimesine gelen açık raporlar birlikte gösterilir.</p>
+      </div>
+      <span id="report-queue-count" class="report-count-badge">0</span>
+    </div>
+    <div id="report-queue-list" class="report-queue-list">
+      <p class="sub">Raporlar yükleniyor...</p>
+    </div>
   </div>
 
   <!-- Kayıtlı bulmacaları düzenleme -->
   <div id="library-panel" class="studio-setup panel">
     <h2>Kayıtlı Bulmacayı Düzenle</h2>
-    <label class="field-label">Seviye</label>
+    <label class="field-label">Zorluk / eski seviye</label>
     <div class="option-grid" id="library-level-options">
-      <button type="button" class="option-btn selected" data-level="A1">A1</button>
+      <button type="button" class="option-btn selected" data-level="A">A</button>
+      <button type="button" class="option-btn" data-level="B">B</button>
+      <button type="button" class="option-btn" data-level="C">C</button>
+      <button type="button" class="option-btn" data-level="A1">A1</button>
       <button type="button" class="option-btn" data-level="A2">A2</button>
       <button type="button" class="option-btn" data-level="B1">B1</button>
       <button type="button" class="option-btn" data-level="B2">B2</button>
@@ -92,6 +118,20 @@
     </section>
 
     <aside class="side-pane">
+
+      <div id="generation-panel" class="panel hidden">
+        <h2>Otomatik Üretim</h2>
+        <p id="generation-summary" class="sub"></p>
+      </div>
+
+      <div id="gap-panel" class="panel hidden">
+        <div class="gap-panel-heading">
+          <h2>Boşluklar</h2>
+          <span id="gap-count-badge" class="gap-count-badge">0</span>
+        </div>
+        <p class="sub studio-hint">AI iskeleti korundu. Önerilerden birini seç veya kesişen harflere uyan cevabı elle gir.</p>
+        <div id="gap-list" class="gap-list"></div>
+      </div>
 
       <div class="panel">
         <h2 id="editor-title">Bir hücre seç</h2>
@@ -126,9 +166,10 @@
       </div>
 
       <div class="panel">
-        <h2>Bulmacayı Kaydet</h2>
+        <h2>Taslak / Yayın</h2>
         <p class="sub" id="save-target-label">Hedef slot hesaplanıyor...</p>
-        <button id="save-puzzle-btn">Kaydet</button>
+        <button id="save-draft-btn" class="ghost full-width">Taslağı Kaydet</button>
+        <button id="save-puzzle-btn" class="full-width">Yayınla</button>
         <button id="reset-grid-btn" class="ghost full-width">Yeni Bulmacaya Başla</button>
         <p id="save-status" class="error-text"></p>
       </div>
@@ -142,8 +183,11 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/room.js"></script>
   <script src="js/text-utils.js"></script>
-  <script src="js/puzzle-library.js"></script>
+  <script src="js/puzzle-library.js?v=3"></script>
   <script src="js/puzzle-render.js"></script>
-  <script src="js/admin.js"></script>
+  <script src="js/auto-puzzle-generator.js?v=7"></script>
+  <script src="js/full-grid-generator.js?v=7"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/admin.js?v=7"></script>
 </body>
 </html>

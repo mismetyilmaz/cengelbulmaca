@@ -21,6 +21,7 @@ cengel-bulmaca/
     puzzle-render.js             -> grid'i ekrana çizer (oyun VE stüdyo ortak kullanır)
     scoring.js                     -> puanlama mantığı
     game.js                         -> Firebase senkronizasyonu, kelime doğrulama (SADECE oyun)
+    reports.js                       -> oyun içi rapor kaydı + moderasyon gruplaması
     app.js                           -> oyun ekranının giriş noktası
     admin.js                          -> Bulmaca Stüdyosu'nun tüm mantığı
 ```
@@ -29,7 +30,7 @@ cengel-bulmaca/
 
 `admin.html`'i aç (yerelde `http://localhost:5500/admin.html`):
 
-1. **Kurulum**: Seviye (A1-C2), çeviri yönü (TR→EN / EN→TR), başlık,
+1. **Kurulum**: Zorluk (A / B / C), çeviri yönü (TR→EN / EN→TR), başlık,
    satır × sütun sayısı seç (örn. 10×12). "Grid Oluştur"a bas.
 2. Karşına boş bir grid çıkar. **Herhangi bir hücreye tıkla** — sağ
    panelde o hücre için bir ipucu editörü açılır:
@@ -44,12 +45,135 @@ cengel-bulmaca/
      gibi üst üste iki ipucu, örn. "Gönüllü oldu / Atlı spor").
 3. Gridi tamamen doldurana kadar hücre hücre devam et. İstediğin an
    bir kelimeyi silip (Sil butonu) yeniden yazabilirsin.
-4. Sağ altta **"Bulmacayı Kaydet"** — seçtiğin seviye+yön için boş
-   olan ilk slotu otomatik bulur (0-19 arası, her seviye+yön için 20
-   slot var) ve Firebase'e yazar.
-5. Kaydettikten sonra bulmaca **anında oynanabilir** hâle gelir —
+4. **Taslağı Kaydet**, tamamlanmamış hibrit çalışmayı oyunculardan ayrı
+   `puzzleDrafts/` alanında saklar. **Yayınla** ise seçtiğin seviye+yön için
+   boş olan ilk slotu otomatik bulur ve yalnız doğrulanmış bulmacayı Firebase'e yazar.
+5. Yayınladıktan sonra bulmaca **anında oynanabilir** hâle gelir —
    index.html'de o seviye+yönü seçen biri, oda kurduğunda rastgele
    seçilebilecek bulmacalar arasına girer.
+
+### Kelime havuzundan otomatik bulmaca
+
+Stüdyoda iki otomatik üretim seçeneği vardır. **Hibrit Taslak Oluştur**
+varsayılan 10×12 ölçüde uzun ve doğal cevaplardan bir iskelet kurar. Kaliteli
+bir kısa cevap bulunamayan slotu elementle zorlamak yerine editör boşluğu olarak bırakır.
+**Az Boşluklu Otomatik Oluştur** ise daha serbest, kesişim öncelikli bir taslak
+hazırlar. Her iki sonuç da Firebase veri formatıyla uyumludur ve kaydetmeden önce
+normal editörde elle düzenlenebilir.
+
+Yeni zorluk eşlemesi şöyledir: **A = A1+A2**, **B = B1+B2**,
+**C = C1+C2**. Ana uzun cevaplar seçilen zorluktan gelir; 1–4 harfli kısa
+dolgular zorluk fark etmeksizin tüm havuzlardan kullanılabilir. Eski A1–C2
+bulmacaları yönetim kitaplığından açılmaya devam eder.
+
+Otomatik üretim varsayılan olarak **kontrollü boşluklu, kesişim öncelikli**
+moddadır. Tercih edilen hedef yaklaşık `%65–70` doluluktur; havuz veya grid
+geometrisi buna izin vermediğinde yanlış bir kelimeyi zorlamak yerine daha
+fazla siyah hücre bırakılır. Her yeni cevap mevcut ağa en az bir harften
+bağlanır, büyük boş bölgeler puanlamada cezalandırılır ve yan yana bağımsız
+cevapların ipucusuz sahte harf dizileri oluşturmasına izin verilmez. Ortak ipucu
+kutuları sayesinde `→`, `↓`, `⤷` ve `⤵` yönlerinin tamamı kullanılabilir.
+
+Hibrit üretici önce en uzun cevaplardan birkaçını rastgele yatay ve dikey
+koridorlara yerleştirir. Ardından orta uzunluktaki cevaplara, son aşamada da
+1–4 harfli kısa kesişimlere iner. Doğal/alfabe niteliğinde uygun bir cevap
+bulunamazsa en fazla dört harfli slot `gap` olarak editöre bırakılır; uzun
+iskelet cevaplar gap olamaz. Başlangıç bölümleri 2 ve 3 hücrelik farklı
+genişliklerde karıştırılır; ipucu konumları çözülebilir kaldığı sürece ayrıca
+kaydırılır. Gridde yatay veya dikey görünen iki ve daha uzun her kesintisiz harf
+dizisi, taslakta bir cevap veya kayıtlı gap ile birebir eşleşmek zorundadır;
+`M + AMONG = MAMONG` gibi izlenmeyen birleşmeler üretim hatası sayılır. Gap paneli
+öneri seçmeye, serbest cevap/ipuçu girmeye ve ilgili hücreleri vurgulamaya izin
+verir. Gap kalmış taslaklar yayınlanamaz. Önerilen ve tüm zorluk/yön
+kombinasyonlarıyla test edilen ölçü **10×12**'dir.
+
+Boşluksuz üretici için CEFR seviyelerinden bağımsız, çift yönlü kısa dolgu
+havuzu `data/word-banks/short-fillers.json` dosyasındadır. İngiliz ve Türk
+alfabelerinden 32 tek harfli cevap ile 988 iki harfli cevap içerir. Element
+simgeleri ve gerçek kısa kayıtlar kullanılabilir; genel alfabe çiftleri üretim
+otomatik yerleştirme havuzundan çıkarılmıştır; element ve alfabe çiftleri yalnız
+gap önerilerinde teknik/son çare seçenekleri olarak gösterilebilir. İpuçları
+Türkçe ve İngilizce ayrı tutulur; bu kayıtlar normal çeviri
+kelimesi değil, yalnızca tam dolu gridin son kısa slotlarında kullanılacak
+insan-onaylı bulmaca dolgularıdır.
+
+```bash
+node tools/build-short-fillers.mjs
+node tests/short-fillers.test.js
+```
+
+- Hazinede 824 insan onaylı A1 kaydı ve 3.000'den fazla AI inceleme adayı vardır.
+- `approved` (insan onaylı) ve `ai_approved` kayıtlar varsayılan olarak
+  kullanılabilir. `candidate` / `needs_review` kayıtlarını kullanmak için ilgili
+  kutunun özellikle işaretlenmesi gerekir; `ai_rejected` kayıtlar kullanılmaz.
+- TR→EN yönünde havuz doğrudan, EN→TR yönünde ters çevrilerek kullanılır.
+- Algoritma grid sınırlarını, kesişen harfleri, kelime yollarını ve ipucu
+  hücresi başına en fazla iki ipucu kuralını doğrular.
+- Otomatik sonuç taslaktır; çeviri ve ipuçları yayınlanmadan önce gözden
+  geçirilmelidir.
+
+Havuzlar FreeDict, Kelly ve FrequencyWords kaynaklarının kesişiminden tekrar
+üretilebilir. Sürüm ve lisans bilgileri `data/word-banks/ATTRIBUTION.md`
+dosyasındadır.
+
+```bash
+node tools/build-word-banks.mjs
+```
+
+#### AI ön incelemesi
+
+AI kararları `data/word-banks/ai-reviews.json` dosyasında ayrı bir denetim
+defterinde tutulur. Böylece model kararı insan onayı gibi gösterilmez ve havuzlar
+yeniden üretildiğinde kaybolmaz. Araç varsayılan olarak bilgisayardaki Ollama
+API'sini kullanır; API anahtarı veya dış servis gerekmez.
+
+Kurulu bir Ollama modeliyle önce yazmadan deneme:
+
+```powershell
+node tools/ai-review-word-banks.mjs --model gemma4:12b --level A2 --limit 5 --dry-run
+```
+
+Sonuç uygunsa gerçek inceleme:
+
+```powershell
+node tools/ai-review-word-banks.mjs --model gemma4:12b --level A2 --limit 100
+```
+
+İstenirse OpenAI sağlayıcısı da kullanılabilir; anahtar yalnızca terminal ortam
+değişkeninden okunur, HTML/JS istemci koduna yazılmaz:
+
+```powershell
+$env:OPENAI_API_KEY="kendi-api-anahtarin"
+$env:OPENAI_REVIEW_MODEL="kullanacagin-model-kimligi"
+node tools/ai-review-word-banks.mjs --provider openai --level A2 --limit 100
+```
+
+`--limit` maliyet kontrolü için zorunludur. Araç kararları her paket sonunda
+kaydeder, ardından havuz JSON dosyalarını yeniden üretir. Karar durumları:
+
+- `ai_approved`: yüksek güvenle uygun bulundu; otomatik üretimde kullanılabilir.
+- `needs_review`: anlam, sözcük türü veya CEFR seviyesi insan incelemesi istiyor.
+- `ai_rejected`: açıkça yanlış/uygunsuz bulundu; üretime alınmaz.
+
+#### Oyun içi raporlar
+
+Oyuncu herhangi bir ipucuna (çözülmüş olsa bile) tıklayıp **Kelime / ipucu
+hatası bildir** seçeneğini kullanabilir. Raporlar
+`wordReports/{puzzleId}/{wordId}/{playerId}` yoluna yazılır. Aynı oyuncunun aynı
+kelime için ikinci gönderimi yeni bir spam kaydı açmak yerine önceki raporunu
+günceller. Stüdyo raporları kelime bazında gruplar; bulmacayı açma, incelendi
+olarak kapatma ve geçersiz sayma işlemleri sunar. **Hatalı: Havuzdan Çıkar**
+kararı `wordBankOverrides/{level}/{answer}` altında bir engelleme kaydı açar;
+sonraki otomatik bulmacalar bu kelimeyi kullanmaz. Kayıtlı mevcut bulmaca ayrı
+olarak Stüdyo'da açılıp düzeltilmelidir.
+
+Üretici testini çalıştırmak için:
+
+```bash
+node tests/auto-puzzle-generator.test.js
+node tests/word-banks.test.js
+node tests/reports.test.js
+```
 
 ### 4 ok yönünün anlamı
 
@@ -59,10 +183,15 @@ cengel-bulmaca/
   (kutunun hemen altı boşsa ve cevap yana doğru devam edecekse kullanılır)
 - **⤵ sağ kutudan aşağıya**: cevap SAĞDAKİ hücreden başlar ama AŞAĞI okunur
 
-Bu 4 yön sayesinde gerçek çengel bulmacalardaki gibi **hiç boş/siyah
-kare olmadan**, tamamen dolu bir dikdörtgen bulmaca tasarlayabilirsin —
-otomatik üretim algoritmalarının veremediği yoğunluk bu şekilde elde
-ediliyor.
+İki ipuculu bir kutuda referans çengel bulmaca düzeni korunur: sağ kenardan
+çıkan okun ipucu üst satırda, alt kenardan çıkan okun ipucu ikinci satırda
+gösterilir. Okların üst üste binmemesi için aynı kutunun aynı kenarından iki
+farklı cevap başlatılmaz.
+
+Bu 4 yön sayesinde gerçek çengel bulmacalardaki gibi farklı başlangıç
+geometrileri kurulabilir. Elle düzenlemede boşluksuz tasarım mümkündür;
+otomatik üretici ise kelime ve ok doğruluğunu koruyabilmek için kontrollü
+oranda siyah hücre bırakabilir.
 
 ## 1) Firebase kurulumu
 
@@ -125,6 +254,8 @@ eklenebilir.
 - **Bulmaca Stüdyosu**: satır×sütun seçimi, hücre bazlı ipucu/cevap/yön
   ekleme, hücre başına 2 ipucu, kesişim doğrulama (çakışan harfleri
   reddeder), Firebase'e kaydetme
+- **Kelime kalite akışı**: AI ön inceleme durumları, oyun içi hata raporu ve
+  Stüdyo moderasyon kuyruğu
 - Oda kurulum ekranı: çeviri yönü / seviye / max oyuncu / parola seçimi
   — o seviye+yönde Firebase'de kayıtlı bulmacalardan rastgele biri seçilir
 - Link ile katılım, lobi yok (`?room=xxxx` URL parametresi)
@@ -140,7 +271,6 @@ eklenebilir.
 ## Sırada ne var
 
 - Bulmaca Stüdyosu'na basit bir giriş şifresi (herkes bulmaca eklemesin diye)
-- Kayıtlı bulmacaları listeleyip düzenleme/silme ekranı (şu an sadece yeni ekleme var)
 - Bulmaca bitince ("tüm kelimeler çözüldü") bir final ekranı
 - Oyuncu sayısı / aktif olma göstergesi (kim şu an bağlı)
 - Parolanın düz metin yerine hash'lenmesi

@@ -52,9 +52,18 @@
   const popover = document.getElementById("answer-popover");
   const answerClueText = document.getElementById("answer-clue-text");
   const answerBoxes = document.getElementById("answer-boxes");
+  const answerActions = popover.querySelector(".answer-actions");
   const answerSubmit = document.getElementById("answer-submit");
   const answerCancel = document.getElementById("answer-cancel");
   const answerFeedback = document.getElementById("answer-feedback");
+  const reportWordBtn = document.getElementById("report-word-btn");
+  const reportModal = document.getElementById("report-modal");
+  const reportWordSummary = document.getElementById("report-word-summary");
+  const reportReasonSelect = document.getElementById("report-reason-select");
+  const reportDetailsInput = document.getElementById("report-details-input");
+  const reportSubmitBtn = document.getElementById("report-submit-btn");
+  const reportCancelBtn = document.getElementById("report-cancel-btn");
+  const reportStatus = document.getElementById("report-status");
 
   const chatBubble = document.getElementById("chat-bubble");
   const chatUnreadBadge = document.getElementById("chat-unread-badge");
@@ -68,6 +77,7 @@
   let roomId = null;
   let roomConfig = null;
   let isCreator = false;
+  let reportingWordId = null;
 
   // ---------- Bağlantı durumu ----------
   Room.watchConnection(connected => {
@@ -315,7 +325,10 @@
     gameRoot.classList.remove("hidden");
     playerNameLabel.textContent = name;
     const directionLabel = roomConfig.direction === "tr_en" ? "TR→EN" : "EN→TR";
-    roomLabel.textContent = `Oda: ${roomId} · ${roomConfig.level} · ${directionLabel}`;
+    const levelLabel = typeof globalThis.getLevelLabel === "function"
+      ? globalThis.getLevelLabel(roomConfig.level)
+      : roomConfig.level;
+    roomLabel.textContent = `Oda: ${roomId} · ${levelLabel} · ${directionLabel}`;
 
     PuzzleRender.init(puzzleGridEl, handleClueClick);
     initZoom();
@@ -383,24 +396,27 @@
   // İPUCUNA TIKLAMA -> CEVAP KUTUSU
   // ================================================================
   function handleClueClick(wordId, clueEl) {
-    if (Game.isWordSolved(wordId)) return;
-
     activeWordId = wordId;
     const word = PUZZLE_DATA.words[wordId];
     const cellData = PUZZLE_DATA.cells[word.clueCell];
     const clue = cellData.clues.find(cl => cl.wordId === wordId);
+    const isSolved = Game.isWordSolved(wordId);
 
     answerClueText.textContent = clue ? clue.text : "";
     answerFeedback.textContent = "";
     answerFeedback.className = "answer-feedback";
+    answerBoxes.classList.toggle("hidden", isSolved);
+    answerActions.classList.toggle("hidden", isSolved);
 
-    buildAnswerBoxes(wordId);
+    if (!isSolved) buildAnswerBoxes(wordId);
     popover.classList.remove("hidden");
     positionPopover(clueEl);
     PuzzleRender.highlightWordCells(wordId, true);
 
-    const firstEmpty = answerBoxes.querySelector("input:not(.locked)");
-    if (firstEmpty) firstEmpty.focus();
+    if (!isSolved) {
+      const firstEmpty = answerBoxes.querySelector("input:not(.locked)");
+      if (firstEmpty) firstEmpty.focus();
+    }
   }
 
   function buildAnswerBoxes(wordId) {
@@ -543,6 +559,71 @@
       closePopover();
     }
   });
+
+  // ================================================================
+  // OYUN İÇİ KELİME / İPUCU RAPORU
+  // ================================================================
+  reportWordBtn.addEventListener("click", () => {
+    if (!activeWordId) return;
+    reportingWordId = activeWordId;
+    const word = PUZZLE_DATA.words[reportingWordId];
+    const clueCell = PUZZLE_DATA.cells[word.clueCell];
+    const clue = clueCell.clues.find(item => item.wordId === reportingWordId);
+    reportWordSummary.textContent = `İpucu: ${clue ? clue.text : "—"} · Cevap: ${word.answer}`;
+    reportReasonSelect.value = "wrong_translation";
+    reportDetailsInput.value = "";
+    reportStatus.textContent = "";
+    reportStatus.className = "answer-feedback";
+    closePopover();
+    reportModal.classList.remove("hidden");
+    reportReasonSelect.focus();
+  });
+
+  reportCancelBtn.addEventListener("click", closeReportModal);
+  reportModal.addEventListener("click", event => {
+    if (event.target === reportModal) closeReportModal();
+  });
+
+  reportSubmitBtn.addEventListener("click", async () => {
+    if (!reportingWordId) return;
+    const word = PUZZLE_DATA.words[reportingWordId];
+    const clueCell = PUZZLE_DATA.cells[word.clueCell];
+    const clue = clueCell.clues.find(item => item.wordId === reportingWordId);
+    reportSubmitBtn.disabled = true;
+    reportSubmitBtn.textContent = "Gönderiliyor...";
+    reportStatus.textContent = "";
+    try {
+      await Reports.submit({
+        puzzleId: roomConfig.puzzleId,
+        wordId: reportingWordId,
+        roomId,
+        playerId,
+        playerName: playerNameLabel.textContent,
+        level: roomConfig.level,
+        direction: roomConfig.direction,
+        clue: clue ? clue.text : "",
+        answer: word.answer,
+        bankEntryKey: word.bankEntryKey || null,
+        reason: reportReasonSelect.value,
+        details: reportDetailsInput.value
+      });
+      reportStatus.textContent = "Raporun alındı. Teşekkürler!";
+      reportStatus.className = "answer-feedback correct";
+      setTimeout(closeReportModal, 900);
+    } catch (err) {
+      console.error("Rapor gönderilemedi:", err);
+      reportStatus.textContent = err.message || "Rapor gönderilemedi. Tekrar dene.";
+      reportStatus.className = "answer-feedback wrong";
+    } finally {
+      reportSubmitBtn.disabled = false;
+      reportSubmitBtn.textContent = "Raporu Gönder";
+    }
+  });
+
+  function closeReportModal() {
+    reportingWordId = null;
+    reportModal.classList.add("hidden");
+  }
 
   // ================================================================
   // SKOR TABLOSU / İLERLEME

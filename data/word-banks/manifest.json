@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "levels": {
+    "A1": {
+      "schemaVersion": 1,
+      "level": "A1",
+      "baseDirection": "tr_en",
+      "totalEntries": 1020,
+      "approvedEntries": 825,
+      "aiApprovedEntries": 85,
+      "candidateEntries": 0,
+      "needsReviewEntries": 18,
+      "aiRejectedEntries": 92,
+      "reviewRequired": true,
+      "sourceRevisions": {
+        "freedict-eng-tur-0.3": "5bdceeac8d0dba3298c1bebe734f60d54dad30f7",
+        "kelly-english-cefr": "dca8f2267b3590e0bd8d4b36d3cbfd945c8b1c79",
+        "frequencywords-turkish-2018": "525f9b560de45753a5ea01069454e72e9aa541c6"
+      }
+    },
+    "A2": {
+      "schemaVersion": 1,
+      "level": "A2",
+      "baseDirection": "tr_en",
+      "totalEntries": 453,
+      "approvedEntries": 0,
+      "aiApprovedEntries": 185,
+      "candidateEntries": 0,
+      "needsReviewEntries": 58,
+      "aiRejectedEntries": 210,
+      "reviewRequired": true,
+      "sourceRevisions": {
+        "freedict-eng-tur-0.3": "5bdceeac8d0dba3298c1bebe734f60d54dad30f7",
+        "kelly-english-cefr": "dca8f2267b3590e0bd8d4b36d3cbfd945c8b1c79",
+        "frequencywords-turkish-2018": "525f9b560de45753a5ea01069454e72e9aa541c6"
+      }
+    },
+    "B1": {
+      "schemaVersion": 1,
+      "level": "B1",
+      "baseDirection": "tr_en",
+      "totalEntries": 854,
+      "approvedEntries": 0,
+      "aiApprovedEntries": 367,
+      "candidateEntries": 0,
+      "needsReviewEntries": 161,
+      "aiRejectedEntries": 326,
+      "reviewRequired": true,
+      "sourceRevisions": {
+        "freedict-eng-tur-0.3": "5bdceeac8d0dba3298c1bebe734f60d54dad30f7",
+        "kelly-english-cefr": "dca8f2267b3590e0bd8d4b36d3cbfd945c8b1c79",
+        "frequencywords-turkish-2018": "525f9b560de45753a5ea01069454e72e9aa541c6"
+      }
+    },
+    "B2": {
+      "schemaVersion": 1,
+      "level": "B2",
+      "baseDirection": "tr_en",
+      "totalEntries": 608,
+      "approvedEntries": 6,
+      "aiApprovedEntries": 499,
+      "candidateEntries": 0,
+      "needsReviewEntries": 29,
+      "aiRejectedEntries": 74,
+      "reviewRequired": true,
+      "sourceRevisions": {
+        "freedict-eng-tur-0.3": "5bdceeac8d0dba3298c1bebe734f60d54dad30f7",
+        "kelly-english-cefr": "dca8f2267b3590e0bd8d4b36d3cbfd945c8b1c79",
+        "frequencywords-turkish-2018": "525f9b560de45753a5ea01069454e72e9aa541c6"
+      }
+    },
+    "C1": {
+      "schemaVersion": 1,
+      "level": "C1",
+      "baseDirection": "tr_en",
+      "totalEntries": 489,
+      "approvedEntries": 0,
+      "aiApprovedEntries": 488,
+      "candidateEntries": 0,
+      "needsReviewEntries": 1,
+      "aiRejectedEntries": 0,
+      "reviewRequired": true,
+      "sourceRevisions": {
+        "freedict-eng-tur-0.3": "5bdceeac8d0dba3298c1bebe734f60d54dad30f7",
+        "kelly-english-cefr": "dca8f2267b3590e0bd8d4b36d3cbfd945c8b1c79",
+        "frequencywords-turkish-2018": "525f9b560de45753a5ea01069454e72e9aa541c6"
+      }
+    },
+    "C2": {
+      "schemaVersion": 1,
+      "level": "C2",
+      "baseDirection": "tr_en",
+      "totalEntries": 435,
+      "approvedEntries": 4,
+      "aiApprovedEntries": 427,
+      "candidateEntries": 0,
+      "needsReviewEntries": 0,
+      "aiRejectedEntries": 4,
+      "reviewRequired": false,
+      "sourceRevisions": {
+        "freedict-eng-tur-0.3": "5bdceeac8d0dba3298c1bebe734f60d54dad30f7",
+        "kelly-english-cefr": "dca8f2267b3590e0bd8d4b36d3cbfd945c8b1c79",
+        "frequencywords-turkish-2018": "525f9b560de45753a5ea01069454e72e9aa541c6"
+      }
+    }
+  },
+  "totals": {
+    "entries": 3859,
+    "approved": 835,
+    "aiApproved": 2051,
+    "candidates": 0,
+    "needsReview": 267,
+    "aiRejected": 706
+  }
+}
