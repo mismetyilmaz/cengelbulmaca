@@ -86,7 +86,15 @@
   const gameCountdownOverlay = document.getElementById("game-countdown-overlay");
   const gameCountdownNumber = document.getElementById("game-countdown-number");
   const toastContainer = document.getElementById("toast-container");
+  const activityBubble = document.getElementById("activity-bubble");
+  const activityPopup = document.getElementById("activity-popup");
+  const activityPanel = document.getElementById("activity-panel");
+  const activityCloseBtn = document.getElementById("activity-close-btn");
+  const activityMessages = document.getElementById("activity-messages");
   
+  let activityPopupTimer = null;
+  const knownSolvedWords = new Set();
+  let isInitialLoad = true;
   let currentPhase = "waiting"; // Oyunun şu an hangi aşamada olduğunu tutacağız
 
   const knownSolvedWords = new Set();
@@ -246,7 +254,34 @@
       createRoomBtn.textContent = "Oda Oluştur";
     }
   });
+// Etkinlik Logu Butonu ve Paneli İşlevleri
+    activityBubble.addEventListener("click", () => {
+    activityPanel.classList.remove("hidden");
+    activityPopup.classList.add("hidden"); // Paneli açınca üstündeki geçici uyarıyı gizle
+  });
+  
+  activityCloseBtn.addEventListener("click", () => {
+    activityPanel.classList.add("hidden");
+  });
 
+  function logActivity(htmlMessage) {
+    // 1. Panele (Log geçmişine) ekle
+    const div = document.createElement("div");
+    div.className = "activity-msg";
+    div.innerHTML = htmlMessage;
+    activityMessages.appendChild(div);
+    activityMessages.scrollTop = activityMessages.scrollHeight;
+
+    // 2. Butonun üstündeki 5 saniyelik geçici uyarıyı tetikle
+    activityPopup.innerHTML = htmlMessage;
+    activityPopup.classList.remove("hidden", "fade-out");
+
+    clearTimeout(activityPopupTimer);
+    activityPopupTimer = setTimeout(() => {
+      activityPopup.classList.add("fade-out");
+      setTimeout(() => activityPopup.classList.add("hidden"), 300);
+    }, 5000); // 5 saniye sonra kaybolur
+  }
   // ================================================================
   // VAR OLAN ODAYA KATILMA
   // ================================================================
@@ -511,47 +546,48 @@
           }
         });
       },
-     onWordsChange: () => {
+    onWordsChange: () => {
         if (gridReady) {
           Object.keys(PUZZLE_DATA.words).forEach(wid => {
             if (Game.isWordSolved(wid)) {
               PuzzleRender.markWordSolved(wid);
 
-              // Sadece daha önce bildirimini atmadığımız kelimeleri işle
               if (!knownSolvedWords.has(wid)) {
                 knownSolvedWords.add(wid);
                 
-                // Sayfa ilk açıldığında daha önceden çözülmüş olanları es geç
                 if (!isInitialLoad) {
-                  const wordData = PUZZLE_DATA.words[wid];
-                  const answer = wordData.answer;
-                  
-                  const cellData = PUZZLE_DATA.cells[wordData.clueCell];
-                  const clueObj = cellData.clues.find(cl => cl.wordId === wid);
-                  const clueText = clueObj ? clueObj.text : "";
+                  // İSİM HATASI ÇÖZÜMÜ: Harf verisinin Firebase'den tam olarak inmesini garanti 
+                  // altına almak için kontrolü 100 milisaniye gecikmeli yapıyoruz.
+                  setTimeout(() => {
+                    const wordData = PUZZLE_DATA.words[wid];
+                    const answer = wordData.answer;
+                    
+                    const cellData = PUZZLE_DATA.cells[wordData.clueCell];
+                    const clueObj = cellData.clues.find(cl => cl.wordId === wid);
+                    const clueText = clueObj ? clueObj.text : "";
 
-                  // Kelimenin harflerine bakıp çözen kişiyi bul
-                  const filled = Game.getFilledLettersForWord(wid);
-                  const firstCellId = wordData.cells[0];
-                  const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
-                  
-                  // Firebase gecikmesi olursa "Bir oyuncu" yazarak iptal olmasını engelle
-                  let solverName = "Bir oyuncu";
-                  if (solverId) {
-                    const players = Game.getPlayersSorted();
-                    const solver = players.find(p => p.id === solverId);
-                    if (solver) solverName = solver.name;
-                  }
-                  
-                  const points = answer.length * 10; 
-                  
-                  showToast(`<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı!`);
+                    const filled = Game.getFilledLettersForWord(wid);
+                    const firstCellId = wordData.cells[0];
+                    const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
+                    
+                    let solverName = "Bir oyuncu";
+                    if (solverId) {
+                      const players = Game.getPlayersSorted();
+                      const solver = players.find(p => p.id === solverId);
+                      if (solver) solverName = solver.name;
+                    }
+                    
+                    const points = answer.length * 10; 
+                    const logHtml = `<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı.`;
+                    
+                    logActivity(logHtml);
+                  }, 100); 
                 }
               }
             }
           });
           
-          isInitialLoad = false; // İlk yükleme taraması bitti, sonrakilerde bildirim çıksın
+          isInitialLoad = false;
           renderProgress();
         }
 
@@ -580,6 +616,7 @@
     initZoom();
 
     chatBubble.classList.remove("hidden");
+    activityBubble.classList.remove("hidden"); // Oyuna girince butonu göster
     Chat.init(roomId, playerId, name, {
       onMessage: (msg, isNew) => {
         renderChatMessage(msg);

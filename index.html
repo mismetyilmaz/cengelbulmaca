@@ -201,7 +201,21 @@
     </div>
     <p id="answer-feedback" class="answer-feedback"></p>
   </div>
+<!-- Hamle Geçmişi Butonu ve Geçici Pop-up -->
+  <div id="activity-bubble" class="chat-bubble activity-bubble-pos hidden">
+    <span class="chat-bubble-icon">📜</span>
+    <!-- 5 saniye görünüp kaybolacak bildirim kutusu -->
+    <div id="activity-popup" class="activity-popup hidden"></div>
+  </div>
 
+  <!-- Hamle Geçmişi Paneli (Log Ekranı) -->
+  <div id="activity-panel" class="chat-panel activity-panel-pos hidden">
+    <div class="chat-header">
+      <span>Hamle Geçmişi</span>
+      <button id="activity-close-btn" class="chat-close" type="button">✕</button>
+    </div>
+    <div id="activity-messages" class="chat-messages"></div>
+  </div>
   <!-- Sohbet balonu: ekranın her zaman sağ altında -->
   <div id="chat-bubble" class="chat-bubble hidden">
     <span class="chat-bubble-icon">💬</span>
@@ -235,7 +249,6 @@
   <script src="js/turns.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/app.js"></script>
-  <!-- YENİ EKLENEN: Sağ üst bildirim kutusu -->
-  <div id="toast-container" class="toast-container"></div>
+
 </body>
 </html>
