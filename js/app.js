@@ -403,34 +403,50 @@
     clearInterval(tickerInterval);
     if (!state) return;
 
+    currentPhase = state.phase; // Fazı güncelliyoruz
+
     if (state.phase === "countdown") {
-      // Geri sayım artık lobide değil, bulmaca ekranında gösteriliyor —
-      // oyuncular süre boyunca bulmacaya göz gezdirebilsin diye tahtayı
-      // hemen açıyoruz. Sıra kimsede olmadığı için tıklamalar otomatik
-      // engelleniyor (currentTurnPlayerId null kalıyor).
       if (!gameStarted) startGame(playerNameLabel.textContent);
-      currentTurnPlayerId = null;
-      turnBanner.classList.remove("hidden", "my-turn", "their-turn");
-      turnBanner.classList.add("previewing");
-      turnBannerText.textContent = "Bulmacayı incele, birazdan başlıyor";
+      
+      lobbyGate.classList.add("hidden");
+      if (typeof gameCountdownOverlay !== 'undefined' && gameCountdownOverlay) {
+         gameCountdownOverlay.classList.remove("hidden"); 
+      }
+      currentTurnPlayerId = null; // Sıra kimsede değil
+      
       tickerInterval = setInterval(() => {
         const remaining = Math.max(0, Math.ceil((state.countdownStartedAt + Turns.COUNTDOWN_MS - Date.now()) / 1000));
-        turnBannerTimer.textContent = remaining;
+        if (typeof gameCountdownNumber !== 'undefined' && gameCountdownNumber) {
+           gameCountdownNumber.textContent = remaining;
+        }
       }, 250);
     } else if (state.phase === "playing") {
+      if (typeof gameCountdownOverlay !== 'undefined' && gameCountdownOverlay) {
+         gameCountdownOverlay.classList.add("hidden"); 
+      }
+
+      // ÇÖZÜM BURADA: Sıranın değiştiğini tespit et
       const turnChanged = currentTurnPlayerId !== null && currentTurnPlayerId !== state.currentPlayerId;
       currentTurnPlayerId = state.currentPlayerId;
+      
       if (!gameStarted) startGame(playerNameLabel.textContent);
+      
       updateTurnBanner(state);
-      // Sıra değişti — süresi dolan (ya da bilerek başka bir kelimeye geçen)
-      // oyuncunun açık kalan cevap kutusunu zorla kapat.
-      if (turnChanged && activeWordId) closePopover();
+
+      // Sıra başkasına geçtiyse ve o an açık bir cevap kutusu varsa ZORLA KAPAT
+      if (turnChanged && activeWordId) {
+         closePopover();
+      }
+
       tickerInterval = setInterval(() => {
         currentTurnPlayerId = state.currentPlayerId;
         const remaining = Math.max(0, Math.ceil((state.turnStartedAt + Turns.TURN_DURATION_MS - Date.now()) / 1000));
         turnBannerTimer.textContent = remaining;
       }, 250);
     } else if (state.phase === "finished") {
+      if (typeof gameCountdownOverlay !== 'undefined' && gameCountdownOverlay) {
+         gameCountdownOverlay.classList.add("hidden");
+      }
       showFinishedScreen(state);
     }
   }
@@ -661,8 +677,16 @@
   answerSubmit.addEventListener("click", submitCurrentAnswer);
   answerCancel.addEventListener("click", closePopover);
 
-  async function submitCurrentAnswer() {
+ async function submitCurrentAnswer() {
     if (!activeWordId) return;
+
+    // YENİ EKLENEN GÜVENLİK KİLİDİ: Süre bittikten sonra Enter'a basılmasını engeller
+    if (roomConfig.mode === "turns" && currentTurnPlayerId !== playerId) {
+      showFeedback("Süren doldu, sıra diğer oyuncuya geçti!", false);
+      setTimeout(closePopover, 1200);
+      return;
+    }
+
     const guess = Array.from(answerBoxes.children).map(el => el.value || "").join("");
     const word = PUZZLE_DATA.words[activeWordId];
 
@@ -708,7 +732,6 @@
     }
     setTimeout(closePopover, 900);
   }
-
   function showFeedback(text, correct) {
     answerFeedback.textContent = text;
     answerFeedback.className = "answer-feedback " + (correct ? "correct" : "wrong");
