@@ -893,4 +893,70 @@ button:focus-visible, input:focus-visible {
   min-width: 28px;
   text-align: center;
 }
+/* ==========================================================================
+   GAME COUNTDOWN OVERLAY (Scouting Phase)
+   ========================================================================== */
+.game-countdown-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  background: rgba(34, 29, 23, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.countdown-card {
+  background: var(--paper-deep);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  padding: 30px 40px;
+  text-align: center;
+  box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
+/* ==========================================================================
+   TOAST NOTIFICATIONS (Hamle Bildirimleri)
+   ========================================================================== */
+.toast-container {
+  position: fixed;
+  top: 80px; /* Üst bardan hemen aşağıda */
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+  pointer-events: none; /* Mouse ile tıklamayı engellememesi için */
+}
+.toast {
+  background: var(--paper-deep);
+  border: 1.5px solid var(--paper-line);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(34, 29, 23, 0.2);
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: auto;
+}
+.toast.fade-out {
+  animation: fadeOutRight 0.3s ease forwards;
+}
+.toast-highlight { font-weight: 700; color: var(--pen-red); }
+.toast-word { font-family: var(--font-mono); font-weight: 700; color: var(--pen-green); }
+
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(120%); opacity: 0; }
+}
