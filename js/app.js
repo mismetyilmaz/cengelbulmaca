@@ -94,6 +94,7 @@
   
 let activityPopupTimer = null;
   const knownSolvedWords = new Set();
+  const claimedCells = new Set();
   let isInitialLoad = true; 
   let currentPhase = "waiting"; 
   let isHost = false;
@@ -261,7 +262,7 @@ let activityPopupTimer = null;
     activityPanel.classList.add("hidden");
   });
 
-  function logActivity(htmlMessage) {
+function logActivity(htmlMessage) {
     // 1. Panele (Log geçmişine) ekle
     const div = document.createElement("div");
     div.className = "activity-msg";
@@ -269,15 +270,23 @@ let activityPopupTimer = null;
     activityMessages.appendChild(div);
     activityMessages.scrollTop = activityMessages.scrollHeight;
 
-    // 2. Butonun üstündeki 5 saniyelik geçici uyarıyı tetikle
-    activityPopup.innerHTML = htmlMessage;
-    activityPopup.classList.remove("hidden", "fade-out");
+    // 2. Butonun üstündeki pop-up (Artık eskisini silmek yerine alt alta ekler)
+    const popItem = document.createElement("div");
+    popItem.className = "activity-popup-item";
+    popItem.innerHTML = htmlMessage;
+    
+    activityPopup.appendChild(popItem);
+    activityPopup.classList.remove("hidden");
 
-    clearTimeout(activityPopupTimer);
-    activityPopupTimer = setTimeout(() => {
-      activityPopup.classList.add("fade-out");
-      setTimeout(() => activityPopup.classList.add("hidden"), 300);
-    }, 5000); // 5 saniye sonra kaybolur
+    setTimeout(() => {
+      popItem.classList.add("fade-out");
+      setTimeout(() => {
+        popItem.remove(); // Sadece süresi dolan mesajı DOM'dan sil
+        if (activityPopup.children.length === 0) {
+          activityPopup.classList.add("hidden");
+        }
+      }, 300);
+    }, 5000); 
   }
   // ================================================================
   // VAR OLAN ODAYA KATILMA
@@ -543,41 +552,52 @@ let activityPopupTimer = null;
           }
         });
       },
-    onWordsChange: () => {
-        // İlk açılışta veya sonrasında her kelimeyi kontrol et
-        Object.keys(PUZZLE_DATA.words).forEach(wid => {
-          if (Game.isWordSolved(wid)) {
-            
-            // Eğer grid hazırsa UI'ı (arayüzü) güncelle
-            if (gridReady) {
-              PuzzleRender.markWordSolved(wid);
-            }
+   onWordsChange: () => {
+        if (gridReady) {
+          const wasInitialLoad = isInitialLoad; // Gecikmeden etkilenmemesi için o anki durumu kilitliyoruz
 
-            // Kelime ilk defa çözülüyorsa (bizim tarafımızda işlem görüyorsa)
-            if (!knownSolvedWords.has(wid)) {
-              knownSolvedWords.add(wid);
-              
-              // Eğer bu İLK veri çekimi değilse (yani oyun sırasında çözüldüyse) bildirimi tetikle
-              if (!isInitialLoad) {
-                const wordData = PUZZLE_DATA.words[wid];
-                const answer = wordData.answer;
+          Object.keys(PUZZLE_DATA.words).forEach(wid => {
+            if (Game.isWordSolved(wid)) {
+              PuzzleRender.markWordSolved(wid);
+
+              if (!knownSolvedWords.has(wid)) {
+                knownSolvedWords.add(wid);
                 
-                const cellData = PUZZLE_DATA.cells[wordData.clueCell];
-                const clueObj = cellData.clues.find(cl => cl.wordId === wid);
-                const clueText = clueObj ? clueObj.text : "";
-                
-                // İSİM HATASI ÇÖZÜMÜ: Harf verisinin sunucudan inmesini bekleyen Polling Sistemi
-                let attempts = 0;
-                const checkInterval = setInterval(() => {
-                  attempts++;
-                  const filled = Game.getFilledLettersForWord(wid);
-                  const firstCellId = wordData.cells[0];
-                  const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
+                // 150ms gecikme: Firebase harf verilerinin tam inmesini bekleriz
+                setTimeout(() => {
+                  const wordData = PUZZLE_DATA.words[wid];
+                  const answer = wordData.answer;
                   
-                  // Eğer solverId bulunduysa veya 15 deneme (1.5 saniye) dolduysa döngüyü durdur
-                  if (solverId || attempts > 15) {
-                    clearInterval(checkInterval);
-                    
+                  const cellData = PUZZLE_DATA.cells[wordData.clueCell];
+                  const clueObj = cellData.clues.find(cl => cl.wordId === wid);
+                  const clueText = clueObj ? clueObj.text : "";
+
+                  const filled = Game.getFilledLettersForWord(wid);
+                  
+                  // GERÇEK ÇÖZENİ VE DOĞRU PUANI BULMA ALGORİTMASI
+                  let newlyClaimed = 0;
+                  let solverId = null;
+
+                  for (const cellId of wordData.cells) {
+                    if (!claimedCells.has(cellId)) {
+                      claimedCells.add(cellId);
+                      newlyClaimed++; // Yalnızca önceden çözülmemiş taze harfler puan verir
+                      
+                      // Bu yepyeni hücreyi kim doldurduysa, kelimeyi submit eden kişi 100% odur
+                      if (filled[cellId] && !solverId) {
+                        solverId = filled[cellId].playerId;
+                      }
+                    }
+                  }
+
+                  // Eğer tüm harfler diğer kelimelerden zaten dolmuşsa (nadir), ilk harfin sahibini al
+                  if (!solverId && wordData.cells.length > 0) {
+                    const firstCell = wordData.cells[0];
+                    solverId = filled[firstCell] ? filled[firstCell].playerId : null;
+                  }
+
+                  // İlk yükleme (sayfaya girildiği an) DEĞİLSE bildirimi göster
+                  if (!wasInitialLoad) {
                     let solverName = "Bir oyuncu";
                     if (solverId) {
                       const players = Game.getPlayersSorted();
@@ -585,21 +605,18 @@ let activityPopupTimer = null;
                       if (solver) solverName = solver.name;
                     }
                     
-                    const points = answer.length * 10; 
+                    const points = newlyClaimed * 10; 
+                    
                     const logHtml = `<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı.`;
                     
                     logActivity(logHtml);
                   }
-                }, 100);
+                }, 150);
               }
             }
-          }
-        });
-        
-        // İlk yükleme bittiğini gridReady'den bağımsız olarak işaretle (İlk hamlenin atlanmasını çözer)
-        isInitialLoad = false; 
-        
-        if (gridReady) {
+          });
+          
+          isInitialLoad = false;
           renderProgress();
         }
 

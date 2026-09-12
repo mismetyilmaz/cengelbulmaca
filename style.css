@@ -975,11 +975,21 @@ button:focus-visible, input:focus-visible {
   .activity-panel-pos { right: 16px; width: calc(100vw - 32px); }
 }
 
+/* ==========================================================================
+   ACTIVITY LOG (Hamle Geçmişi)
+   ========================================================================== */
 .activity-popup {
   position: absolute;
-  bottom: 110%; /* Butonun hemen üstünde çıkar */
+  bottom: 110%; 
   right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 10px;
+  pointer-events: none;
+}
+
+.activity-popup-item {
   background: var(--paper-deep);
   border: 1.5px solid var(--paper-line);
   border-left: 4px solid var(--gold);
@@ -996,7 +1006,7 @@ button:focus-visible, input:focus-visible {
   animation: popUpActivity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.activity-popup.fade-out {
+.activity-popup-item.fade-out {
   animation: fadeDownActivity 0.3s ease forwards;
 }
 
