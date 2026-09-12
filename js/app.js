@@ -92,13 +92,10 @@
   const activityCloseBtn = document.getElementById("activity-close-btn");
   const activityMessages = document.getElementById("activity-messages");
   
-  let activityPopupTimer = null;
+let activityPopupTimer = null;
   const knownSolvedWords = new Set();
-  let isInitialLoad = true;
-  let currentPhase = "waiting"; // Oyunun şu an hangi aşamada olduğunu tutacağız
-
-  const knownSolvedWords = new Set();
-  let isInitialLoad = true; // İlk veri çekimindeki bildirimleri engellemek için
+  let isInitialLoad = true; 
+  let currentPhase = "waiting"; 
   let isHost = false;
   let gameStarted = false;
   let currentTurnPlayerId = null;
