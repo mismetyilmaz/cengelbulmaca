@@ -544,28 +544,39 @@ let activityPopupTimer = null;
         });
       },
     onWordsChange: () => {
-        if (gridReady) {
-          Object.keys(PUZZLE_DATA.words).forEach(wid => {
-            if (Game.isWordSolved(wid)) {
+        // İlk açılışta veya sonrasında her kelimeyi kontrol et
+        Object.keys(PUZZLE_DATA.words).forEach(wid => {
+          if (Game.isWordSolved(wid)) {
+            
+            // Eğer grid hazırsa UI'ı (arayüzü) güncelle
+            if (gridReady) {
               PuzzleRender.markWordSolved(wid);
+            }
 
-              if (!knownSolvedWords.has(wid)) {
-                knownSolvedWords.add(wid);
+            // Kelime ilk defa çözülüyorsa (bizim tarafımızda işlem görüyorsa)
+            if (!knownSolvedWords.has(wid)) {
+              knownSolvedWords.add(wid);
+              
+              // Eğer bu İLK veri çekimi değilse (yani oyun sırasında çözüldüyse) bildirimi tetikle
+              if (!isInitialLoad) {
+                const wordData = PUZZLE_DATA.words[wid];
+                const answer = wordData.answer;
                 
-                if (!isInitialLoad) {
-                  // İSİM HATASI ÇÖZÜMÜ: Harf verisinin Firebase'den tam olarak inmesini garanti 
-                  // altına almak için kontrolü 100 milisaniye gecikmeli yapıyoruz.
-                  setTimeout(() => {
-                    const wordData = PUZZLE_DATA.words[wid];
-                    const answer = wordData.answer;
-                    
-                    const cellData = PUZZLE_DATA.cells[wordData.clueCell];
-                    const clueObj = cellData.clues.find(cl => cl.wordId === wid);
-                    const clueText = clueObj ? clueObj.text : "";
-
-                    const filled = Game.getFilledLettersForWord(wid);
-                    const firstCellId = wordData.cells[0];
-                    const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
+                const cellData = PUZZLE_DATA.cells[wordData.clueCell];
+                const clueObj = cellData.clues.find(cl => cl.wordId === wid);
+                const clueText = clueObj ? clueObj.text : "";
+                
+                // İSİM HATASI ÇÖZÜMÜ: Harf verisinin sunucudan inmesini bekleyen Polling Sistemi
+                let attempts = 0;
+                const checkInterval = setInterval(() => {
+                  attempts++;
+                  const filled = Game.getFilledLettersForWord(wid);
+                  const firstCellId = wordData.cells[0];
+                  const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
+                  
+                  // Eğer solverId bulunduysa veya 15 deneme (1.5 saniye) dolduysa döngüyü durdur
+                  if (solverId || attempts > 15) {
+                    clearInterval(checkInterval);
                     
                     let solverName = "Bir oyuncu";
                     if (solverId) {
@@ -578,13 +589,17 @@ let activityPopupTimer = null;
                     const logHtml = `<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı.`;
                     
                     logActivity(logHtml);
-                  }, 100); 
-                }
+                  }
+                }, 100);
               }
             }
-          });
-          
-          isInitialLoad = false;
+          }
+        });
+        
+        // İlk yükleme bittiğini gridReady'den bağımsız olarak işaretle (İlk hamlenin atlanmasını çözer)
+        isInitialLoad = false; 
+        
+        if (gridReady) {
           renderProgress();
         }
 
