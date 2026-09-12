@@ -418,9 +418,13 @@
         turnBannerTimer.textContent = remaining;
       }, 250);
     } else if (state.phase === "playing") {
+      const turnChanged = currentTurnPlayerId !== null && currentTurnPlayerId !== state.currentPlayerId;
       currentTurnPlayerId = state.currentPlayerId;
       if (!gameStarted) startGame(playerNameLabel.textContent);
       updateTurnBanner(state);
+      // Sıra değişti — süresi dolan (ya da bilerek başka bir kelimeye geçen)
+      // oyuncunun açık kalan cevap kutusunu zorla kapat.
+      if (turnChanged && activeWordId) closePopover();
       tickerInterval = setInterval(() => {
         currentTurnPlayerId = state.currentPlayerId;
         const remaining = Math.max(0, Math.ceil((state.turnStartedAt + Turns.TURN_DURATION_MS - Date.now()) / 1000));
