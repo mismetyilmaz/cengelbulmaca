@@ -113,6 +113,15 @@ eklenebilir.
 
 ## Şu ana kadar çalışan mekanikler
 
+- **Sıra Tabanlı (1v1) mod**: oda kurulurken "Serbest (Co-op)" veya
+  "Sıra Tabanlı (1v1)" seçilir. 1v1 modda oda tam 2 kişilik olur.
+  İsim girişinden sonra herkes önce **lobiye** düşer; oda sahibi
+  ikinci oyuncu gelince "Oyunu Başlat"a basar, 10 saniyelik geri
+  sayımın ardından rastgele bir oyuncudan başlanır. Her turda 20
+  saniye süre var — doğru cevap puan kazandırıp sırayı karşıya
+  geçirir, süre dolarsa puansız geçer. Bulmaca bitince kazananı
+  gösteren bir sonuç ekranı açılır. (`js/turns.js`)
+
 - **Oyuncu renkleri**: odaya katılma sırasına göre her oyuncuya sabit
   bir renk atanır; doğru cevaplanan harfler o oyuncunun renginde
   grid'e işlenir, skor tablosunda da isminin yanında aynı renkte bir

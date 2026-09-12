@@ -6,7 +6,7 @@
  *
  * rooms/{roomId}/config -> {
  *   puzzleId, maxPlayers (0 = sınırsız), password (boş string = yok),
- *   language, createdAt
+ *   level, direction, mode ("coop" | "turns"), hostId
  * }
  */
 
@@ -30,7 +30,7 @@ const Room = (() => {
    * Yeni oda oluşturur ve config'i yazar.
    * @returns {Promise<string>} roomId
    */
-  async function createRoom({ puzzleId, maxPlayers, password, level, direction }) {
+  async function createRoom({ puzzleId, maxPlayers, password, level, direction, mode, hostId }) {
     const roomId = generateRoomId();
     await db.ref(`rooms/${roomId}/config`).set({
       puzzleId,
@@ -38,6 +38,8 @@ const Room = (() => {
       password: password || "",
       level,
       direction,
+      mode: mode || "coop",
+      hostId: hostId || null,
       createdAt: firebase.database.ServerValue.TIMESTAMP
     });
     return roomId;

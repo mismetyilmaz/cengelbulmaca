@@ -20,6 +20,9 @@
   const connStatusText = document.getElementById("conn-status-text");
 
   const setupGate = document.getElementById("setup-gate");
+  const modeOptions = document.getElementById("mode-options");
+  const maxPlayersField = document.getElementById("max-players-field");
+  const turnsModeNote = document.getElementById("turns-mode-note");
   const directionOptions = document.getElementById("direction-options");
   const levelOptions = document.getElementById("level-options");
   const maxPlayersSelect = document.getElementById("max-players-select");
@@ -63,6 +66,28 @@
   const chatMessagesEl = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
   const chatSendBtn = document.getElementById("chat-send-btn");
+
+  const lobbyGate = document.getElementById("lobby-gate");
+  const lobbyStatus = document.getElementById("lobby-status");
+  const lobbyPlayersList = document.getElementById("lobby-players-list");
+  const lobbyStartBtn = document.getElementById("lobby-start-btn");
+  const lobbyHostHint = document.getElementById("lobby-host-hint");
+  const lobbyGuestHint = document.getElementById("lobby-guest-hint");
+  const lobbyCountdownBox = document.getElementById("lobby-countdown-box");
+  const lobbyCountdownNumber = document.getElementById("lobby-countdown-number");
+
+  const finishedGate = document.getElementById("finished-gate");
+  const finishedTitle = document.getElementById("finished-title");
+  const finishedScores = document.getElementById("finished-scores");
+
+  const turnBanner = document.getElementById("turn-banner");
+  const turnBannerText = document.getElementById("turn-banner-text");
+  const turnBannerTimer = document.getElementById("turn-banner-timer");
+
+  let isHost = false;
+  let gameStarted = false;
+  let currentTurnPlayerId = null;
+  let tickerInterval = null;
 
   let activeWordId = null;
   let roomId = null;
@@ -117,6 +142,15 @@
   const puzzleSelect = document.getElementById("puzzle-select");
   let puzzleSelectRequestId = 0;
 
+  wireOptionGroup(modeOptions, "mode");
+  modeOptions.querySelectorAll(".option-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const isTurns = modeOptions.querySelector(".selected").dataset.mode === "turns";
+      maxPlayersField.classList.toggle("hidden", isTurns);
+      turnsModeNote.classList.toggle("hidden", !isTurns);
+    });
+  });
+
   wireOptionGroup(directionOptions, "direction");
   wireOptionGroup(levelOptions, "level");
   [directionOptions, levelOptions].forEach(group => {
@@ -166,9 +200,10 @@
 
   createRoomBtn.addEventListener("click", async () => {
     setupError.textContent = "";
+    const mode = modeOptions.querySelector(".selected").dataset.mode;
     const direction = directionOptions.querySelector(".selected").dataset.direction;
     const level = levelOptions.querySelector(".selected").dataset.level;
-    const maxPlayers = parseInt(maxPlayersSelect.value, 10);
+    const maxPlayers = mode === "turns" ? 2 : parseInt(maxPlayersSelect.value, 10);
     const password = usePasswordCheck.checked ? setupPasswordInput.value.trim() : "";
 
     if (usePasswordCheck.checked && password.length < 3) {
@@ -188,8 +223,8 @@
     createRoomBtn.disabled = true;
     createRoomBtn.textContent = "Oluşturuluyor...";
     try {
-      roomId = await Room.createRoom({ puzzleId, maxPlayers, password, level, direction });
-      roomConfig = { puzzleId, maxPlayers, password, level, direction };
+      roomId = await Room.createRoom({ puzzleId, maxPlayers, password, level, direction, mode, hostId: playerId });
+      roomConfig = { puzzleId, maxPlayers, password, level, direction, mode, hostId: playerId };
       isCreator = true;
 
       params.set("room", roomId);
@@ -307,35 +342,138 @@
       joinBtn.textContent = "Bulmacaya Katıl";
       return;
     }
-    startGame(name);
+
+    // Game.init BURADA çağrılır (lobiden önce) ki oyuncu Firebase'e hemen
+    // kaydolsun — sıra tabanlı modda lobi ekranı oyuncu listesini
+    // gösterebilsin, oyun tahtası henüz çizilmemiş olsa bile.
+    initGameSync(name);
+
+    if (roomConfig.mode === "turns") {
+      enterLobby(name);
+    } else {
+      startGame(name);
+    }
   }
 
- function startGame(name) {
+  // ================================================================
+  // LOBİ (SIRA TABANLI MOD)
+  // ================================================================
+  function enterLobby(name) {
     nameGate.classList.add("hidden");
-    gameRoot.classList.remove("hidden");
+    lobbyGate.classList.remove("hidden");
     playerNameLabel.textContent = name;
-    const directionLabel = roomConfig.direction === "tr_en" ? "TR→EN" : "EN→TR";
-    roomLabel.textContent = `Oda: ${roomId} · ${roomConfig.level} · ${directionLabel}`;
+    isHost = playerId === roomConfig.hostId;
 
-    PuzzleRender.init(puzzleGridEl, handleClueClick);
-    initZoom();
+    lobbyHostHint.classList.toggle("hidden", !isHost);
+    lobbyGuestHint.classList.toggle("hidden", isHost);
+    lobbyStartBtn.classList.toggle("hidden", !isHost);
 
-    // YENİ EKLENEN: Otomatik çözülen kelimelerde tekrarlı istek atmayı önlemek için
-    const pendingAutoSolves = new Set(); 
+    db.ref(`rooms/${roomId}/players`).on("value", snap => {
+      renderLobbyPlayers(snap.val() || {});
+    });
 
+    Turns.init(roomId, playerId, isHost, { onStateChange: handleTurnStateChange });
+  }
+
+  function renderLobbyPlayers(players) {
+    const ids = Object.keys(players);
+    lobbyStatus.textContent = `${ids.length} / 2 oyuncu hazır`;
+    lobbyPlayersList.innerHTML = "";
+    ids.forEach(pid => {
+      const p = players[pid];
+      const li = document.createElement("li");
+      li.className = "lobby-player-row";
+      li.innerHTML = `
+        <span class="player-dot" style="background:${p.color || "#6E6555"}"></span>
+        <span class="lobby-player-name">${escapeHtml(p.name)}</span>
+        ${pid === roomConfig.hostId ? '<span class="lobby-player-tag">Oda Sahibi</span>' : ""}
+      `;
+      lobbyPlayersList.appendChild(li);
+    });
+    if (isHost) lobbyStartBtn.disabled = ids.length !== 2;
+  }
+
+  lobbyStartBtn.addEventListener("click", () => Turns.startGame());
+
+  function handleTurnStateChange(state) {
+    clearInterval(tickerInterval);
+    if (!state) return;
+
+    if (state.phase === "countdown") {
+      lobbyCountdownBox.classList.remove("hidden");
+      lobbyStartBtn.classList.add("hidden");
+      lobbyHostHint.classList.add("hidden");
+      lobbyGuestHint.classList.add("hidden");
+      tickerInterval = setInterval(() => {
+        const remaining = Math.max(0, Math.ceil((state.countdownStartedAt + Turns.COUNTDOWN_MS - Date.now()) / 1000));
+        lobbyCountdownNumber.textContent = remaining;
+      }, 250);
+    } else if (state.phase === "playing") {
+      currentTurnPlayerId = state.currentPlayerId;
+      if (!gameStarted) startGame(playerNameLabel.textContent);
+      updateTurnBanner(state);
+      tickerInterval = setInterval(() => {
+        currentTurnPlayerId = state.currentPlayerId;
+        const remaining = Math.max(0, Math.ceil((state.turnStartedAt + Turns.TURN_DURATION_MS - Date.now()) / 1000));
+        turnBannerTimer.textContent = remaining;
+      }, 250);
+    } else if (state.phase === "finished") {
+      showFinishedScreen(state);
+    }
+  }
+
+  function updateTurnBanner(state) {
+    const myTurn = state.currentPlayerId === playerId;
+    turnBanner.classList.remove("hidden");
+    turnBanner.classList.toggle("my-turn", myTurn);
+    turnBanner.classList.toggle("their-turn", !myTurn);
+    turnBannerText.textContent = myTurn ? "Senin Sıran!" : "Rakibinin Sırası...";
+  }
+
+  function showFinishedScreen(state) {
+    if (activeWordId) closePopover();
+    gameRoot.classList.add("hidden");
+    finishedGate.classList.remove("hidden");
+    const players = Game.getPlayersSorted();
+    const winner = players.find(p => p.id === state.winnerId);
+    finishedTitle.textContent = winner ? `${winner.name} kazandı! 🎉` : "Berabere!";
+    finishedScores.innerHTML = "";
+    players.forEach(p => {
+      const li = document.createElement("li");
+      li.className = "lobby-player-row";
+      li.innerHTML = `
+        <span class="player-dot" style="background:${p.color}"></span>
+        <span class="lobby-player-name">${escapeHtml(p.name)}</span>
+        <span class="lobby-player-tag">${p.score} puan</span>
+      `;
+      finishedScores.appendChild(li);
+    });
+  }
+
+  // ================================================================
+  // FIREBASE SENKRONİZASYONU — lobiden ÖNCE çağrılır (oyuncu hemen kaydolsun)
+  // ================================================================
+  let gridReady = false;
+  const pendingAutoSolves = new Set();
+
+  function initGameSync(name) {
     Game.init(roomId, playerId, name, {
       onLettersChange: letters => {
-        PuzzleRender.paintLetters(letters, Game.getPlayerColor);
-        
+        if (gridReady) PuzzleRender.paintLetters(letters, Game.getPlayerColor);
+
+        // Otomatik onaylama SADECE serbest (co-op) modda çalışır — sıra
+        // tabanlı modda hangi oyuncunun tur hakkını kullandığı belirsizleşir.
+        if (roomConfig.mode === "turns") return;
+
         // YENİ EKLENEN BLOK: Bütün harfleri çıkan kelimeleri otomatik onayla
         Object.keys(PUZZLE_DATA.words).forEach(async wordId => {
           // Eğer kelime zaten çözüldüyse veya şu an sunucuya gönderiliyorsa atla
           if (Game.isWordSolved(wordId) || pendingAutoSolves.has(wordId)) return;
-          
+
           const word = PUZZLE_DATA.words[wordId];
           let isComplete = true;
           let currentGuess = "";
-          
+
           // Kelimenin tüm hücreleri grid üzerinde dolu mu diye kontrol et
           for (const cellId of word.cells) {
             if (!letters[cellId] || !letters[cellId].letter) {
@@ -344,7 +482,7 @@
             }
             currentGuess += letters[cellId].letter;
           }
-          
+
           // Eğer kelime tamamen dolmuşsa, oyuncu tıklamadan arka planda cevabı gönder
           if (isComplete && currentGuess.length === word.answer.length) {
             pendingAutoSolves.add(wordId);
@@ -359,13 +497,36 @@
         });
       },
       onWordsChange: () => {
-        Object.keys(PUZZLE_DATA.words).forEach(wid => {
-          if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
-        });
-        renderProgress();
+        if (gridReady) {
+          Object.keys(PUZZLE_DATA.words).forEach(wid => {
+            if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
+          });
+          renderProgress();
+        }
+
+        // Sıra tabanlı modda bulmaca tamamen çözülünce oyunu bitir
+        if (roomConfig.mode === "turns" && Game.getSolvedWordCount() === Game.getTotalWordCount()) {
+          const scores = {};
+          Game.getPlayersSorted().forEach(p => { scores[p.id] = p.score; });
+          Turns.finishGame(scores);
+        }
       },
       onPlayersChange: () => renderScoreboard()
     });
+  }
+
+ function startGame(name) {
+    gameStarted = true;
+    nameGate.classList.add("hidden");
+    lobbyGate.classList.add("hidden");
+    gameRoot.classList.remove("hidden");
+    playerNameLabel.textContent = name;
+    const directionLabel = roomConfig.direction === "tr_en" ? "TR→EN" : "EN→TR";
+    roomLabel.textContent = `Oda: ${roomId} · ${roomConfig.level} · ${directionLabel}`;
+
+    PuzzleRender.init(puzzleGridEl, handleClueClick);
+    gridReady = true;
+    initZoom();
 
     chatBubble.classList.remove("hidden");
     Chat.init(roomId, playerId, name, {
@@ -384,6 +545,7 @@
   // ================================================================
   function handleClueClick(wordId, clueEl) {
     if (Game.isWordSolved(wordId)) return;
+    if (roomConfig.mode === "turns" && currentTurnPlayerId !== playerId) return;
 
     activeWordId = wordId;
     const word = PUZZLE_DATA.words[wordId];
@@ -521,6 +683,7 @@
       showFeedback("Bu kelimeyi başka biri az önce çözdü.", true);
     } else {
       showFeedback(`Doğru! +${result.points} puan`, true);
+      if (roomConfig.mode === "turns") Turns.passTurnAfterCorrectAnswer();
     }
     setTimeout(closePopover, 900);
   }

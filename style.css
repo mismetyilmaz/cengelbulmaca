@@ -465,8 +465,8 @@ button:focus-visible, input:focus-visible {
 
 .arrow {
   position: absolute;
-  width: 19px;
-  height: 19px;
+  width: 15px;
+  height: 15px;
   color: var(--pen-red);
   z-index: 5;
   pointer-events: none;
@@ -793,3 +793,104 @@ button:focus-visible, input:focus-visible {
   }
   .chat-bubble { right: 16px; bottom: 16px; }
 }
+
+/* ==========================================================================
+   SIRA TABANLI MOD — lobi, tur banner, final ekranı
+   ========================================================================== */
+.lobby-players-list {
+  list-style: none;
+  margin: 18px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lobby-player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+.lobby-player-row .player-dot { width: 12px; height: 12px; }
+.lobby-player-row .lobby-player-name { flex: 1; font-weight: 500; }
+.lobby-player-row .lobby-player-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+#lobby-start-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  margin-top: 6px;
+}
+#lobby-start-btn:hover:not(:disabled) { background: #37302A; }
+#lobby-start-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.lobby-countdown-box {
+  text-align: center;
+  margin-top: 18px;
+}
+.lobby-countdown-number {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--pen-red);
+  line-height: 1;
+}
+
+.ghost-link-block {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  padding: 11px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+.ghost-link-block:hover { border-color: var(--gold); }
+
+.turn-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  margin: 0 28px;
+  background: var(--paper-deep);
+  border: 1.5px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.turn-banner.my-turn {
+  background: #E2ECD9;
+  border-color: var(--pen-green);
+  color: var(--pen-green);
+}
+.turn-banner.their-turn {
+  background: #F1E7C9;
+  border-color: var(--gold);
+}
+.turn-banner-timer {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: center;
+}
+

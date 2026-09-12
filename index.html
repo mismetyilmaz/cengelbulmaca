@@ -26,6 +26,12 @@
       <h1>Bulmaca Odası Oluştur</h1>
       <p class="sub">Ayarları seç, oda linkini oluştur ve arkadaşlarınla paylaş.</p>
 
+      <label class="field-label">Oyun modu</label>
+      <div class="option-row" id="mode-options">
+        <button type="button" class="option-btn selected" data-mode="coop">Serbest (Co-op)</button>
+        <button type="button" class="option-btn" data-mode="turns">Sıra Tabanlı (1v1)</button>
+      </div>
+
       <label class="field-label">Çeviri yönü</label>
       <div class="option-row" id="direction-options">
         <button type="button" class="option-btn selected" data-direction="tr_en">Türkçe → İngilizce</button>
@@ -47,14 +53,17 @@
         <option value="random">🎲 Rastgele seç</option>
       </select>
 
-      <label class="field-label" for="max-players-select">Maksimum oyuncu</label>
-      <select id="max-players-select">
-        <option value="0">Sınırsız</option>
-        <option value="2">2 kişi</option>
-        <option value="4">4 kişi</option>
-        <option value="6">6 kişi</option>
-        <option value="10">10 kişi</option>
-      </select>
+      <div id="max-players-field">
+        <label class="field-label" for="max-players-select">Maksimum oyuncu</label>
+        <select id="max-players-select">
+          <option value="0">Sınırsız</option>
+          <option value="2">2 kişi</option>
+          <option value="4">4 kişi</option>
+          <option value="6">6 kişi</option>
+          <option value="10">10 kişi</option>
+        </select>
+      </div>
+      <p id="turns-mode-note" class="sub hidden">Sıra tabanlı modda oda tam olarak 2 kişilik olur.</p>
 
       <label class="checkbox-row">
         <input type="checkbox" id="use-password-check">
@@ -89,6 +98,36 @@
     </div>
   </div>
 
+  <!-- Sıra tabanlı mod: isim girişinden sonra, oyun başlamadan önce lobi -->
+  <div id="lobby-gate" class="overlay hidden">
+    <div class="name-card">
+      <p class="eyebrow">Sıra Tabanlı — 1v1</p>
+      <h1 id="lobby-title">Rakibini Bekliyoruz</h1>
+      <p class="sub" id="lobby-status">1 / 2 oyuncu hazır</p>
+
+      <ul id="lobby-players-list" class="lobby-players-list"></ul>
+
+      <button id="lobby-start-btn" class="hidden" disabled>Oyunu Başlat</button>
+      <p id="lobby-host-hint" class="sub hidden">Odayı sen kurdun — ikinci oyuncu gelince başlatabilirsin.</p>
+      <p id="lobby-guest-hint" class="sub hidden">Oda sahibinin oyunu başlatmasını bekliyorsun...</p>
+
+      <div id="lobby-countdown-box" class="lobby-countdown-box hidden">
+        <p class="sub">Oyun başlıyor</p>
+        <div id="lobby-countdown-number" class="lobby-countdown-number">10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sıra tabanlı mod: bulmaca tamamlanınca sonuç ekranı -->
+  <div id="finished-gate" class="overlay hidden">
+    <div class="name-card">
+      <p class="eyebrow">Bulmaca Bitti</p>
+      <h1 id="finished-title">Sonuç</h1>
+      <ul id="finished-scores" class="lobby-players-list"></ul>
+      <a href="index.html" class="ghost-link-block">Ana sayfaya dön</a>
+    </div>
+  </div>
+
   <!-- Ana oyun ekranı -->
   <div id="game-root" class="game-root hidden">
 
@@ -105,6 +144,11 @@
         <span id="player-name-label"></span>
       </div>
     </header>
+
+    <div id="turn-banner" class="turn-banner hidden">
+      <span id="turn-banner-text">Sıra bekleniyor...</span>
+      <span id="turn-banner-timer" class="turn-banner-timer">20</span>
+    </div>
 
     <main class="layout">
 
@@ -182,6 +226,7 @@
   <script src="js/scoring.js"></script>
   <script src="js/puzzle-render.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/turns.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/app.js"></script>
 </body>
