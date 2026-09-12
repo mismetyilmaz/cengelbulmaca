@@ -83,7 +83,12 @@
   const turnBanner = document.getElementById("turn-banner");
   const turnBannerText = document.getElementById("turn-banner-text");
   const turnBannerTimer = document.getElementById("turn-banner-timer");
-
+  const gameCountdownOverlay = document.getElementById("game-countdown-overlay");
+  const gameCountdownNumber = document.getElementById("game-countdown-number");
+  const toastContainer = document.getElementById("toast-container");
+  
+  let currentPhase = "waiting"; // Oyunun şu an hangi aşamada olduğunu tutacağız
+  const knownSolvedWords = new Set(); // Bildirimleri tekrar tekrar göstermemek için
   let isHost = false;
   let gameStarted = false;
   let currentTurnPlayerId = null;
@@ -399,18 +404,25 @@
     clearInterval(tickerInterval);
     if (!state) return;
 
+    currentPhase = state.phase; // Fazı güncelliyoruz
+
     if (state.phase === "countdown") {
-      lobbyCountdownBox.classList.remove("hidden");
-      lobbyStartBtn.classList.add("hidden");
-      lobbyHostHint.classList.add("hidden");
-      lobbyGuestHint.classList.add("hidden");
+      // Eğer oyun tahtası çizilmediyse hemen çiz!
+      if (!gameStarted) startGame(playerNameLabel.textContent);
+      
+      lobbyGate.classList.add("hidden");
+      gameCountdownOverlay.classList.remove("hidden"); // Tahta üstü sayacı göster
+      
       tickerInterval = setInterval(() => {
         const remaining = Math.max(0, Math.ceil((state.countdownStartedAt + Turns.COUNTDOWN_MS - Date.now()) / 1000));
-        lobbyCountdownNumber.textContent = remaining;
+        gameCountdownNumber.textContent = remaining;
       }, 250);
     } else if (state.phase === "playing") {
+      gameCountdownOverlay.classList.add("hidden"); // Sayacı gizle, oyun başlasın
       currentTurnPlayerId = state.currentPlayerId;
+      
       if (!gameStarted) startGame(playerNameLabel.textContent);
+      
       updateTurnBanner(state);
       tickerInterval = setInterval(() => {
         currentTurnPlayerId = state.currentPlayerId;
@@ -418,6 +430,7 @@
         turnBannerTimer.textContent = remaining;
       }, 250);
     } else if (state.phase === "finished") {
+      gameCountdownOverlay.classList.add("hidden");
       showFinishedScreen(state);
     }
   }
@@ -499,7 +512,38 @@
       onWordsChange: () => {
         if (gridReady) {
           Object.keys(PUZZLE_DATA.words).forEach(wid => {
-            if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
+            if (Game.isWordSolved(wid)) {
+              PuzzleRender.markWordSolved(wid);
+
+              // YENİ EKLENEN BLOK: Sadece YENİ çözülen kelimeler için bildirim yolla
+              if (!knownSolvedWords.has(wid)) {
+                knownSolvedWords.add(wid);
+                
+                const wordData = PUZZLE_DATA.words[wid];
+                const answer = wordData.answer;
+                
+                // İpucunu çek
+                const cellData = PUZZLE_DATA.cells[wordData.clueCell];
+                const clueObj = cellData.clues.find(cl => cl.wordId === wid);
+                const clueText = clueObj ? clueObj.text : "";
+
+                // Kelimeyi ilk kimin çözdüğünü bul (ilk harfi kim yazdıysa onundur)
+                const filled = Game.getFilledLettersForWord(wid);
+                const firstCellId = wordData.cells[0];
+                const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
+                
+                if (solverId) {
+                  const players = Game.getPlayersSorted();
+                  const solver = players.find(p => p.id === solverId);
+                  const solverName = solver ? solver.name : "Biri";
+                  
+                  // Puanlama algoritmana göre buradaki *10 değerini güncelleyebilirsin
+                  const points = answer.length * 10; 
+                  
+                  showToast(`<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı!`);
+                }
+              }
+            }
           });
           renderProgress();
         }
@@ -545,7 +589,11 @@
   // ================================================================
   function handleClueClick(wordId, clueEl) {
     if (Game.isWordSolved(wordId)) return;
-    if (roomConfig.mode === "turns" && currentTurnPlayerId !== playerId) return;
+    
+    if (roomConfig.mode === "turns") {
+      if (currentPhase === "countdown") return; // Geri sayım (scouting) sırasında tıklamayı engelle
+      if (currentTurnPlayerId !== playerId) return; // Sıra bende değilse engelle
+    }
 
     activeWordId = wordId;
     const word = PUZZLE_DATA.words[wordId];
@@ -746,7 +794,22 @@
     div.textContent = str;
     return div.innerHTML;
   }
-
+  function showToast(htmlMessage) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerHTML = htmlMessage;
+    
+    if(toastContainer) {
+      toastContainer.appendChild(toast);
+      
+      // 4 saniye sonra fade out animasyonunu başlat
+      setTimeout(() => {
+        toast.classList.add("fade-out");
+        // Animasyon bitince DOM'dan kalıcı olarak sil
+        setTimeout(() => toast.remove(), 300); 
+      }, 4000);
+    }
+  }
   // ================================================================
   // ZOOM — mobilde pinch, masaüstünde +/- butonlar
   // ================================================================
