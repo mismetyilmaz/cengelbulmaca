@@ -876,6 +876,23 @@ button:focus-visible, input:focus-visible {
   font-weight: 600;
   font-size: 14.5px;
   color: var(--ink);
+  
+  /* YENİ EKLENEN KISIM: Barı ekranın üstüne sabitler */
+  position: -webkit-sticky; /* iOS Safari desteği için */
+  position: sticky;
+  top: 0; 
+  z-index: 75; /* Pop-up'ların altında, oyun tahtasının üstünde kalması için */
+  box-shadow: 0 6px 16px -6px rgba(34, 29, 23, 0.4); /* Kaydırırken oyun tahtasından ayrı dursun diye şık bir gölge */
+}
+
+/* YENİ EKLENEN KISIM: Mobilde barın kenarlara tam oturması için */
+@media (max-width: 880px) {
+  .turn-banner {
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
 }
 .turn-banner.my-turn {
   background: #E2ECD9;
