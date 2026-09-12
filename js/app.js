@@ -409,23 +409,20 @@
       if (!gameStarted) startGame(playerNameLabel.textContent);
       
       lobbyGate.classList.add("hidden");
-      if (typeof gameCountdownOverlay !== 'undefined' && gameCountdownOverlay) {
-         gameCountdownOverlay.classList.remove("hidden"); 
-      }
-      currentTurnPlayerId = null; // Sıra kimsede değil
+      currentTurnPlayerId = null; // Sıra henüz kimsede değil
+      
+      // ÇÖZÜM: Üst barı inceleme modunda görünür yapıyoruz
+      turnBanner.classList.remove("hidden", "my-turn", "their-turn");
+      turnBanner.classList.add("previewing");
+      turnBannerText.textContent = "Bulmacayı incele, birazdan başlıyor";
       
       tickerInterval = setInterval(() => {
         const remaining = Math.max(0, Math.ceil((state.countdownStartedAt + Turns.COUNTDOWN_MS - Date.now()) / 1000));
-        if (typeof gameCountdownNumber !== 'undefined' && gameCountdownNumber) {
-           gameCountdownNumber.textContent = remaining;
-        }
+        turnBannerTimer.textContent = remaining;
       }, 250);
-    } else if (state.phase === "playing") {
-      if (typeof gameCountdownOverlay !== 'undefined' && gameCountdownOverlay) {
-         gameCountdownOverlay.classList.add("hidden"); 
-      }
 
-      // ÇÖZÜM BURADA: Sıranın değiştiğini tespit et
+    } else if (state.phase === "playing") {
+      // Sıranın değiştiğini tespit et
       const turnChanged = currentTurnPlayerId !== null && currentTurnPlayerId !== state.currentPlayerId;
       currentTurnPlayerId = state.currentPlayerId;
       
@@ -443,10 +440,8 @@
         const remaining = Math.max(0, Math.ceil((state.turnStartedAt + Turns.TURN_DURATION_MS - Date.now()) / 1000));
         turnBannerTimer.textContent = remaining;
       }, 250);
+
     } else if (state.phase === "finished") {
-      if (typeof gameCountdownOverlay !== 'undefined' && gameCountdownOverlay) {
-         gameCountdownOverlay.classList.add("hidden");
-      }
       showFinishedScreen(state);
     }
   }
