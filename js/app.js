@@ -67,14 +67,18 @@
   const chatInput = document.getElementById("chat-input");
   const chatSendBtn = document.getElementById("chat-send-btn");
 
+  const movelogBubble = document.getElementById("movelog-bubble");
+  const movelogPanel = document.getElementById("movelog-panel");
+  const movelogCloseBtn = document.getElementById("movelog-close-btn");
+  const movelogList = document.getElementById("movelog-list");
+  const movelogToast = document.getElementById("movelog-toast");
+
   const lobbyGate = document.getElementById("lobby-gate");
   const lobbyStatus = document.getElementById("lobby-status");
   const lobbyPlayersList = document.getElementById("lobby-players-list");
   const lobbyStartBtn = document.getElementById("lobby-start-btn");
   const lobbyHostHint = document.getElementById("lobby-host-hint");
   const lobbyGuestHint = document.getElementById("lobby-guest-hint");
-  const lobbyCountdownBox = document.getElementById("lobby-countdown-box");
-  const lobbyCountdownNumber = document.getElementById("lobby-countdown-number");
 
   const finishedGate = document.getElementById("finished-gate");
   const finishedTitle = document.getElementById("finished-title");
@@ -83,20 +87,7 @@
   const turnBanner = document.getElementById("turn-banner");
   const turnBannerText = document.getElementById("turn-banner-text");
   const turnBannerTimer = document.getElementById("turn-banner-timer");
-  const gameCountdownOverlay = document.getElementById("game-countdown-overlay");
-  const gameCountdownNumber = document.getElementById("game-countdown-number");
-  const toastContainer = document.getElementById("toast-container");
-  const activityBubble = document.getElementById("activity-bubble");
-  const activityPopup = document.getElementById("activity-popup");
-  const activityPanel = document.getElementById("activity-panel");
-  const activityCloseBtn = document.getElementById("activity-close-btn");
-  const activityMessages = document.getElementById("activity-messages");
-  
-let activityPopupTimer = null;
-  const knownSolvedWords = new Set();
-  const claimedCells = new Set();
-  let isInitialLoad = true; 
-  let currentPhase = "waiting"; 
+
   let isHost = false;
   let gameStarted = false;
   let currentTurnPlayerId = null;
@@ -252,42 +243,7 @@ let activityPopupTimer = null;
       createRoomBtn.textContent = "Oda Oluştur";
     }
   });
-// Etkinlik Logu Butonu ve Paneli İşlevleri
-    activityBubble.addEventListener("click", () => {
-    activityPanel.classList.remove("hidden");
-    activityPopup.classList.add("hidden"); // Paneli açınca üstündeki geçici uyarıyı gizle
-  });
-  
-  activityCloseBtn.addEventListener("click", () => {
-    activityPanel.classList.add("hidden");
-  });
 
-function logActivity(htmlMessage) {
-    // 1. Panele (Log geçmişine) ekle
-    const div = document.createElement("div");
-    div.className = "activity-msg";
-    div.innerHTML = htmlMessage;
-    activityMessages.appendChild(div);
-    activityMessages.scrollTop = activityMessages.scrollHeight;
-
-    // 2. Butonun üstündeki pop-up (Artık eskisini silmek yerine alt alta ekler)
-    const popItem = document.createElement("div");
-    popItem.className = "activity-popup-item";
-    popItem.innerHTML = htmlMessage;
-    
-    activityPopup.appendChild(popItem);
-    activityPopup.classList.remove("hidden");
-
-    setTimeout(() => {
-      popItem.classList.add("fade-out");
-      setTimeout(() => {
-        popItem.remove(); // Sadece süresi dolan mesajı DOM'dan sil
-        if (activityPopup.children.length === 0) {
-          activityPopup.classList.add("hidden");
-        }
-      }, 300);
-    }, 5000); 
-  }
   // ================================================================
   // VAR OLAN ODAYA KATILMA
   // ================================================================
@@ -447,25 +403,23 @@ function logActivity(htmlMessage) {
     clearInterval(tickerInterval);
     if (!state) return;
 
-    currentPhase = state.phase; // Fazı güncelliyoruz
-
     if (state.phase === "countdown") {
-      // Eğer oyun tahtası çizilmediyse hemen çiz!
+      // Geri sayım artık lobide değil, bulmaca ekranında gösteriliyor —
+      // oyuncular süre boyunca bulmacaya göz gezdirebilsin diye tahtayı
+      // hemen açıyoruz. Sıra kimsede olmadığı için tıklamalar otomatik
+      // engelleniyor (currentTurnPlayerId null kalıyor).
       if (!gameStarted) startGame(playerNameLabel.textContent);
-      
-      lobbyGate.classList.add("hidden");
-      gameCountdownOverlay.classList.remove("hidden"); // Tahta üstü sayacı göster
-      
+      currentTurnPlayerId = null;
+      turnBanner.classList.remove("hidden", "my-turn", "their-turn");
+      turnBanner.classList.add("previewing");
+      turnBannerText.textContent = "Bulmacayı incele, birazdan başlıyor";
       tickerInterval = setInterval(() => {
         const remaining = Math.max(0, Math.ceil((state.countdownStartedAt + Turns.COUNTDOWN_MS - Date.now()) / 1000));
-        gameCountdownNumber.textContent = remaining;
+        turnBannerTimer.textContent = remaining;
       }, 250);
     } else if (state.phase === "playing") {
-      gameCountdownOverlay.classList.add("hidden"); // Sayacı gizle, oyun başlasın
       currentTurnPlayerId = state.currentPlayerId;
-      
       if (!gameStarted) startGame(playerNameLabel.textContent);
-      
       updateTurnBanner(state);
       tickerInterval = setInterval(() => {
         currentTurnPlayerId = state.currentPlayerId;
@@ -473,14 +427,13 @@ function logActivity(htmlMessage) {
         turnBannerTimer.textContent = remaining;
       }, 250);
     } else if (state.phase === "finished") {
-      gameCountdownOverlay.classList.add("hidden");
       showFinishedScreen(state);
     }
   }
 
   function updateTurnBanner(state) {
     const myTurn = state.currentPlayerId === playerId;
-    turnBanner.classList.remove("hidden");
+    turnBanner.classList.remove("hidden", "previewing");
     turnBanner.classList.toggle("my-turn", myTurn);
     turnBanner.classList.toggle("their-turn", !myTurn);
     turnBannerText.textContent = myTurn ? "Senin Sıran!" : "Rakibinin Sırası...";
@@ -552,71 +505,11 @@ function logActivity(htmlMessage) {
           }
         });
       },
-   onWordsChange: () => {
+      onWordsChange: () => {
         if (gridReady) {
-          const wasInitialLoad = isInitialLoad; // Gecikmeden etkilenmemesi için o anki durumu kilitliyoruz
-
           Object.keys(PUZZLE_DATA.words).forEach(wid => {
-            if (Game.isWordSolved(wid)) {
-              PuzzleRender.markWordSolved(wid);
-
-              if (!knownSolvedWords.has(wid)) {
-                knownSolvedWords.add(wid);
-                
-                // 150ms gecikme: Firebase harf verilerinin tam inmesini bekleriz
-                setTimeout(() => {
-                  const wordData = PUZZLE_DATA.words[wid];
-                  const answer = wordData.answer;
-                  
-                  const cellData = PUZZLE_DATA.cells[wordData.clueCell];
-                  const clueObj = cellData.clues.find(cl => cl.wordId === wid);
-                  const clueText = clueObj ? clueObj.text : "";
-
-                  const filled = Game.getFilledLettersForWord(wid);
-                  
-                  // GERÇEK ÇÖZENİ VE DOĞRU PUANI BULMA ALGORİTMASI
-                  let newlyClaimed = 0;
-                  let solverId = null;
-
-                  for (const cellId of wordData.cells) {
-                    if (!claimedCells.has(cellId)) {
-                      claimedCells.add(cellId);
-                      newlyClaimed++; // Yalnızca önceden çözülmemiş taze harfler puan verir
-                      
-                      // Bu yepyeni hücreyi kim doldurduysa, kelimeyi submit eden kişi 100% odur
-                      if (filled[cellId] && !solverId) {
-                        solverId = filled[cellId].playerId;
-                      }
-                    }
-                  }
-
-                  // Eğer tüm harfler diğer kelimelerden zaten dolmuşsa (nadir), ilk harfin sahibini al
-                  if (!solverId && wordData.cells.length > 0) {
-                    const firstCell = wordData.cells[0];
-                    solverId = filled[firstCell] ? filled[firstCell].playerId : null;
-                  }
-
-                  // İlk yükleme (sayfaya girildiği an) DEĞİLSE bildirimi göster
-                  if (!wasInitialLoad) {
-                    let solverName = "Bir oyuncu";
-                    if (solverId) {
-                      const players = Game.getPlayersSorted();
-                      const solver = players.find(p => p.id === solverId);
-                      if (solver) solverName = solver.name;
-                    }
-                    
-                    const points = newlyClaimed * 10; 
-                    
-                    const logHtml = `<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı.`;
-                    
-                    logActivity(logHtml);
-                  }
-                }, 150);
-              }
-            }
+            if (Game.isWordSolved(wid)) PuzzleRender.markWordSolved(wid);
           });
-          
-          isInitialLoad = false;
           renderProgress();
         }
 
@@ -645,7 +538,6 @@ function logActivity(htmlMessage) {
     initZoom();
 
     chatBubble.classList.remove("hidden");
-    activityBubble.classList.remove("hidden"); // Oyuna girince butonu göster
     Chat.init(roomId, playerId, name, {
       onMessage: (msg, isNew) => {
         renderChatMessage(msg);
@@ -655,6 +547,14 @@ function logActivity(htmlMessage) {
         }
       }
     });
+
+    movelogBubble.classList.remove("hidden");
+    MoveLog.init(roomId, {
+      onMove: (move, isNew) => {
+        renderMoveLogEntry(move);
+        if (isNew) showMoveToast(move);
+      }
+    });
   }
 
   // ================================================================
@@ -662,11 +562,7 @@ function logActivity(htmlMessage) {
   // ================================================================
   function handleClueClick(wordId, clueEl) {
     if (Game.isWordSolved(wordId)) return;
-    
-    if (roomConfig.mode === "turns") {
-      if (currentPhase === "countdown") return; // Geri sayım (scouting) sırasında tıklamayı engelle
-      if (currentTurnPlayerId !== playerId) return; // Sıra bende değilse engelle
-    }
+    if (roomConfig.mode === "turns" && currentTurnPlayerId !== playerId) return;
 
     activeWordId = wordId;
     const word = PUZZLE_DATA.words[wordId];
@@ -867,28 +763,7 @@ function logActivity(htmlMessage) {
     div.textContent = str;
     return div.innerHTML;
   }
-  function showToast(htmlMessage) {
-    let container = document.getElementById("toast-container");
-    
-    // Eğer HTML içine eklenmemişse veya JS'den sonra yükleniyorsa otomatik oluştur:
-    if (!container) {
-      container = document.createElement("div");
-      container.id = "toast-container";
-      container.className = "toast-container";
-      document.body.appendChild(container);
-    }
-    
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerHTML = htmlMessage;
-    
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.classList.add("fade-out");
-      setTimeout(() => toast.remove(), 300); 
-    }, 4000);
-  }
+
   // ================================================================
   // ZOOM — mobilde pinch, masaüstünde +/- butonlar
   // ================================================================
@@ -986,5 +861,45 @@ function logActivity(htmlMessage) {
   chatSendBtn.addEventListener("click", sendChatMessage);
   chatInput.addEventListener("keydown", e => {
     if (e.key === "Enter") sendChatMessage();
+  });
+
+  // ================================================================
+  // HAMLE GEÇMİŞİ
+  // ================================================================
+  let moveToastTimer = null;
+
+  function formatMoveLogText(move) {
+    return `${move.playerName} ${move.clueText} > ${move.answer} ile ${move.points} puan aldı`;
+  }
+
+  function renderMoveLogEntry(move) {
+    const empty = movelogList.querySelector(".movelog-empty");
+    if (empty) empty.remove();
+
+    const li = document.createElement("li");
+    li.className = "movelog-entry";
+    li.innerHTML = `<span class="movelog-name">${escapeHtml(move.playerName)}</span> ${escapeHtml(move.clueText)} > ${escapeHtml(move.answer)} ile <span class="movelog-points">${move.points} puan</span> aldı`;
+    movelogList.appendChild(li);
+    movelogList.scrollTop = movelogList.scrollHeight;
+  }
+
+  function showMoveToast(move) {
+    clearTimeout(moveToastTimer);
+    movelogToast.textContent = formatMoveLogText(move);
+    movelogToast.classList.add("visible");
+    moveToastTimer = setTimeout(() => {
+      movelogToast.classList.remove("visible");
+    }, 4000);
+  }
+
+  movelogBubble.addEventListener("click", () => {
+    movelogPanel.classList.remove("hidden");
+    if (!movelogList.children.length) {
+      movelogList.innerHTML = '<li class="movelog-empty">Henüz hamle yok.</li>';
+    }
+  });
+
+  movelogCloseBtn.addEventListener("click", () => {
+    movelogPanel.classList.add("hidden");
   });
 })();

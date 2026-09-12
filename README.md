@@ -116,11 +116,16 @@ eklenebilir.
 - **Sıra Tabanlı (1v1) mod**: oda kurulurken "Serbest (Co-op)" veya
   "Sıra Tabanlı (1v1)" seçilir. 1v1 modda oda tam 2 kişilik olur.
   İsim girişinden sonra herkes önce **lobiye** düşer; oda sahibi
-  ikinci oyuncu gelince "Oyunu Başlat"a basar, 10 saniyelik geri
-  sayımın ardından rastgele bir oyuncudan başlanır. Her turda 20
-  saniye süre var — doğru cevap puan kazandırıp sırayı karşıya
-  geçirir, süre dolarsa puansız geçer. Bulmaca bitince kazananı
-  gösteren bir sonuç ekranı açılır. (`js/turns.js`)
+  ikinci oyuncu gelince "Oyunu Başlat"a basar. 10 saniyelik geri
+  sayım artık **bulmaca ekranında** gösterilir (oyuncular tahtaya göz
+  gezdirebilsin diye), ardından rastgele bir oyuncudan başlanır. Her
+  turda 20 saniye süre var — doğru cevap puan kazandırıp sırayı
+  karşıya geçirir, süre dolarsa puansız geçer. Bulmaca bitince
+  kazananı gösteren bir sonuç ekranı açılır. (`js/turns.js`)
+- **Hamle Geçmişi**: sohbet balonunun solunda ikinci bir balon (📜).
+  Her doğru cevapta "İsim ipucu > cevap ile X puan aldı" şeklinde bir
+  bildirim balonun üstünde belirip birkaç saniye sonra kayboluyor;
+  aynı satır popup içinde kalıcı bir log olarak birikiyor. (`js/movelog.js`)
 
 - **Oyuncu renkleri**: odaya katılma sırasına göre her oyuncuya sabit
   bir renk atanır; doğru cevaplanan harfler o oyuncunun renginde

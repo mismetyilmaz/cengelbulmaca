@@ -7,6 +7,7 @@
  *   rooms/{roomId}/players/{playerId}   -> { name, score, color, joinedAt }
  *   rooms/{roomId}/letters/{cellId}     -> { letter: "X", playerId }
  *   rooms/{roomId}/words/{wordId}       -> { solved, solvedBy, solvedByName }
+ *   rooms/{roomId}/moveLog/{pushId}     -> { playerId, playerName, clueText, answer, points, timestamp }
  *
  * Her hücreye yazılan harfin YANINDA o harfi doğru bilen oyuncunun id'si
  * de tutulur — bu sayede grid'de harfi kimin yazdığı, o oyuncunun
@@ -138,6 +139,18 @@ const Game = (() => {
       await roomRef.child(`players/${playerId}/score`).transaction(
         current => (current || 0) + points
       );
+
+      // Hamle geçmişine kaydet — hangi ipucuna, hangi cevap yazıldı, kaç puan
+      const clueCellData = PUZZLE_DATA.cells[word.clueCell];
+      const clueEntry = clueCellData && clueCellData.clues.find(cl => cl.wordId === wordId);
+      await roomRef.child("moveLog").push({
+        playerId,
+        playerName,
+        clueText: clueEntry ? clueEntry.text : "",
+        answer: word.answer,
+        points,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      });
 
       return { correct: true, points };
     } catch (err) {

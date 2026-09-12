@@ -886,6 +886,11 @@ button:focus-visible, input:focus-visible {
   background: #F1E7C9;
   border-color: var(--gold);
 }
+.turn-banner.previewing {
+  background: #E7E1D3;
+  border-color: var(--ink-soft);
+  color: var(--ink-soft);
+}
 .turn-banner-timer {
   font-family: var(--font-mono);
   font-size: 16px;
@@ -893,139 +898,78 @@ button:focus-visible, input:focus-visible {
   min-width: 28px;
   text-align: center;
 }
-/* ==========================================================================
-   GAME COUNTDOWN OVERLAY (Scouting Phase)
-   ========================================================================== */
-.game-countdown-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 45;
-  background: rgba(34, 29, 23, 0.4);
-  backdrop-filter: blur(3px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.countdown-card {
-  background: var(--paper-deep);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-md);
-  padding: 30px 40px;
-  text-align: center;
-  box-shadow: 0 16px 32px rgba(0,0,0,0.3);
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-@keyframes popIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
 
 /* ==========================================================================
-   TOAST NOTIFICATIONS (Hamle Bildirimleri)
+   HAMLE GEÇMİŞİ — sohbet balonunun solunda ikinci bir balon
    ========================================================================== */
-.toast-container {
-  position: fixed;
-  top: 80px; /* Üst bardan hemen aşağıda */
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 100;
-  pointer-events: none; /* Mouse ile tıklamayı engellememesi için */
+.movelog-bubble {
+  right: 88px; /* sohbet balonunun (56px + 12px boşluk) solunda */
 }
-.toast {
-  background: var(--paper-deep);
-  border: 1.5px solid var(--paper-line);
-  border-left: 4px solid var(--gold);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  font-family: var(--font-ui);
-  font-size: 13.5px;
-  color: var(--ink);
-  box-shadow: 0 8px 24px rgba(34, 29, 23, 0.2);
-  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  pointer-events: auto;
+@media (max-width: 480px) {
+  .movelog-bubble { right: 82px; }
 }
-.toast.fade-out {
-  animation: fadeOutRight 0.3s ease forwards;
-}
-.toast-highlight { font-weight: 700; color: var(--pen-red); }
-.toast-word { font-family: var(--font-mono); font-weight: 700; color: var(--pen-green); }
 
-@keyframes slideInRight {
-  from { transform: translateX(120%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@keyframes fadeOutRight {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(120%); opacity: 0; }
-}
-/* ==========================================================================
-   ACTIVITY LOG (Hamle Geçmişi)
-   ========================================================================== */
-.activity-bubble-pos {
-  right: 88px; /* Chat balonunun solunda durması için */
-}
-.activity-panel-pos {
+.movelog-panel {
   right: 88px;
 }
-
 @media (max-width: 480px) {
-  .activity-bubble-pos { right: 84px; }
-  .activity-panel-pos { right: 16px; width: calc(100vw - 32px); }
+  .movelog-panel { right: 16px; bottom: 148px; }
 }
 
-/* ==========================================================================
-   ACTIVITY LOG (Hamle Geçmişi)
-   ========================================================================== */
-.activity-popup {
-  position: absolute;
-  bottom: 110%; 
-  right: 0;
+.movelog-list {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px;
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 10px;
-  pointer-events: none;
 }
-
-.activity-popup-item {
-  background: var(--paper-deep);
-  border: 1.5px solid var(--paper-line);
-  border-left: 4px solid var(--gold);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  color: var(--ink);
-  box-shadow: 0 8px 24px rgba(34, 29, 23, 0.2);
-  white-space: normal;
-  min-width: 200px;
-  max-width: 260px;
-  pointer-events: none;
-  animation: popUpActivity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.activity-popup-item.fade-out {
-  animation: fadeDownActivity 0.3s ease forwards;
-}
-
-@keyframes popUpActivity {
-  from { transform: translateY(15px) scale(0.9); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-@keyframes fadeDownActivity {
-  from { transform: translateY(0) scale(1); opacity: 1; }
-  to { transform: translateY(15px) scale(0.9); opacity: 0; }
-}
-
-.activity-msg {
-  font-size: 13px;
+.movelog-entry {
+  font-size: 12.5px;
   line-height: 1.4;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--paper-line);
+  padding: 8px 10px;
+  background: var(--paper-deep);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--pen-green);
 }
-.activity-msg:last-child {
-  border-bottom: none;
+.movelog-entry .movelog-name { font-weight: 700; color: var(--pen-green); }
+.movelog-entry .movelog-points {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--gold);
 }
+.movelog-empty {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.movelog-toast {
+  position: fixed;
+  bottom: 88px;
+  right: 88px;
+  max-width: 260px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12.5px;
+  line-height: 1.4;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 24px -10px rgba(0,0,0,0.5);
+  z-index: 82;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.movelog-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (max-width: 480px) {
+  .movelog-toast { right: 16px; bottom: 148px; max-width: calc(100vw - 32px); }
+}
+
