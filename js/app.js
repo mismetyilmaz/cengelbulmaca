@@ -88,7 +88,9 @@
   const toastContainer = document.getElementById("toast-container");
   
   let currentPhase = "waiting"; // Oyunun şu an hangi aşamada olduğunu tutacağız
-  const knownSolvedWords = new Set(); // Bildirimleri tekrar tekrar göstermemek için
+
+  const knownSolvedWords = new Set();
+  let isInitialLoad = true; // İlk veri çekimindeki bildirimleri engellemek için
   let isHost = false;
   let gameStarted = false;
   let currentTurnPlayerId = null;
@@ -509,35 +511,38 @@
           }
         });
       },
-      onWordsChange: () => {
+     onWordsChange: () => {
         if (gridReady) {
           Object.keys(PUZZLE_DATA.words).forEach(wid => {
             if (Game.isWordSolved(wid)) {
               PuzzleRender.markWordSolved(wid);
 
-              // YENİ EKLENEN BLOK: Sadece YENİ çözülen kelimeler için bildirim yolla
+              // Sadece daha önce bildirimini atmadığımız kelimeleri işle
               if (!knownSolvedWords.has(wid)) {
                 knownSolvedWords.add(wid);
                 
-                const wordData = PUZZLE_DATA.words[wid];
-                const answer = wordData.answer;
-                
-                // İpucunu çek
-                const cellData = PUZZLE_DATA.cells[wordData.clueCell];
-                const clueObj = cellData.clues.find(cl => cl.wordId === wid);
-                const clueText = clueObj ? clueObj.text : "";
-
-                // Kelimeyi ilk kimin çözdüğünü bul (ilk harfi kim yazdıysa onundur)
-                const filled = Game.getFilledLettersForWord(wid);
-                const firstCellId = wordData.cells[0];
-                const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
-                
-                if (solverId) {
-                  const players = Game.getPlayersSorted();
-                  const solver = players.find(p => p.id === solverId);
-                  const solverName = solver ? solver.name : "Biri";
+                // Sayfa ilk açıldığında daha önceden çözülmüş olanları es geç
+                if (!isInitialLoad) {
+                  const wordData = PUZZLE_DATA.words[wid];
+                  const answer = wordData.answer;
                   
-                  // Puanlama algoritmana göre buradaki *10 değerini güncelleyebilirsin
+                  const cellData = PUZZLE_DATA.cells[wordData.clueCell];
+                  const clueObj = cellData.clues.find(cl => cl.wordId === wid);
+                  const clueText = clueObj ? clueObj.text : "";
+
+                  // Kelimenin harflerine bakıp çözen kişiyi bul
+                  const filled = Game.getFilledLettersForWord(wid);
+                  const firstCellId = wordData.cells[0];
+                  const solverId = filled[firstCellId] ? filled[firstCellId].playerId : null;
+                  
+                  // Firebase gecikmesi olursa "Bir oyuncu" yazarak iptal olmasını engelle
+                  let solverName = "Bir oyuncu";
+                  if (solverId) {
+                    const players = Game.getPlayersSorted();
+                    const solver = players.find(p => p.id === solverId);
+                    if (solver) solverName = solver.name;
+                  }
+                  
                   const points = answer.length * 10; 
                   
                   showToast(`<span class="toast-highlight">${escapeHtml(solverName)}</span>, <i>${escapeHtml(clueText)}</i> > <span class="toast-word">${escapeHtml(answer)}</span> ile ${points} puan aldı!`);
@@ -545,6 +550,8 @@
               }
             }
           });
+          
+          isInitialLoad = false; // İlk yükleme taraması bitti, sonrakilerde bildirim çıksın
           renderProgress();
         }
 
@@ -795,20 +802,26 @@
     return div.innerHTML;
   }
   function showToast(htmlMessage) {
+    let container = document.getElementById("toast-container");
+    
+    // Eğer HTML içine eklenmemişse veya JS'den sonra yükleniyorsa otomatik oluştur:
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "toast-container";
+      container.className = "toast-container";
+      document.body.appendChild(container);
+    }
+    
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.innerHTML = htmlMessage;
     
-    if(toastContainer) {
-      toastContainer.appendChild(toast);
-      
-      // 4 saniye sonra fade out animasyonunu başlat
-      setTimeout(() => {
-        toast.classList.add("fade-out");
-        // Animasyon bitince DOM'dan kalıcı olarak sil
-        setTimeout(() => toast.remove(), 300); 
-      }, 4000);
-    }
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add("fade-out");
+      setTimeout(() => toast.remove(), 300); 
+    }, 4000);
   }
   // ================================================================
   // ZOOM — mobilde pinch, masaüstünde +/- butonlar
