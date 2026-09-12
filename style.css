@@ -862,13 +862,15 @@ button:focus-visible, input:focus-visible {
 }
 .ghost-link-block:hover { border-color: var(--gold); }
 
+/* ==========================================================================
+   SIRA TABANLI MOD — tur banner
+   ========================================================================== */
 .turn-banner {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   padding: 10px 20px;
-  margin: 0 28px;
   background: var(--paper-deep);
   border: 1.5px solid var(--paper-line);
   border-radius: var(--radius-sm);
@@ -877,23 +879,17 @@ button:focus-visible, input:focus-visible {
   font-size: 14.5px;
   color: var(--ink);
   
-  /* YENİ EKLENEN KISIM: Barı ekranın üstüne sabitler */
-  position: -webkit-sticky; /* iOS Safari desteği için */
-  position: sticky;
-  top: 0; 
-  z-index: 75; /* Pop-up'ların altında, oyun tahtasının üstünde kalması için */
-  box-shadow: 0 6px 16px -6px rgba(34, 29, 23, 0.4); /* Kaydırırken oyun tahtasından ayrı dursun diye şık bir gölge */
+  /* STICKY YERİNE FIXED KULLANIYORUZ - KESİN ÇÖZÜM */
+  position: fixed;
+  top: 12px; /* Masaüstünde ekranın üstünden ufak bir pay */
+  left: 50%;
+  transform: translateX(-50%); /* Tam ortaya hizalamak için */
+  z-index: 95; /* Diğer her şeyin (örneğin pop-upların) altında, ızgaranın üstünde durması için */
+  width: calc(100% - 56px); /* Sağdan soldan pay */
+  max-width: 500px;
+  box-shadow: 0 8px 24px -6px rgba(34, 29, 23, 0.4); /* Havada duruyormuş hissi veren gölge */
 }
 
-/* YENİ EKLENEN KISIM: Mobilde barın kenarlara tam oturması için */
-@media (max-width: 880px) {
-  .turn-banner {
-    margin: 0;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-}
 .turn-banner.my-turn {
   background: #E2ECD9;
   border-color: var(--pen-green);
@@ -916,6 +912,26 @@ button:focus-visible, input:focus-visible {
   text-align: center;
 }
 
+/* MOBİL EKRANLAR İÇİN DÜZENLEME */
+@media (max-width: 880px) {
+  .turn-banner {
+    top: 0; /* Mobilde ekranın en tepesine sıfırla */
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    padding: 12px 20px;
+  }
+  
+  /* Bar ekranın en üstüne sabitlendiğinde altındaki "Çengel Bulmaca" logolu 
+     üst alanı kapatmasın diye otomatik olarak aşağı itiyoruz */
+  body:has(.turn-banner:not(.hidden)) .topbar {
+    padding-top: 58px; 
+  }
+}
 /* ==========================================================================
    HAMLE GEÇMİŞİ — sohbet balonunun solunda ikinci bir balon
    ========================================================================== */
