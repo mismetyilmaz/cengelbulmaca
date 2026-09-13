@@ -52,13 +52,35 @@ const PuzzleRender = (() => {
 
   function buildGrid() {
     containerEl.innerHTML = "";
+    
+    // Fotoğrafların altında kalan hücreleri tespit et
+    const skipCells = new Set();
     for (let r = 0; r < PUZZLE_DATA.rows; r++) {
       for (let c = 0; c < PUZZLE_DATA.cols; c++) {
-        containerEl.appendChild(buildCellEl(`r${r}c${c}`, PUZZLE_DATA.cells[`r${r}c${c}`]));
+        const cellId = `r${r}c${c}`;
+        const cellData = PUZZLE_DATA.cells[cellId];
+        if (cellData && cellData.type === "photo") {
+           const w = cellData.w || 1;
+           const h = cellData.h || 1;
+           for(let ir = 0; ir < h; ir++) {
+              for(let ic = 0; ic < w; ic++) {
+                 if(ir === 0 && ic === 0) continue;
+                 skipCells.add(`r${r+ir}c${c+ic}`);
+              }
+           }
+        }
+      }
+    }
+
+    // skipCells'teki (görselin altında kalan) hücreleri atlayarak gridi diz
+    for (let r = 0; r < PUZZLE_DATA.rows; r++) {
+      for (let c = 0; c < PUZZLE_DATA.cols; c++) {
+        const cellId = `r${r}c${c}`;
+        if (skipCells.has(cellId)) continue;
+        containerEl.appendChild(buildCellEl(cellId, PUZZLE_DATA.cells[cellId]));
       }
     }
   }
-
  /**
    * Bir okun hücre içindeki konumunu hesaplar.
    * ZOOM sorununu çözmek için px yerine % (yüzdelik) oranlar kullanılmıştır.
@@ -140,6 +162,9 @@ const PuzzleRender = (() => {
     } else if (cellData.type === "photo") {
       el.className = "cell photo";
       if (cellData.imageUrl) el.style.backgroundImage = `url(${cellData.imageUrl})`;
+      // Büyüyen görsellerin CSS grid üzerinde esnemesini sağla
+      if (cellData.w > 1) el.style.gridColumn = `span ${cellData.w}`;
+      if (cellData.h > 1) el.style.gridRow = `span ${cellData.h}`;
     }
 
     return el;
