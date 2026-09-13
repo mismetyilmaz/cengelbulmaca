@@ -488,8 +488,13 @@ button:focus-visible, input:focus-visible {
 }
 
 .cell.photo {
+  /* YENİ EKLENEN: Sabit 64px boyutunu ezip seçilen grid alanını tamamen kaplamasını sağlar */
+  width: 100%;
+  height: 100%;
+  
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* ==========================================================================
